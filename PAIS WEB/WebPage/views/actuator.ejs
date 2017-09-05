@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<title>정밀 배지무게 모니터링 시스템</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/button.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="shortcut icon" href="img/logo.png" />
+
+<style>
+
+</style>
+
+<body>
+    <div class="popup borderRadius" style="width: 50%; height: 40%;" id="popup">
+        <img id="popupImg" src="img/farm_.jpg" alt="" style="width:100%;hegith:auto;">
+    </div>
+
+    <div style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background-image: url('../img/farm.jpg'); background-size: cover; z-index: -2;"></div>
+    <!-- 배경 어둡거나 색감 변경 하고 싶을때 -->
+    <!-- <div style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background-color: rgba(0,0,0,0.6); background-size: cover; z-index: -1;"></div> -->
+ 
+    <!-- Navbar -->
+    <div class="w3-top">
+        <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+            <a class="w3-bar-item w3-button w3-opennav w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()">
+                <i class="fa fa-bars"></i>
+            </a>
+            <a href="#" class="w3-bar-item w3-button w3-theme-l1"><b>SSL</b></a>
+            <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white" id="titleDate"></a>
+            <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white" id="titleText">배지 정보</a>
+        </div>
+    </div>
+    <!-- Sidenav -->
+    <nav class="w3-sidenav w3-collapse w3-animate-left" id="mySidenav" style="margin-top:16px;">
+        <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="close menu">
+            <i class="fa fa-remove"></i>
+        </a>
+
+        <div style="background-color:rgba(255,255,255,0.85);text-align:center;padding-top:1.5em;padding-bottom:1.5em;">
+            <img src="img/logo.png" style="width:9em;height:auto;" />
+        </div>
+
+        <h4><b>Menu</b></h4>
+        <a href="#" onclick="showAddDevice()" class="w3-hover-black">제품 등록</a>
+        <hr>
+        <a id="tab-sensor" href="http://www.ezsmartfarm.com/" class="w3-hover-black">미기후 정보</a>
+        <a id="tab-weight" href="#" class="w3-hover-black"><b>배지 정보</b></a>
+        <hr>
+        <a id="tab-journal" href="http://www.ezsmartfarm.com/journal" class="w3-hover-black">영농 일지</a>
+        <hr>
+        <a id="tab-actuator" href="http://www.ezsmartfarm.com/actuator" class="w3-hover-black" style = "visibility:hidden;">온실제어 <</a>
+        <hr id = "div-actuator" style = "visibility:hidden;">
+        <a href="#" onclick="kakaoLogout()" class="w3-hover-black">로그아웃</a>
+    </nav>
+
+    <!-- Overlay effect when opening sidenav on small screens -->
+    <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
+
+    <!-- Main content: shift it to the right by 250 pixels when the sidenav is visible -->
+    <div class="w3-main" style="margin-left: 220px;margin-top:38px;">
+
+
+        <!-- 좌측 라인 -->
+        <div class="w3-col w3-half">
+
+            <div class="w3-container w3-alpha-black w3-margin">
+                <h4 class="w3-text-white w3-border-bottom">달력</h4>
+                <div style="width:100%;">
+                    <div id="calendar"> </div>
+                </div>
+            </div>
+
+            <div class="w3-container w3-alpha-black w3-margin">
+                <h4 class="w3-text-white w3-border-bottom">설치 위치 정보</h4>
+                <div id="googleMapWeight" style="height:30em;padding-bottom:2em;"></div>
+            </div>
+
+
+        </div>
+
+
+        <!-- 우측 라인 -->
+        <div class="w3-col w3-half">
+            <div class="w3-container w3-alpha-black w3-margin">
+                <h4 class="w3-text-white w3-border-bottom">외부 날씨 및 예보</h4>
+
+                <div id="weather" style="text-align:center;">
+                    <!-- 현재 날씨 -->
+                    <div class="forecast_current">
+                        <div style="width:100%; margin-bottom:0.5em;">
+                            <div>
+                                <div id="weatherImage_0" style="text-align:center;"> </div>
+                            </div>
+                            <div>
+                                <h4 class="korea" id="temperatureHL_0" style="margin-bottom:0; margin-top:0.5em;"></h4>
+                                <h2 class="korea" id="temperature_0" style="margin-bottom:0;"></h2>
+                                <h4 class="korea" id="wind_0"></h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 향후 날씨 -->
+                    <div style="width:50%; float:left;">
+                        <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
+                            <div id="forecastDate_1" class="forecast_date"></div>
+                            <div class="forecast_inner_wrapper">
+                                <div id="weatherImage_1" class="forecast_img"></div>
+                                <div id="temperatureHL_1" class="forecast_temperature"></div>
+                            </div>
+                        </div>
+                        <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
+                            <div id="forecastDate_2" class="forecast_date"></div>
+                            <div class="forecast_inner_wrapper">
+                                <div id="weatherImage_2" class="forecast_img"></div>
+                                <div id="temperatureHL_2" class="forecast_temperature"></div>
+                            </div>
+                        </div>
+                        <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
+                            <div id="forecastDate_3" class="forecast_date"></div>
+                            <div class="forecast_inner_wrapper">
+                                <div id="weatherImage_3" class="forecast_img"></div>
+                                <div id="temperatureHL_3" class="forecast_temperature"></div>
+                            </div>
+                        </div>
+                        <div class="w3-border-left-dotted forecast_wrapper" style="padding-bottom:0;">
+                            <div id="forecastDate_4" class="forecast_date"></div>
+                            <div class="forecast_inner_wrapper" style="padding-bottom:0.5em;">
+                                <div id="weatherImage_4" class="forecast_img"></div>
+                                <div id="temperatureHL_4" class="forecast_temperature"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w3-container w3-alpha-black w3-margin">
+                <h4 class="w3-text-white w3-border-bottom">ON/OFF 동작 제어</h4>
+                <div>
+                <%
+                    var port = new Array("","측창열기","측창닫기","원격","보광등","양액기","온열기","유동팬","환풍기");
+                %>
+                <%for(var i = 1;i<9;i++){%>
+                    <div class="w3-border-left-dotted w3-border-bottom-dotted actuator_wrapper">
+                        <div class="actuator_inner_wrapper">
+                            <div id="actuator_port_name_<%=i%>" class="actuator_port_name">
+                                <h4 class = "actuator_txt"><%=port[i]%></h4>
+                            </div>
+                            <div id="actuator_port_on_switch_<%=i-1%>" class="actuator_button_on">
+                                <div id="actuator_port_off_switch_<%=i-1%>" class="btn-3d green" onclick="setState(<%=i-1%>,1)">
+                                    <a>ON</a>
+                                </div>
+                            </div>
+                            <div id="actuator_port_off" class="actuator_button_off">
+                                <div id="actuator_port_off_switch_<%=i-1%>" class="btn-3d red" onclick="setState(<%=i-1%>,0)">
+                                    <a>OFF</a>
+                                </div>
+                            </div>
+                            <div id="actuator_port_state_<%=i-1%>" class = "actuator_checker_off">
+                                
+                            </div>
+                        </div>
+                    </div>
+                <%}%>
+                </div>
+            </div>
+        </div>
+        <!-- END MAIN -->
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
+    <script src="js/weight.js"></script>
+    <script src="js/actuator.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/lib/cookie.js"></script>
+    <script src="js/lib/kalmanFilter.js"></script>
+    <script src="js/lib/jquery.min.js"></script>
+    <script src="js/lib/jquery.simpleWeather.js"></script>
+    <script src="js/lib/jquery.panzoom.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+    <script>
+        var selectedPosition = '35,48.6';
+        $(document).ready(function() {
+            var cookie_token = getCookie(cookie_accessToken);
+            if (cookie_token == "") { //기존에 로그인되어 있을경우
+                $("#loginMask").css("display", "block");
+            } else { //로그인 되어 있을때
+                //저장되어 있는 토큰 유효성 검사 후 화면 출력
+                serialListCheck();
+                createMapWeight();
+                drawCalendar();
+                getCommandState();
+                setCurrentState();
+                $('#titleDate').html(getFormatingDate(new Date()));
+                //$('#title').html("센서 현황 [" + today + "]");
+
+                //데이터 다운로드 창 밖에 클릭시 사라지게
+                $(document).mouseup(function (e) {
+                   var downloadPopup = $('#downloadMask');
+                   var datePicker = $('#ui-datepicker-div');
+                   if (downloadPopup.has(e.target).length === 0 && datePicker.has(e.target).length === 0) { downloadPopup.hide()} //container.style.display = 'none';
+                });
+
+                setHighchartsOption();
+            }
+            if(getCookie(cookie_usercode) == "425622077" || getCookie(cookie_usercode) == "400102789" ){
+                $('#tab-actuator').css('visibility','visible');
+                $('#div-actuator').css('visibility','visible');
+            }else{
+                $('#tab-actuator').css('visibility','hidden');
+                $('#div-actuator').css('visibility','hidden');
+            }
+            
+        });
+        // $(document).ready(function() {
+
+        //     var cookie_token = getCookie(cookie_usercode);
+        //     console.log(cookie_token);
+        //     if (cookie_token == "") {
+        //         setCookie(cookie_usercode, "425622077", 2);
+        //     } else { //로그인 되어 있을때
+        //         //저장되어 있는 토큰 유효성 검사 후 고고싱
+        //         getCookie(cookie_usercode);
+        //         serialListCheck();
+        //         createMapWeight();
+        //         getCommandState();
+        //         setCurrentState();
+        //         drawCalendar();
+        //         $('#titleDate').html(getFormatingDate(new Date()));
+        //         //$('#title').html("센서 현황 [" + today + "]");
+                
+        //         setHighchartsOption();
+        //     }
+        // });
+    </script>
+
+</body>
+
+</html>

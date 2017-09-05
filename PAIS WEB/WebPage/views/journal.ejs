@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<title>온실 모니터링 - 영농일지</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="shortcut icon" href="img/logo.png" />
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" />
+<script src="//code.jquery.com/jquery-1.12.4.js"></script>
+<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<style>
+
+</style>
+
+<body>
+    <div id="loginMask">
+        <div id="logo"></div>
+        <div id="kakao-login-btn" onClick="kakaoLogin()"></div>
+    </div>
+    <div id="addDeviceMask">
+        <div onclick="popupClose()" style="position:fixed;width:100%;height:100%;"> </div>
+        <h3 class="w3-text-white" style="margin-top:10%">제품이 배치될 장소를 선택해주세요.</h3>
+        <div onclick="voidFunction()" id="addDeviceMap"></div>
+    </div>
+
+    <div id="mask" onclick="popupClose()"></div>
+    <div class="popup borderRadius" id="popup">
+        <!-- [TBD] 이미지 외부 모든 여백 클릭시 팝업 닫히게 해야함(남는 좌우 DIV부분에 클릭하면 안닫힘)
+                  현재 반투명 흰색으로 처리 해뒀으니 추후 체크-->
+        <section id="popupSection">
+            <div style="padding-bottom: 3px">
+                <button class="zoom-in grayButton">확대</button>
+                <button class="zoom-out grayButton">축소</button>
+                <input type="range" class="zoom-range">
+                <button class="reset grayButton">초기화</button>
+                <button class="grayButton" onclick="popupClose()">닫기</button>
+            </div>
+            <div style="background-color:rgba(255,255,255,0.2);">
+                <div class="panzoom">
+                    <img id="popupImg" onerror="this.src='img/noImage.png'" src="img/farm_.jpg" alt="">
+                </div>
+
+                <a class="popupImgButton" style="right:-5%;" onclick="clickNextCamImg()"><i class="popupRightButton"></i></a>
+                <a class="popupImgButton" style="left:5%;" onclick="clickPreCamImg()"><i class="popupLeftButton"></i></a>
+            </div>
+        </section>
+        <!-- 팝업창 하단 이미지 -->
+        <div class="popupBottom">
+            <div id="popupBottomDiv_0"></div>
+            <div id="popupBottomText_0" class="popupBottomWrapperTop" onclick="popupChange(0)">
+                <p class="popupCamImgText">00:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_1"></div>
+            <div id="popupBottomText_1" class="popupBottomWrapperTop" onclick="popupChange(1)">
+                <p class="popupCamImgText">02:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_2"></div>
+            <div id="popupBottomText_2" class="popupBottomWrapperTop" onclick="popupChange(2)">
+                <p class="popupCamImgText">04:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_3"></div>
+            <div id="popupBottomText_3" class="popupBottomWrapperTop" onclick="popupChange(3)">
+                <p class="popupCamImgText">06:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_4"></div>
+            <div id="popupBottomText_4" class="popupBottomWrapperTop" onclick="popupChange(4)">
+                <p class="popupCamImgText">08:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_5"></div>
+            <div id="popupBottomText_5" class="popupBottomWrapperTop" onclick="popupChange(5)">
+                <p class="popupCamImgText">10:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_6"></div>
+            <div id="popupBottomText_6" class="popupBottomWrapperLower" onclick="popupChange(6)">
+                <p class="popupCamImgText">12:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_7"></div>
+            <div id="popupBottomText_7" class="popupBottomWrapperLower" onclick="popupChange(7)">
+                <p class="popupCamImgText">14:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_8"></div>
+            <div id="popupBottomText_8" class="popupBottomWrapperLower" onclick="popupChange(8)">
+                <p class="popupCamImgText">16:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_9"></div>
+            <div id="popupBottomText_9" class="popupBottomWrapperLower" onclick="popupChange(9)">
+                <p class="popupCamImgText">18:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_10"></div>
+            <div id="popupBottomText_10" class="popupBottomWrapperLower" onclick="popupChange(10)">
+                <p class="popupCamImgText">20:00</p>
+            </div>
+        </div>
+        <div class="popupBottom">
+            <div id="popupBottomDiv_11"></div>
+            <div id="popupBottomText_11" class="popupBottomWrapperLower" onclick="popupChange(11)">
+                <p class="popupCamImgText">22:00</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background-image: url('../img/farm.jpg'); background-size: cover; z-index: -2;"></div>
+    <!-- 배경 어둡거나 색감 변경 하고 싶을때 -->
+    <!-- <div style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background-color: rgba(0,0,0,0.6); background-size: cover; z-index: -1;"></div> -->
+
+    <!-- Navbar -->
+    <div class="w3-top">
+        <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+            <a class="w3-bar-item w3-button w3-opennav w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()">
+                <i class="fa fa-bars"></i>
+            </a>
+            <a href="#" class="w3-bar-item w3-button w3-theme-l1"><b>SSL</b></a>
+            <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white" id="titleDate"></a>
+            <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white" id="titleText">영농일지</a>
+
+            <a href="/en/journal" class="w3-bar-item w3-hover-white" style="position:relative; float:right; right:0px">English(US)</a>
+            <a href="#" class="w3-bar-item w3-white" style="position:relative; float:right; right:0px">한국어</a>
+        </div>
+    </div>
+
+    <!-- Sidenav -->
+    <nav class="w3-sidenav w3-collapse w3-animate-left" id="mySidenav">
+        <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="close menu">
+            <i class="fa fa-remove"></i>
+        </a>
+        <div style="background-color:rgba(255,255,255,0.85);text-align:center;padding-top:1.5em;padding-bottom:1.5em;">
+            <img src="img/logo.png" style="width:9em;height:auto;" />
+        </div>
+        <h4><b>Menu</b></h4>
+        <a href="#" onclick="showAddDevice()" class="w3-hover-black">제품 등록</a>
+        <hr>
+        <a id="tab-sensor" href="http://www.ezsmartfarm.com/" class="w3-hover-black">미기후 정보</a>
+        <a id="tab-weight" href="http://www.ezsmartfarm.com/weight" class="w3-hover-black">배지 정보</a>
+        <hr>
+        <a id="tab-journal" href="#" class="w3-hover-black"><b>영농 일지 <</b></a>
+        <hr>
+        <a id="tab-actuator" href="http://www.ezsmartfarm.com/actuator" class="w3-hover-black" style = "visibility:hidden;">온실제어</a>
+        <hr id = "div-actuator" style = "visibility:hidden;">
+        <a href="#" onclick="kakaoLogout()" class="w3-hover-black">로그아웃</a>
+    </nav>
+
+    <!-- Overlay effect when opening sidenav on small screens -->
+    <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
+
+    <!-- Main content: shift it to the right by 250 pixels when the sidenav is visible -->
+    <div class="w3-main" style="margin-left: 220px;">
+        <!-- 좌측 라인 -->
+        <div class="w3-col w3-half" style="margin-top:38px">
+            <div class="w3-container w3-alpha-black w3-margin">
+                <h4 class="w3-text-white w3-border-bottom">달력</h4>
+                <div style="width:100%;">
+                    <div id="calendar"> </div>
+                </div>
+            </div>
+
+            <div class="w3-container w3-alpha-black w3-margin">
+                <h4 class="w3-text-white w3-border-bottom">설치 위치 정보</h4>
+                <div id="googleMap" style="height:30em;padding-bottom:2em;"></div>
+            </div>
+
+        </div>
+
+        <!-- 우측 라인 -->
+        <div class="w3-col w3-half" style="margin-top:38px">
+            <div class="w3-container w3-alpha-black w3-margin">
+                <h4 class="w3-text-white w3-border-bottom">기록</h4>
+
+                <div>
+                    <div class="w3-half w3-padding-small" style="text-align:center;">
+                        <h5 class="w3-text-white" style="font-size:1.1em;">재배현황</h5>
+                        <textarea class="textArea"></textarea>
+                    </div>
+                    <div class="w3-half w3-padding-small" style="text-align:center;">
+                        <h5 class="w3-text-white" style="font-size:1.1em;">특이사항</h5>
+                        <textarea class="textArea"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w3-container w3-alpha-black w3-margin">
+                <h4 class="w3-text-white w3-border-bottom">날씨</h4>
+                <div id="weatherGraph" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+            </div>
+
+            <div class="w3-container w3-alpha-black w3-margin">
+                <span onclick="showComponentToggle('dailyVPD_HDPieChart', 'dailyVPD_HDPieChartMinus')" class="w3-hover-text-grey w3-closebtn">
+                    <i id="dailyVPD_HDPieChartMinus" class="fa fa-minus-square-o"></i>
+                </span>
+                <h4 class="w3-text-white w3-border-bottom">일일 VPD&HD 적합성</h4>
+                <div id="dailyVPD_HDPieChart">
+                    <div id="vpdPieChart" style="width:50%; height:auto; float:left"></div>
+                    <div id="hdPieChart" style="width:50%; height:auto; float:left"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
+            <h4 class="w3-text-white w3-border-bottom">작물 생육 이미지</h4>
+
+            <div style="width:100%;">
+                <!-- 카메라 부분 이미지 html div로 수정 -->
+                <h5>작물 생육 이미지 Ⅰ</h5>
+                <div class="cameraImageHistoryDiv">
+                    <div>00:00</div>
+                    <div id="cropImg_0"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>02:00</div>
+                    <div id="cropImg_1"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>04:00</div>
+                    <div id="cropImg_2"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>06:00</div>
+                    <div id="cropImg_3"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>08:00</div>
+                    <div id="cropImg_4"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>10:00</div>
+                    <div id="cropImg_5"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>12:00</div>
+                    <div id="cropImg_6"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>14:00</div>
+                    <div id="cropImg_7"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>16:00</div>
+                    <div id="cropImg_8"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>18:00</div>
+                    <div id="cropImg_9"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>20:00</div>
+                    <div id="cropImg_10"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>22:00</div>
+                    <div id="cropImg_11"></div>
+                </div>
+            </div>
+
+            <h5>작물 생육 이미지 Ⅱ</h5>
+            <div style="width:100%;">
+                <div class="cameraImageHistoryDiv">
+                    <div>00:00</div>
+                    <div id="bugImg_0"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>02:00</div>
+                    <div id="bugImg_1"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>04:00</div>
+                    <div id="bugImg_2"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>06:00</div>
+                    <div id="bugImg_3"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>08:00</div>
+                    <div id="bugImg_4"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>10:00</div>
+                    <div id="bugImg_5"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>12:00</div>
+                    <div id="bugImg_6"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>14:00</div>
+                    <div id="bugImg_7"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>16:00</div>
+                    <div id="bugImg_8"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>18:00</div>
+                    <div id="bugImg_9"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>20:00</div>
+                    <div id="bugImg_10"></div>
+                </div>
+                <div class="cameraImageHistoryDiv">
+                    <div>22:00</div>
+                    <div id="bugImg_11"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
+            <h4 class="w3-text-white w3-border-bottom">
+                미기후 통합 정보
+                <!-- <a id="allDataDown" class="downloadLink" href="#">[데이터 다운로드]</a> -->
+                <span id="download" class="downloadLink" onclick="downloadCalPopupShow()">[데이터 다운로드]</span>
+                <div id="downloadMask">
+                    <div style="width:20%; position:absolute; background-color:#000; border:1px solid #38393a; left:21.5%; z-index:10; float:left; text-align:center; color:#fff; font-size:.8em; padding-top:10px;">
+                        <h3>기간을 선택하여 주세요.</h3>
+                        <table align="center">
+                            <tr>
+                                <td><b>시작날짜</b></td>
+                                <td><input id="downloadStartDate" type="text" data-role="date" value="" onFocus="this.blur()"></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><h3> ▼ </h3></td>
+                            </tr>
+                            <tr>
+                                <td><b>종료날짜</b></td>
+                                <td><input id="downloadEndDate" type="text" data-role="date" value="" onFocus="this.blur()"></td>
+                            </tr>
+                        </table>
+                        <button id="downloadDataButton" onclick="downloadData()" style="margin-top:5%; margin-bottom:5%;">다운로드</button>
+                    </div>
+                </div>
+            </h4>
+            <div id="graphAll" class="borderRadius"></div>
+        </div>
+
+        <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
+            <h4 class="w3-text-white w3-border-bottom">온실 대기 변화 추이</h4>
+            <div id="graphAirHumidity" class="borderRadius"></div>
+        </div>
+
+        <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
+            <h4 class="w3-text-white w3-border-bottom">VPD&HD 적합성 변화 추이</h4>
+            <div id="graphVpd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
+            <div id="graphHd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
+        </div>
+
+        <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
+            <h4 class="w3-text-white w3-border-bottom">미기후 항목별 변화 추이</h4>
+            <div id="graph" class="borderRadius"></div>
+        </div>
+
+
+        <!-- END MAIN -->
+    </div>
+
+    <script>
+        $("#downloadStartDate, #downloadEndDate").datepicker({
+              dateFormat: 'yy-mm-dd',
+              prevText: '이전 달',
+              nextText: '다음 달',
+              monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+              monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+              dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+              dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+              dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+              showMonthAfterYear: true,
+              yearSuffix: '년'
+        });
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
+    <script src="js/journal.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/lib/cookie.js"></script>
+    <script src="js/lib/kalmanFilter.js"></script>
+    <script src="js/lib/mollier.js"></script>
+
+    <script src="js/lib/jquery.min.js"></script>
+    <script src="js/lib/jquery.panzoom.min.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var cookie_token = getCookie(cookie_accessToken);
+            if (cookie_token == "") { //기존에 로그인되어 있을경우
+                $("#loginMask").css("display", "block");
+            } else { //로그인 되어 있을때
+                //저장되어 있는 토큰 유효성 검사 후 고고싱
+
+                serialListCheck();
+                var $section = $('#popupSection');
+                $section.find('.panzoom').panzoom({
+                    $zoomIn: $section.find(".zoom-in"),
+                    $zoomOut: $section.find(".zoom-out"),
+                    $zoomRange: $section.find(".zoom-range"),
+                    $reset: $section.find(".reset")
+                });
+                var today = '';
+
+                $('#titleDate').html(getFormatingDate(new Date()));
+                drawCalendar();
+                createMap();
+                setHighchartsOption();
+
+                //데이터 다운로드 창 밖에 클릭시 사라지게
+                $(document).mouseup(function (e) {
+                   var downloadPopup = $('#downloadMask');
+                   var datePicker = $('#ui-datepicker-div');
+                   if (downloadPopup.has(e.target).length === 0 && datePicker.has(e.target).length === 0) { downloadPopup.hide()} //container.style.display = 'none';
+                });
+            }
+            if(getCookie(cookie_usercode) == "425622077" || getCookie(cookie_usercode) == "400102789" ){
+                $('#tab-actuator').css('visibility','visible');
+                $('#div-actuator').css('visibility','visible');
+            }else{
+                $('#tab-actuator').css('visibility','hidden');
+                $('#div-actuator').css('visibility','hidden');
+            }
+        });
+    </script>
+
+</body>
+
+</html>
