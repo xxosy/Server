@@ -1,4 +1,4 @@
-var myServerIP = "http://221.159.48.9";
+var myServerIP = "http://localhost";
 var myServerPort = "80";
 var myServerCamPort = "8084";
 var sensorServerPort = "3000";
@@ -39,7 +39,7 @@ function w3_close() {
 
 //사용자가 등록한 센서, 저울 시리얼 목록확인하여 보여줄 탭 정하기
 function serialListCheck() {
-    var url = myServerIP + ":" + sensorServerPort + "/map/sensor/";
+    var url = myServerIP + ":" + sensorServerPort + "/usersensor/";
     var usercode = getCookie(cookie_usercode);
 
     $.ajax({
@@ -140,7 +140,7 @@ function createMap() {
 
     map = new google.maps.Map(document.getElementById('googleMap'), mapOptions);
 
-    var url = myServerIP + ":" + sensorServerPort + "/map/sensor/";
+    var url = myServerIP + ":" + sensorServerPort + "/usersensor/";
     var usercode = getCookie(cookie_usercode);
 
     $.ajax({
@@ -177,7 +177,7 @@ function createMap() {
                     latlng = new google.maps.LatLng(parseFloat(response[i].lat), parseFloat(response[i].lng));
 
                     var serial = response[i].serial;
-                    var title = response[i].title;
+                    var title = response[i].name;
 
                     markers[i] = new google.maps.Marker({
                         position: latlng,
@@ -270,15 +270,6 @@ function getFormatingDate(date) {
 //============================================================================================
 //그래프 세팅
 //그래프 들어갈 div 아이디 : graph
-var sensors = new Array();
-sensors[0] = 'temperature';
-sensors[1] = 'humidity';
-sensors[2] = 'light';
-sensors[3] = 'co2';
-sensors[4] = 'ph';
-sensors[5] = 'ec';
-sensors[6] = 'temperature_ds';
-
 function setGraph(selectedSensor, date) {
     var year = Number(date.split('-')[0]);
     var month = Number(date.split('-')[1]);
@@ -287,107 +278,72 @@ function setGraph(selectedSensor, date) {
     var datas = new Array(); //0~5 위에 순서대로
     var flgGraphData = 0;
 
-
-    for (i = 0; i < sensors.length; i++) {
         // 형식 : /list/:factor/:serial/:date/one
-        var graphDataQuery = "list/" + sensors[i] + "/" + selectedSensor + "/" + date + "/one";
+    var graphDataQuery = "value/list/all/" + selectedSensor + "/" + date + "/one";
 
-        $.ajax({
-            dataType: "jsonp",
-            url: myServerDomain + "/" + graphDataQuery, //[TBD]추후 baseURL 로 교체해야함 (현재 복호화때문에 별도 서버 우회중, 교체 후 값사용 시 복호화 해서 사용해야함)
-            type: "GET",
-            success: function(response) {
-                var currentSensorIndex = 0;
-
-                for (j = 0; j < response.graphItems.length; j++) {
-                    var item = response.graphItems[j];
-
-                    var hour = Number(item.update_time.split(':')[0]);
-                    var min = Number(item.update_time.split(':')[1]);
-                    var value = 0;
-
-                    if (j == 0) {
-                        if (item.temperature != null) currentSensorIndex = 0;
-                        else if (item.humidity != null) currentSensorIndex = 1;
-                        else if (item.light != null) currentSensorIndex = 2;
-                        else if (item.co2 != null) currentSensorIndex = 3;
-                        else if (item.ph != null) currentSensorIndex = 4;
-                        else if (item.ec != null) currentSensorIndex = 5;
-                        else if (item.temperature_ds != null) currentSensorIndex = 6;
-
-                        datas[currentSensorIndex] = new Array();
-                    }
-
-                    switch (currentSensorIndex) {
-                        case 0:
-                            value = Number(item.temperature);
-                            break;
-                        case 1:
-                            value = Number(item.humidity);
-                            break;
-                        case 2:
-                            value = Number(item.light);
-                            value = value*2.7;
-                            break;
-                        case 3:
-                            value = Number(item.co2);
-                            break;
-                        case 4:
-                            value = Number(item.ph);
-                            break;
-                        case 5:
-                            value = Number(item.ec);
-                            break;
-                        case 6:
-                            value = Number(item.temperature_ds);
-                            break;
-                    }
-
-                    datas[currentSensorIndex][j] = [Date.UTC(year, month - 1, day, hour, min, 0), value];
-                }
-
-                //칼만 사용하면 위에꺼 안하면 아래꺼 사용
-                if (response.graphItems.length > 0) datas[currentSensorIndex] = kalman(datas[currentSensorIndex]);
-                //if (response.graphItems.length > 0) datas[currentSensorIndex] = datas[currentSensorIndex];
-
-                flgGraphData++;
-
-                if (flgGraphData == sensors.length) {
-                    flgGraphData = 0;
-
-                    var humidityDatas = new Array();
-
-                    humidityDatas[0] = datas[0];
-                    humidityDatas[1] = datas[1];
-                    humidityDatas[2] = new Array(); //이슬점
-                    humidityDatas[3] = new Array(); //HD
-                    humidityDatas[4] = new Array(); //VPD
-
-                    if (response.graphItems.length > 0) {
-                        for (j = 0; j < datas[0].length; j++) {
-                            var pressure = 1013; //[TBD] 추후 다르게 수집한 기압 대입 해야함
-                            var dryTemp = datas[0][j][1];
-                            var humidity = datas[1][j][1];
-                            var wetTemp = getWetTemperature(dryTemp, pressure, humidity);
-
-                            humidityDatas[2][j] = [datas[0][j][0], getDEW(dryTemp, wetTemp, pressure)];
-                            humidityDatas[3][j] = [datas[0][j][0], getHD(humidity, dryTemp)];
-                            humidityDatas[4][j] = [datas[0][j][0], getVPD(dryTemp, wetTemp, pressure, humidity)];
-                        }
-                    }
-
-                    drawGraphAll(datas);
-                    drawGraphAirHumidity(humidityDatas);
-                    drawVPDHD(humidityDatas[4], humidityDatas[3]);
-                    drawPieChart(humidityDatas[4], humidityDatas[3]);
-                    drawGraph(datas);
-                }
-            },
-            error: function(response, status, error) {
-                console.log("sensor value loading failure : " + status + ", " + error);
+    $.ajax({
+        dataType: "jsonp",
+        url: myServerIP + ":3000/" + graphDataQuery, //[TBD]추후 baseURL 로 교체해야함 (현재 복호화때문에 별도 서버 우회중, 교체 후 값사용 시 복호화 해서 사용해야함)
+        type: "GET",
+        success: function(response) {
+            var currentSensorIndex = 0;
+            for(var k = 0;k<7;k++){
+                datas[k] = new Array();
             }
-        });
-    }
+            for (j = 0; j < response.length; j++) {
+                var item = response[j];
+
+                var hour = Number(item.update_time.split(':')[0]);
+                var min = Number(item.update_time.split(':')[1]);
+                var value = JSON.parse(response[j].value);
+
+                datas[0][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.temperature)];
+                datas[1][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.humidity)];
+                datas[2][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.light)];
+                datas[3][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.co2)];
+                datas[4][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.ph)];
+                datas[5][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.ec)];
+                datas[6][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.temperature_ds)];            
+            }
+
+            //칼만 사용하면 위에꺼 안하면 아래꺼 사용
+            for(var k = 0;k<7;k++){
+                if (response.length > 0) datas[k] = kalman(datas[k]);
+            }
+            //if (response.graphItems.length > 0) datas[currentSensorIndex] = datas[currentSensorIndex];
+            var humidityDatas = new Array();
+
+            humidityDatas[0] = datas[0];
+            humidityDatas[1] = datas[1];
+            humidityDatas[2] = new Array(); //이슬점
+            humidityDatas[3] = new Array(); //HD
+            humidityDatas[4] = new Array(); //VPD
+
+            if (response.length > 0) {
+                for (j = 0; j < datas[0].length; j++) {
+                    var pressure = 1013; //[TBD] 추후 다르게 수집한 기압 대입 해야함
+                    var dryTemp = datas[0][j][1];
+                    var humidity = datas[1][j][1];
+                    var wetTemp = getWetTemperature(dryTemp, pressure, humidity);
+
+                    humidityDatas[2][j] = [datas[0][j][0], getDEW(dryTemp, wetTemp, pressure)];
+                    humidityDatas[3][j] = [datas[0][j][0], getHD(humidity, dryTemp)];
+                    humidityDatas[4][j] = [datas[0][j][0], getVPD(dryTemp, wetTemp, pressure, humidity)];
+                }
+            }
+
+            drawGraphAll(datas);
+            drawGraphAirHumidity(humidityDatas);
+            drawVPDHD(humidityDatas[4], humidityDatas[3]);
+            drawPieChart(humidityDatas[4], humidityDatas[3]);
+            drawGraph(datas);
+
+        },
+        error: function(response, status, error) {
+            console.log("sensor value loading failure : " + status + ", " + error);
+        }
+    });
+
 }
 
 //ajax 통신의 success 콜백 발생시간의 시간차때문에 모든 데이터 수신후 아래 함수 호출하여 전체 그래프 생성
@@ -398,7 +354,7 @@ function drawGraph(datas) {
 
     for (i = 0; i < 7; i++) {
 
-        var title = sensors[i];
+        var title = "";
         var valueSuffix = " ";
         switch (i) {
             case 0:

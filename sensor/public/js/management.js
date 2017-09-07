@@ -48,6 +48,7 @@ function setSensorConnectionState(){
 					console.log("dead");
 				}
 				console.log(response);
+				console.log(abc);
 			},
 			error: function(response, status, error){
 				console.log("error");

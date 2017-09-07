@@ -3,12 +3,11 @@ var http = require('http');
 var bodyParser = require('body-parser');//json body parsing
 var path = require('path');
 //external library
-var fs = require('fs');					//file system
+
 var schedule = require('node-schedule');//timer ex)save weather fer hour
 var HashMap = require('hashmap');		//hash map ex)serial option
 var winston = require('winston');		//log collector
 var mime = require('mime');				//download util
-var json2csv = require('json2csv');		//parsing json to csv
 var database = require('./router/database');
 //router
 var r_value = require('./router/value');
@@ -18,6 +17,7 @@ var r_scale = require('./router/scale');
 var r_export_data = require('./router/export_data');
 var r_journal = require('./router/journal');
 var r_actuator = require('./router/actuator');
+var r_usersensor = require('./router/usersensor');
 //module
 var m_hum2hdvpd = require('./util/hum2hdvpd');
 //web
@@ -25,7 +25,7 @@ var index = require('./views/js/index');
 
 winston.add(winston.transports.File, { filename: 'IpAddress.log' });
 
-require('date-utils')
+require('date-utils');
 var app = express();
 var request = require('request');
 app.use(express.static(path.join(__dirname,'public')));
@@ -41,6 +41,7 @@ app.use('/export', r_export_data);
 app.use('/journal', r_journal);
 app.use('/actuator', r_actuator);
 app.use('/scale', r_scale);
+app.use('/usersensor', r_usersensor);
 app.use('/',index);
 
 var connection = database;

@@ -6,7 +6,7 @@ var moment = require('moment');
 var scheduler = require('node-schedule');
 var mkdir = require('mkdirp');
 
-var myServerIP = "http://221.159.48.9";
+var myServerIP = "http://localhost";
 var myServerPort = "80";
 var myServerCamPort = "8084";
 var sensorServerPort = "3000";
@@ -256,16 +256,23 @@ router.get('/check', function(req, res, next) {
 
 router.get('/value/recent/:sensor', function(req, res, next) {
     request(myServerIP + ":" + sensorServerPort + '/value/recent/' + req.params.sensor, function(err, res2, body) {
+
         if (err === null && body !== null && body !== undefined && body !=="") {
+
             var jsonObj = JSON.parse(body);
+        console.log(jsonObj);
+        console.log(jsonObj.id);
+        console.log(jsonObj.value);
+        var jsonObj1 = JSON.parse(jsonObj.value);
+        console.log(jsonObj1.temperature);
             res.jsonp({
-                temperature: decrypt(jsonObj.temperature),
-                temperature_ds: decrypt(jsonObj.temperature_ds),
-                humidity: decrypt(jsonObj.humidity),
-                co2: decrypt(jsonObj.co2),
-                light: decrypt(jsonObj.light),
-                ec: decrypt(jsonObj.ec),
-                ph: decrypt(jsonObj.ph),
+                temperature: jsonObj1.temperature,
+                temperature_ds: jsonObj1.temperature_ds,
+                humidity: jsonObj1.humidity,
+                co2: jsonObj1.co2,
+                light: jsonObj1.light,
+                ec: jsonObj1.ec,
+                ph: jsonObj1.ph,
                 update_time: jsonObj.update_time,
                 update_date: jsonObj.update_date
             });

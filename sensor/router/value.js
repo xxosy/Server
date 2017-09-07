@@ -70,15 +70,16 @@ router.post('/',function(req,res){
 
 	var update_date=date.toFormat('YYYY-MM-DD');
 	var update_time=date.toFormat('HH24:MI');
-	var array = {};
-	array['temperature'] = temperature;
-	array['temperature_ds'] = temperature_ds;
-	array['humidity'] = humidity;
-	array['co2'] = co2;
-	array['light'] = light;
-	array['ec'] = ec;
-	array['ph'] = ph;
-
+	var array = {
+		'temperature':temperature,
+		"temperature_ds":temperature_ds,
+		"humidity":humidity,
+		"co2":co2,
+		"light":light,
+		"ec":ec,
+		"ph":ph
+	};
+	console.log(array);
 	var json_value = JSON.stringify(array);
 	console.log(json_value);
 
@@ -91,9 +92,10 @@ router.post('/',function(req,res){
 				res.status(404).send('NOT find list for serial :'+serial);
 			}else{
 				connection.query('insert into value(`value`,`update_time`,`update_date`,`sensor_id`) '+
-					'values(\''+json_value+'\',\''+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
+					'values(\''+array+'\',\''+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
 						if(err == null){
 							console.log('sensor '+sensor_id+'value is inserted : '+update_time);
+
 						}else if(err.code === 'ER_NO_REFERENCED_ROW_2'){
 							res.send('sensor id is not exist')
 						}else{
@@ -107,7 +109,31 @@ router.post('/',function(req,res){
 	});
 });
 
-router.get('/list/:factor/:serial/:date',function(req,res){
+router.get('/list/all/:serial/:date/one',function(req,res){
+	var serial = req.params.serial;
+	var update_date = new Date(req.params.date);
+	console.log("call");
+	update_date = update_date.toFormat('YYYY-MM-DD');
+	connection.query('select id from sensor where serial =\''+serial+'\';',function(err,rows){
+		if(err!==null){
+			res.end();
+		}else{
+			if(!rows.length){
+				res.status(404).send('NOT find list for serial : '+serial);
+				res.end();
+			}else{
+				var sensor_id = rows[rows.length-1].id;
+				connection.query('select id, value, update_time,sensor_id from value where sensor_id=\''
+					+sensor_id+'\' and update_date = \''
+					+update_date+'\' and update_time between \'00:00\' and \'23:59\';',function(err,rows){
+						res.jsonp(rows);
+					});
+			}
+		}
+	});
+});
+
+router.get('/list/factor/:factor/:serial/:date',function(req,res){
 	var factor = req.params.factor;
 	var serial = req.params.serial;
 	var update_date = new Date(req.params.date);
@@ -147,7 +173,7 @@ router.get('/list/:factor/:serial/:date',function(req,res){
 		}
 	});
 });
-router.get('/list/:factor/:serial/:date/one',function(req,res){
+router.get('/list/factor/:factor/:serial/:date/one',function(req,res){
 	var factor = req.params.factor;
 	var serial = req.params.serial;
 	var update_date = new Date(req.params.date);

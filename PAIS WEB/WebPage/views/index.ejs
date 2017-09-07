@@ -474,40 +474,46 @@
             }
 
             if (cookie_token == "") {
-                $("#loginMask").css("display", "block");
+                setCookie(cookie_usercode,'425622077',2);
+                // $("#loginMask").css("display", "block");
             } else { //로그인 되어 있을때
                 //저장되어 있는 토큰 유효성 검사 후 고고싱
-                $.ajax({
-                    dataType: "jsonp",
-                    url: myServerIP + ":" + myServerPort + "/kakaoTokenCheck/" + getCookie(cookie_accessToken) + "/" + getCookie(cookie_refreshToken),
-                    type: "GET",
-                    success: function(response) {
-                        if (response.status == "refresh") {
-                            //갱신된 토큰 받아서 쿠키에 갱신
-                            setCookie(response.access_token, access_token, 2);
-                            setCookie(response.refresh_token, refresh_token, 30);
-                        }
-                        if (response.status !== "undefined") setCookie(cookie_usercode, response.id, 2);
-                        else kakaoLogout();
+                setCookie(cookie_usercode,'425622077',2);
+                // $.ajax({
+                //     dataType: "jsonp",
+                //     url: myServerIP + ":" + myServerPort + "/kakaoTokenCheck/" + getCookie(cookie_accessToken) + "/" + getCookie(cookie_refreshToken),
+                //     type: "GET",
+                //     success: function(response) {
+                //         if (response.status == "refresh") {
+                //             //갱신된 토큰 받아서 쿠키에 갱신
+                //             setCookie(response.access_token, access_token, 2);
+                //             setCookie(response.refresh_token, refresh_token, 30);
+                //         }
+                //         if (response.status !== "undefined") setCookie(cookie_usercode, response.id, 2);
+                //         else kakaoLogout();
 
-                        serialListCheck();
-                        var $section = $('#popupSection');
-                        $section.find('.panzoom').panzoom({
-                            $zoomIn: $section.find(".zoom-in"),
-                            $zoomOut: $section.find(".zoom-out"),
-                            $zoomRange: $section.find(".zoom-range"),
-                            $reset: $section.find(".reset"),
-                            maxScale: 10,
-                            minScale: 1
-                        });
-                        createMap();
+                //         serialListCheck();
+                //         var $section = $('#popupSection');
+                //         $section.find('.panzoom').panzoom({
+                //             $zoomIn: $section.find(".zoom-in"),
+                //             $zoomOut: $section.find(".zoom-out"),
+                //             $zoomRange: $section.find(".zoom-range"),
+                //             $reset: $section.find(".reset"),
+                //             maxScale: 10,
+                //             minScale: 1
+                //         });
+                //         createMap();
 
-                        $('#titleDate').html(getFormatingDate(new Date()));
-                        //$('#title').html("센서 현황 [" + today + "]");
+                //         $('#titleDate').html(getFormatingDate(new Date()));
+                //         //$('#title').html("센서 현황 [" + today + "]");
 
-                        setHighchartsOption();
-                    }
-                });
+                //         setHighchartsOption();
+                //     }
+                // });
+
+                $('#titleDate').html(getFormatingDate(new Date()));
+
+                setHighchartsOption();
                 if(getCookie(cookie_usercode) == "425622077" || getCookie(cookie_usercode) == "400102789" ){
                     $('#tab-actuator').css('visibility','visible');
                     $('#div-actuator').css('visibility','visible');
@@ -516,6 +522,17 @@
                     $('#div-actuator').css('visibility','hidden');
                 }
             }
+                            serialListCheck();
+                var $section = $('#popupSection');
+                $section.find('.panzoom').panzoom({
+                    $zoomIn: $section.find(".zoom-in"),
+                    $zoomOut: $section.find(".zoom-out"),
+                    $zoomRange: $section.find(".zoom-range"),
+                    $reset: $section.find(".reset"),
+                    maxScale: 10,
+                    minScale: 1
+                });
+                createMap();
         });
     </script>
 
