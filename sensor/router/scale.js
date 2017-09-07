@@ -1,13 +1,15 @@
 var express = require('express');
 var router = express.Router();
 var HashMap = require('hashmap');
+var database = require('./database');
 var recentHash = new HashMap();
+var connection = database;
 require('date-utils');
 
 router.post('/weight',function(req,res){
 	var serial = req.body.serial;
-	var weight1 = req.body.weight1;
-	var weight2 = req.body.weight2;
+	var medium_weight = req.body.medium_weight;
+	var drain_weight = req.body.drain_weight;
 
 	var date = new Date();
 	var update_date = date.toFormat('YYYYMMDD');
@@ -16,15 +18,15 @@ router.post('/weight',function(req,res){
 		"update_date" : update_date,
 		"update_time" : update_time,
 		"serial_id" : serial,
-		"value" : weight1,
-		"liquid" : weight2
+		"medium_weight" : medium_weight,
+		"drain_weight" : drain_weight
 	}
 	recentHash.set(serial,recent);
 });
 
 router.get('/weight/recent/serial/:serial',function(req,res){
 	var serial = req.params.serial;
-	connection.query('select id from scale where serial = \''+serial+'\';',function(err,rows){
+	connection.query('select id from sensor where serial = \''+serial+'\';',function(err,rows){
 		if(rows!==undefined){
 			if(!rows.length){
 				res.status(404);
@@ -36,8 +38,8 @@ router.get('/weight/recent/serial/:serial',function(req,res){
 						"serial_id" : rows[0].id,
 						"update_date" : temp.update_date,
 						"update_time" : temp.update_time,
-						"value" : temp.value,
-						"liquid" : temp.liquid
+						"medium_weight" : temp.medium_weight,
+						"drain_weight" : temp.drain_weight
 					}
 					res.jsonp(recent);
 					res.end();

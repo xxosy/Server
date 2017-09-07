@@ -66,12 +66,12 @@
         <h4><b>Menu</b></h4>
         <a href="#" onclick="showAddDevice()" class="w3-hover-black">제품 등록</a>
         <hr>
-        <a id="tab-sensor" href="http://www.ezsmartfarm.com/" class="w3-hover-black">미기후 정보</a>
+        <a id="tab-sensor" href="http://localhost/" class="w3-hover-black">미기후 정보</a>
         <a id="tab-weight" href="#" class="w3-hover-black"><b>배지 정보 <</b></a>
         <hr>
-        <a id="tab-journal" href="http://www.ezsmartfarm.com/journal" class="w3-hover-black">영농 일지</a>
+        <a id="tab-journal" href="http://localhost/journal" class="w3-hover-black">영농 일지</a>
         <hr>
-        <a id="tab-actuator" href="http://www.ezsmartfarm.com/actuator" class="w3-hover-black" style = "visibility:hidden;">온실제어</a>
+        <a id="tab-actuator" href="http://localhost/actuator" class="w3-hover-black" style = "visibility:hidden;">온실제어</a>
         <hr id = "div-actuator" style = "visibility:hidden;">
         <a href="#" onclick="kakaoLogout()" class="w3-hover-black">로그아웃</a>
     </nav>
@@ -308,12 +308,30 @@
     <script>
         var selectedPosition = '35,48.6';
         $(document).ready(function() {
+            setCookie(cookie_usercode,'425622077',2);
             var cookie_token = getCookie(cookie_accessToken);
             if (cookie_token == "") { //기존에 로그인되어 있을경우
-                $("#loginMask").css("display", "block");
+                setCookie(cookie_usercode,'425622077',2);
+                // $("#loginMask").css("display", "block");
             } else { //로그인 되어 있을때
+                setCookie(cookie_usercode,'425622077',2);
                 //저장되어 있는 토큰 유효성 검사 후 화면 출력
-                serialListCheck();
+                // serialListCheck();
+                // createMapWeight();
+                // drawCalendar();
+                // $('#titleDate').html(getFormatingDate(new Date()));
+                // //$('#title').html("센서 현황 [" + today + "]");
+
+                // //데이터 다운로드 창 밖에 클릭시 사라지게
+                // $(document).mouseup(function (e) {
+                //    var downloadPopup = $('#downloadMask');
+                //    var datePicker = $('#ui-datepicker-div');
+                //    if (downloadPopup.has(e.target).length === 0 && datePicker.has(e.target).length === 0) { downloadPopup.hide()} //container.style.display = 'none';
+                // });
+
+                // setHighchartsOption();
+            }
+                            serialListCheck();
                 createMapWeight();
                 drawCalendar();
                 $('#titleDate').html(getFormatingDate(new Date()));
@@ -327,7 +345,7 @@
                 });
 
                 setHighchartsOption();
-            }
+                
             if(getCookie(cookie_usercode) == "425622077" || getCookie(cookie_usercode) == "400102789" ){
                 $('#tab-actuator').css('visibility','visible');
                 $('#div-actuator').css('visibility','visible');

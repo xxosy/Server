@@ -53,6 +53,8 @@ router.post('/',function(req,res){
 	var ec = req.body.ec;
 	var ph = req.body.ph;
 	var serial = req.body.serial;
+	var medium_weight = req.body.medium_weight;
+	var drain_weight = req.body.drain_weight;
 
 	var num_light = Number(light);
 	if(num_light>25000){
@@ -77,7 +79,9 @@ router.post('/',function(req,res){
 		"co2":co2,
 		"light":light,
 		"ec":ec,
-		"ph":ph
+		"ph":ph,
+		"medium_weight":medium_weight,
+		"drain_weight":drain_weight
 	};
 	console.log(array);
 	var json_value = JSON.stringify(array);
@@ -92,7 +96,7 @@ router.post('/',function(req,res){
 				res.status(404).send('NOT find list for serial :'+serial);
 			}else{
 				connection.query('insert into value(`value`,`update_time`,`update_date`,`sensor_id`) '+
-					'values(\''+array+'\',\''+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
+					'values(\''+json_value+'\',\''+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
 						if(err == null){
 							console.log('sensor '+sensor_id+'value is inserted : '+update_time);
 

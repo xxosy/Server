@@ -77,7 +77,7 @@ function createMapWeight() {
 
     map = new google.maps.Map(document.getElementById('googleMapWeight'), mapOptions);
 
-    var url = myServerIP + ":" + sensorServerPort + "/map/sensor/";
+    var url = myServerIP + ":" + sensorServerPort + "/usersensor/";
     var usercode = getCookie(cookie_usercode);
 
     $.ajax({
@@ -85,15 +85,14 @@ function createMapWeight() {
         url: url + usercode,
         type: "GET",
         success: function(response) {
-
             for (i = 0; i < response.length; i++) {
                 if (getCookie(cookie_recentWeight) == "") {
-                    if (response[i].weight_serial != "-") {
+                    if (response[i].serial != "-") {
                         latlng = new google.maps.LatLng(parseFloat(response[i].lat), parseFloat(response[i].lng));
                         break;
                     }
                 } else {
-                    if (response[i].weight_serial == getCookie(cookie_recentWeight)) {
+                    if (response[i].serial == getCookie(cookie_recentWeight)) {
                         latlng = new google.maps.LatLng(parseFloat(response[i].lat), parseFloat(response[i].lng));
                     }
                 }
@@ -111,11 +110,11 @@ function createMapWeight() {
             var markers = new Array();
 
             for (var i = 0; i < response.length; i++) {
-                if (response[i].weight_serial != "-") {
+                if (response[i].serial != "-") {
                     latlng = new google.maps.LatLng(parseFloat(response[i].lat), parseFloat(response[i].lng));
 
-                    var serial = response[i].weight_serial;
-                    var title = response[i].title;
+                    var serial = response[i].serial;
+                    var title = response[i].name;
 
                     markers[i] = new google.maps.Marker({
                         position: latlng,
@@ -202,24 +201,24 @@ function setCurrentWeight() {
         return;
     }
 
-    var dataQuery = "weight/recent/" + getCookie(cookie_recentWeight);
+    var dataQuery = "scale/weight/recent/serial/" + getCookie(cookie_recentWeight);
     preSerial = getCookie(cookie_recentWeight);
     setCurrentWeightFirst = false;
 
     $.ajax({
         dataType: "jsonp",
-        url: myServerIP + ":" + sensorServerWeightPort + "/" + dataQuery,
+        url: myServerIP + ":" + sensorServerPort + "/" + dataQuery,
         type: "GET",
         success: function(response) {
-            var value = (response.value / 1000).toFixed(2) + "";
-            if (value.length == 2) value += ".00";
-            $('#currentWeight').html(value + "kg");
+            var medium_weight = (response.medium_weight / 1000).toFixed(2) + "";
+            if (medium_weight.length == 2) medium_weight += ".00";
+            $('#currentWeight').html(medium_weight + "kg");
 
-            if (response.liquid != null && response.liquid != undefined) {
-                var liquid = (response.liquid / 1000).toFixed(2) + "";
-                if (liquid.length == 2) value += ".00";
-                if (liquid.length == 4) value += "0";
-                $('#currentLiquid').html(liquid + "kg");
+            if (response.drain_weight != null && response.drain_weight != undefined) {
+                var drain_weight = (response.drain_weight / 1000).toFixed(2) + "";
+                if (drain_weight.length == 2) medium_weight += ".00";
+                if (drain_weight.length == 4) medium_weight += "0";
+                $('#currentLiquid').html(drain_weight + "kg");
             } else {
                 $('#currentLiquid').html("ㅡ");
             }
@@ -445,7 +444,7 @@ function setWeightGraph(date) {
     var serial = getCookie(cookie_recentWeight);
     var usercode = getCookie(cookie_usercode);
     //var date = "2017-02-24"
-    var graphDataQuery = "weight/list/" + serial + "/" + date + "/one";
+    var graphDataQuery = "value/list/all/" + serial + "/" + date + "/one";
 
     var datas = new Array();
     var lightDatas = new Array();
@@ -470,7 +469,7 @@ function setWeightGraph(date) {
 
     $.ajax({
         dataType: "jsonp",
-        url: myServerIP + ":" + sensorServerWeightPort + "/" + graphDataQuery,
+        url: myServerIP + ":" + sensorServerPort + "/" + graphDataQuery,
         type: "GET",
         success: function(response) {
             var currentSensorIndex = 0;
@@ -512,26 +511,29 @@ function setWeightGraph(date) {
                 return time;
             }
 
-            for (i = items.length - 1; i >= 0; i--) {
+            for (i = 0; i <items.length; i++) {
                 var item = items[i];
-
                 var hour = Number(item.update_time.split(':')[0]);
                 var min = Number(item.update_time.split(':')[1]);
-                var sec = Number(item.update_time.split(':')[2]);
-                var value = Number(item.value) / 1000;
-                var liquid = Number(item.liquid) / 1000;
-
-                datas[index] = [Date.UTC(year, month - 1, day, hour, min, sec), value];
-                liquidDatas[index] = [Date.UTC(year, month - 1, day, hour, min, sec), liquid];
-
+                // var sec = Number(item.update_time.split(':')[2]);
+                var value = JSON.parse(item.value);
+                console.log(value);
+                                console.log(value.drain_weigth);
+                var medium_weight = Number(value.medium_weight) / 1000;
+                var drain_weigth = Number(value.drain_weigth) / 1000;
+                var light = Number(value.light)*2.7;
+                console.log(drain_weigth);
+                datas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), medium_weight];
+                liquidDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), drain_weigth];
+                lightDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), light];
 
                 if (index == 0) {
-                    maxliquid = liquid;
-                    preWeight = value;
+                    maxliquid = drain_weigth;
+                    preWeight = medium_weight;
                 }
                 if (index != 0) {
                     //급액량
-                    if (preValue < value) supValue += value - preValue;
+                    if (preValue < medium_weight) supValue += medium_weight - preValue;
 
                     //배액량
                     if(isRapidDecrease) {
@@ -540,28 +542,28 @@ function setWeightGraph(date) {
                             isRapidIncrease = false;
                         }
                         if(!isRapidIncrease) {
-                            maxliquid = liquid;
+                            maxliquid = drain_weigth;
                             isRapidDecrease = false;
                         }
                     }
 
-                    if(preliquid - liquid > 0.5)   isRapidDecrease = true;
-                    if(liquid - preliquid > 0.5)   isRapidIncrease = true;
+                    if(preliquid - drain_weigth > 0.5)   isRapidDecrease = true;
+                    if(drain_weigth - preliquid > 0.5)   isRapidIncrease = true;
 
-                    if (preliquid - liquid > 0.16) {
+                    if (preliquid - drain_weigth > 0.16) {
                         isRapidDecrease = true;
-                    } else if (isRapidDecrease && liquid - preliquid < 0.16) {  //급감 후 유지 : 비움
-                        maxliquid = liquid;
+                    } else if (isRapidDecrease && drain_weigth - preliquid < 0.16) {  //급감 후 유지 : 비움
+                        maxliquid = drain_weigth;
                         isRapidDecrease = false;
                     } else isRapidDecrease = false;    // 급감후 급상승 : 무시
 
-                    if (maxliquid < liquid ) {
-                        useValue += liquid - maxliquid;
-                        maxliquid = liquid;
+                    if (maxliquid < drain_weigth ) {
+                        useValue += drain_weigth - maxliquid;
+                        maxliquid = drain_weigth;
                     }
 
                     // 급액 횟수&시간 구하기
-                    currWeight = value;
+                    currWeight = medium_weight;
                     if( isWeightSensorError ) { isWeightSensorError = false; }
                     else if( isIncreasing && currWeight - preWeight < 0 ) {
                        diffWeight = currWeight - minWeight;
@@ -586,10 +588,10 @@ function setWeightGraph(date) {
                 }
 
                 //liquid 값으로 변경해야함 현재 null 이라 사용 x
-                useDatas[index] = [Date.UTC(year, month - 1, day, hour, min, sec), useValue];
+                useDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), useValue];
 
-                preliquid = liquid;
-                preValue = value;
+                preliquid = drain_weigth;
+                preValue = medium_weight;
                 index++;
             }
             nutrientSupplyTime  += '</tr>';
@@ -613,51 +615,21 @@ function setWeightGraph(date) {
 
 
             //연결되어 있는 센서 시리얼 획득 후(success 안) 광센서 값 가져오기
-            $.ajax({
-                dataType: "jsonp",
-                url: myServerIP + ":" + sensorServerPort + "/map/sensor/" + serial + "/" + usercode,
-                type: "GET",
-                success: function(response2) {
-                    //연결되어있는 광량 데이터 가져오기
-                    var sensorSeiral = response2[0].serial;
+            console.log(datas);
+            console.log(useDatas);
+            console.log(lightDatas);
+            console.log(liquidDatas);
+            drawWeightGraph(datas, useDatas, kalman(lightDatas));
 
-                    if (sensorSeiral != "-") {
-                        graphDataQuery = "list/light/" + sensorSeiral + "/" + date + "/one";
+            drawWeightEachGraph(datas, useDatas, liquidDatas);
 
-                        $.ajax({
-                            dataType: "jsonp",
-                            url: myServerIP + ":" + myServerPort + "/" + graphDataQuery,
-                            type: "GET",
-                            success: function(response3) {
-                                var index = 0;
-                                for (i = 0; i < response3.graphItems.length; i++) {
-                                    var item = response3.graphItems[i];
 
-                                    var hour = Number(item.update_time.split(':')[0]);
-                                    var min = Number(item.update_time.split(':')[1]);
-                                    var value = Number(item.light)*2.7;
-
-                                    lightDatas[i] = [Date.UTC(year, month - 1, day, hour, min, 0), value];
-                                }
-                                drawWeightGraph(datas, useDatas, kalman(lightDatas));
-                                drawWeightEachGraph(datas, useDatas, liquidDatas);
-                            },
-                            error: function(response2, status, error) {}
-                        });
-                    } else {
-                        drawWeightGraph(datas, useDatas, kalman(lightDatas));
-                        drawWeightEachGraph(datas, useDatas, liquidDatas);
-                    }
-                },
-                error: function(response2, status, error) {
-
-                }
-            });
         },
         error: function(response, status, error) {
             alert("sensor value loading failure : " + status + ", " + error);
         }
     });
+
 }
 
 function drawWeightGraph(data, useDatas, lightDatas) {
