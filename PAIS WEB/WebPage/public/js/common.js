@@ -1335,17 +1335,13 @@ function showAddDevice() {
         });
         var addwindow = new google.maps.InfoWindow({
             content: "<div style='font-size:1.3em;color:#000;text-align:center;'><p>새 제품 등록</p>" +
-                "명　　칭 : <input type='text' id='addName'/> <br>" +
                 "환경센서 : <input type='text' id='addSerial'/> <br>" +
-                "배지센서 : <input type='text' id='addSerialWeight'/> <br>" +
-                "위　　도 : <input type='text' id='addLat' value='" + event.latLng.lat() + "' readonly/> <br>" +
-                "경　　도 : <input type='text' id='addLng' value='" + event.latLng.lng() + "' readonly/> <br>" +
                 "<input type='button' id='' onclick='addDevice()' style='margin-top:1em;' value='등록'/> <br>" +
                 "</div>",
             maxWidth: 300
         });
         addwindow.open(this, marker);
-        $('#addName').focus();
+        $('#addSerial').focus();
         prev_addwindow = addwindow;
         prev_addmarker = marker;
 
@@ -1358,14 +1354,13 @@ function showAddDevice() {
 function addDevice() {
     var name = $('#addName').val();
     var serial = $('#addSerial').val();
-    var serialWeight = $('#addSerialWeight').val();
     var lat = $('#addLat').val();
     var lng = $('#addLng').val();
 
     if (name == "") {
         alert("명칭을 기입해주세요.");
         $('#addName').focus();
-    } else if (serial == "" && serialWeight == "") {
+    } else if (serial == "") {
         alert("환경센서(미기후), 배지센서 중 하나의 시리얼번호는 입력되어야 합니다.");
         $('#addSerial').focus();
     } else {
@@ -1374,11 +1369,8 @@ function addDevice() {
         if (serial == "") serial = "-";
         else validCheck++;
 
-        if (serialWeight == "") serialWeight = "-";
-        else validCheck++;
-
         $.ajax({
-            url: myServerIP + ":" + sensorServerPort + "/sensor/" + serial,
+            url: myServerIP + ":" + sensorServerPort + "/sensor/serial/" + serial,
             type: "GET",
             dataType: "jsonp",
             success: function(response) {
@@ -1389,31 +1381,14 @@ function addDevice() {
                 $('#addSerial').focus();
             }
         });
-        $.ajax({
-            url: myServerIP + ":" + sensorServerWeightPort + "/scale/" + serialWeight,
-            type: "GET",
-            dataType: "jsonp",
-            success: function(response) {
-                validCheck--;
-            },
-            error: function(response, status, error) {
-                alert("배지센서 시리얼번호가 유효하지 않습니다.");
-                $('#addSerial').focus();
-            }
-        });
 
         setTimeout(function() {
             if(validCheck != 0) alert("환경센서 또는 배지센서 시리얼번호가 유효하지 않습니다.");
             else {
                 $.ajax({
-                    url: myServerIP + ":" + sensorServerPort + "/map/sensor/" + serial + "/" + serialWeight + "/" + getCookie(cookie_usercode),
+                    url: myServerIP + ":" + sensorServerPort + "/usersensor/serial/" + serial + "/usercode/" + getCookie(cookie_usercode),
                     type: "POST",
                     dataType: "json",
-                    data: {
-                        "title": name,
-                        "lat": lat,
-                        "lng": lng
-                    },
                     success: function(response) {},
                     error: function(response, status, error) {}
                 });

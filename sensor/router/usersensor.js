@@ -114,6 +114,40 @@ router.get('/:usercode',function(req,res){
 			}
 		});
 });
+
+router.post('/serial/:serial/usercode/:usercode',function(req,res){
+	var serial = req.params.serial;
+	var usercode = req.params.usercode;
+	connection.query('select sensor.id as sensor_id, user.id as user_id '+
+		'from sensor, user where sensor.serial = \''+serial+'\''+
+		' && user.code = \''+usercode+'\';',function(err,rows){
+		if(err !== null) console.log(err);
+		if(rows === undefined || rows === null){
+			res.status(401);
+			res.end();
+		}else if(rows.length === 0){
+			res.status(404);
+			res.end();
+		}else{
+			var user_id = rows[0].user_id;
+			var sensor_id = rows[0].sensor_id;
+			connection.query('insert into usersensor(`user_id`,`sensor_id`)'+
+				' values(\''+user_id+'\','+
+				'\''+sensor_id+'\');',
+				function(err){
+					if(err===undefined || err===null){
+						var status = {
+							"status" : 'ok'
+						}
+						res.jsonp(status);
+						res.end();
+					}
+				});
+		}
+	});
+});
+
+
 router.get('/map/delete/:serial/:usercode',function(req,res){
 	var usercode = req.params.usercode;
 	var serial = req.params.serial;
