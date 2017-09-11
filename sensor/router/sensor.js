@@ -23,6 +23,21 @@ router.post('/serial/:serial',function(req,res){
 	winston.log('info','POST Sensor serial Access device IP : '+req.connection.remoteAddress);
 });
 
+router.post('/update/serial/:serial',function(req,res){
+	var serial = req.params.serial;
+	var lat = req.body.lat;
+	var lng = req.body.lng;
+	console.log(serial);
+	console.log(lat);
+	console.log(lng);
+	connection.query('update sensor set lat=\''+lat+'\',lng=\''+lng+'\' where serial = \''+serial+'\';',function(err){
+		res.header("Access-Control-Allow-Origin", "*");
+      	res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+      	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+		res.end();
+	});
+});
+
 router.get('/serial/:serial',function(req,res){
 	var serial = req.params.serial;
 	connection.query('select * from sensor where serial = \''+serial+'\';',

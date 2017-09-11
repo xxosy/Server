@@ -1275,7 +1275,7 @@ function deleteDevice(serial) {
     //서버로 제품 삭제 요청
     if (confirm(serial + ' 제품을 삭제하시겠습니까?')) {
         $.ajax({
-            url: myServerDomain + ":" + sensorServerPort + "/map/delete/" + serial + "/" + getCookie(cookie_usercode),
+            url: myServerIP + ":" + sensorServerPort + "/usersensor/delete/serial/" + serial + "/usercode/" + getCookie(cookie_usercode),
             type: "GET",
             dataType: "jsonp",
             success: function(response) {
@@ -1296,6 +1296,27 @@ var prev_addwindow = false;
 var prev_addmarker = false;
 
 function showAddDevice() {
+    var inputSerial = prompt('시리얼을 입력하세요.');
+    var serial = inputSerial;
+    $.ajax({
+        url: myServerIP + ":" + sensorServerPort + "/sensor/serial/" + serial,
+        type: "GET",
+        dataType: "jsonp",
+        success: function(response) {
+            console.log(response);
+            if(response.lat === null || response.lat === undefined || response.lat ===""){
+                temp(serial);
+            }else{
+                addDevice(serial);
+            }
+        },
+        error: function(response, status, error) {
+            alert("환경센서 시리얼번호가 유효하지 않습니다.");
+            $('#addSerial').focus();
+        }
+    });
+}
+function temp(serial){
     $('#addDeviceMask').fadeTo("slow", 1);
 
     var zoom = 13;
@@ -1335,13 +1356,14 @@ function showAddDevice() {
         });
         var addwindow = new google.maps.InfoWindow({
             content: "<div style='font-size:1.3em;color:#000;text-align:center;'><p>새 제품 등록</p>" +
-                "환경센서 : <input type='text' id='addSerial'/> <br>" +
-                "<input type='button' id='' onclick='addDevice()' style='margin-top:1em;' value='등록'/> <br>" +
+                "제품번호 : <input type='text' id='addSerial' value='" + serial + "' readonly/> <br>" +
+                "위　　도 : <input type='text' id='addLat' value='" + event.latLng.lat() + "' readonly/> <br>" +
+                "경　　도 : <input type='text' id='addLng' value='" + event.latLng.lng() + "' readonly/> <br>" +
+                "<input type='button' id='' onclick='updateDevice()' style='margin-top:1em;' value='등록'/> <br>" +
                 "</div>",
             maxWidth: 300
         });
         addwindow.open(this, marker);
-        $('#addSerial').focus();
         prev_addwindow = addwindow;
         prev_addmarker = marker;
 
@@ -1350,73 +1372,44 @@ function showAddDevice() {
         });
     });
 }
-
-function addDevice() {
-    var name = $('#addName').val();
-    var serial = $('#addSerial').val();
+function updateDevice() {
     var lat = $('#addLat').val();
     var lng = $('#addLng').val();
-
-    if (name == "") {
-        alert("명칭을 기입해주세요.");
-        $('#addName').focus();
-    } else if (serial == "") {
-        alert("환경센서(미기후), 배지센서 중 하나의 시리얼번호는 입력되어야 합니다.");
-        $('#addSerial').focus();
-    } else {
-        var validCheck = 0;
-
-        if (serial == "") serial = "-";
-        else validCheck++;
-
+    var serial = $('#addSerial').val();
+    setTimeout(function() {
         $.ajax({
-            url: myServerIP + ":" + sensorServerPort + "/sensor/serial/" + serial,
-            type: "GET",
-            dataType: "jsonp",
-            success: function(response) {
-                validCheck--;
+            url:myServerIP+":"+sensorServerPort+"/sensor/update/serial/"+serial,
+            type: "POST",
+            dataType: "json",
+            data:{
+                "lat":lat,
+                "lng":lng
             },
-            error: function(response, status, error) {
-                alert("환경센서 시리얼번호가 유효하지 않습니다.");
-                $('#addSerial').focus();
-            }
+            success: function(response){
+                addDevice(serial);
+            },
+            error: function(response,status,error){}
         });
-
         setTimeout(function() {
-            if(validCheck != 0) alert("환경센서 또는 배지센서 시리얼번호가 유효하지 않습니다.");
-            else {
-                $.ajax({
-                    url: myServerIP + ":" + sensorServerPort + "/usersensor/serial/" + serial + "/usercode/" + getCookie(cookie_usercode),
-                    type: "POST",
-                    dataType: "json",
-                    success: function(response) {},
-                    error: function(response, status, error) {}
-                });
+            alert("[" + serial + "] 제품 등록이 완료되었습니다.");
+            popupClose();
+            if (document.location.href.indexOf("weight") != -1) createMapWeight();
+            else createMap();
+        }, 300);
 
-                setTimeout(function() {
-                    alert("[" + name + "] 제품 등록이 완료되었습니다.");
-                    popupClose();
-                    if (document.location.href.indexOf("weight") != -1) createMapWeight();
-                    else createMap();
-
-                    //탭확인
-                    if (serial != "-") {
-                        if ($("#tab-sensor").css("display") == "none") {
-                            $("#tab-sensor").css("display", "block");
-                            $("#tab-journal").css("display", "block");
-                        }
-                    }
-                    if (serialWeight != "-") {
-                        if ($("#tab-weight").css("display") == "none") {
-                            $("#tab-weight").css("display", "block");
-                        }
-                    }
-                }, 300);
-            }
-        }, 500);
-    }
+    }, 500);
 }
-
+function addDevice(serial){
+    $.ajax({
+        url:myServerIP+":"+sensorServerPort+"/usersensor/serial/"+serial+"/usercode/"+getCookie(cookie_usercode),
+        type: "POST",
+        dataType: "json",
+        success: function(response){
+            console.log(response);
+        },
+        error: function(response,status,error){}
+    });
+}
 function popupClose() {
     $('#popup').fadeOut();
     $('#mask').fadeOut();

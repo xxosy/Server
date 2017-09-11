@@ -139,6 +139,9 @@ router.post('/serial/:serial/usercode/:usercode',function(req,res){
 						var status = {
 							"status" : 'ok'
 						}
+						res.header("Access-Control-Allow-Origin", "*");
+				      	res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+				      	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
 						res.jsonp(status);
 						res.end();
 					}
@@ -148,12 +151,13 @@ router.post('/serial/:serial/usercode/:usercode',function(req,res){
 });
 
 
-router.get('/map/delete/:serial/:usercode',function(req,res){
+router.get('/delete/serial/:serial/usercode/:usercode',function(req,res){
 	var usercode = req.params.usercode;
 	var serial = req.params.serial;
 
-	connection.query('delete from usersensor where (usercode = \''+usercode+'\' and serial = \''+serial+
-		'\') or (usercode = \''+usercode+'\' and weight_serial = \''+serial+'\');',function(err){
+	connection.query('delete from usersensor '+
+		'where usersensor.sensor_id = (select id from sensor where serial = \''+serial+
+		'\') && usersensor.user_id = (select id from user where code = \''+usercode+'\');',function(err){
 			if(err!==undefined){
 				winston.log('error','usersensor delete error : '+err);
 				var status = {
