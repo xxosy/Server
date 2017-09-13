@@ -3,95 +3,6 @@ var router = express.Router();
 var connection = require('./database');
 var winston = require('winston');
 
-router.post('/map/sensor/:serial/:usercode',function(req,res){
-	var serial = req.params.serial;
-	var usercode = req.params.usercode;
-	var title = req.body.title;
-	var lat = req.body.lat;
-	var lng = req.body.lng;
-
-	connection.query('insert into usersensor(`serial`,`title`,`lat`,`lng`,`usercode`)'+
-		' values(\''+serial+'\','+
-		'\''+title+'\','+
-		'\''+lat+'\','+
-		'\''+lng+'\','+
-		'\''+usercode+'\');',
-		function(err){
-			if(err!==undefined){
-				winston.log('error','usersensor post error : '+err);
-			}
-		});
-	res.end();
-});
-router.post('/map/weight/:weight_serial/:usercode',function(req,res){
-	var weight_serial = req.params.weight_serial;
-	var usercode = req.params.usercode;
-	var title = req.body.title;
-	var lat = req.body.lat;
-	var lng = req.body.lng;
-
-	connection.query('insert into usersensor(`weight_serial`,`title`,`lat`,`lng`,`usercode`)'+
-		' values(\''+serial+'\','+
-		'\''+title+'\','+
-		'\''+lat+'\','+
-		'\''+lng+'\','+
-		'\''+usercode+'\');',
-		function(err){
-			if(err!==undefined){
-				winston.log('error','usersensor post error : '+err);
-			}
-		});
-	res.end();
-});
-router.post('/map/sensor/:serial/:weight_serial/:usercode',function(req,res){
-	var weight_serial = req.params.weight_serial;
-	var serial = req.params.serial;
-	var usercode = req.params.usercode;
-	var title = req.body.title;
-	var lat = req.body.lat;
-	var lng = req.body.lng;
-
-	connection.query('insert into usersensor(`serial`,`title`,`lat`,`lng`,`usercode`,`weight_serial`)'+
-		' values(\''+serial+'\','+
-		'\''+title+'\','+
-		'\''+lat+'\','+
-		'\''+lng+'\','+
-		'\''+usercode+'\','+
-		'\''+weight_serial+'\');',
-		function(err){
-			if(err!==undefined){
-				winston.log('error','usersensor post error : '+err);
-			}
-
-			var status = {
-				"status" : 'ok'
-			}
-			res.jsonp(status);
-			res.end();
-		});
-});
-
-router.get('/map/sensor/:weight_serial/:usercode',function(req,res){
-	var usercode = req.params.usercode;
-	var weight_serial = req.params.weight_serial;
-	console.log(usercode);
-	connection.query('select * from usersensor where usercode = \''+usercode+'\' and weight_serial = \''+weight_serial+'\';',function(err,rows){
-		if(rows!==undefined){
-			if(!rows.length){
-				res.status(200);
-				res.end();
-			}else{
-				res.jsonp(rows);
-			}
-		}else{
-			res.status(200);
-			res.end();
-		}
-		if(err!==undefined){
-			winston.log('error','usersensor get error : '+err);
-		}
-	});
-});
 router.get('/:usercode',function(req,res){
 	var usercode = req.params.usercode;
 	console.log(usercode);
@@ -168,22 +79,7 @@ router.get('/delete/serial/:serial/usercode/:usercode',function(req,res){
 			}
 		});
 });
-router.put('/map/sensor/:serial/:usercode',function(req,res){
-	var usercode = req.params.usercode;
-	var serial = req.params.serial;
-	var title = req.body.title;
-	var lat = req.body.lat;
-	var lng = req.body.lng;
 
-	connection.query('update usersensor set `title` =\''+title
-		+'\', `lat`=\''+lat
-		+'\', `lng`=\''+lng+'\' where usercode = \''+usercode+'\' and serial = \''+serial+'\';',function(err){
-			if(err!==undefined){
-				winston.log('error','usersensor put error : '+err.code);
-			}
-		});
-	res.end();
-});
 router.get('/camera/list/url',function(req,res){
 	connection.query('select distinct url from sensor where url is not null and url != \'\';',function(err,rows){
 		if(rows!==undefined){

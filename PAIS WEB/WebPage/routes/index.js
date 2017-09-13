@@ -75,6 +75,14 @@ router.get('/actuator', function(req, res, next) {
         id: '-'
     });
 });
+router.get('/test', function(req, res, next) {
+    res.render('test', {
+        title: 'Express',
+        access_token: '-',
+        refresh_token: '-',
+        id: '-'
+    });
+});
 
 router.get('/kakaoLogin', function(req, res, next) {
     var kakaoRestKey = "d405df36708ace0f0609039df30e8e80";
@@ -256,10 +264,9 @@ router.get('/check', function(req, res, next) {
 
 router.get('/value/recent/:sensor', function(req, res, next) {
     request(myServerIP + ":" + sensorServerPort + '/value/recent/' + req.params.sensor, function(err, res2, body) {
-
-        if (err === null && body !== null && body !== undefined && body !=="") {
-
-            var jsonObj = JSON.parse(body);
+        console.log(res2.statusCode);
+        if (err === null && body !== null && body !== undefined && body !=="" && res2.statusCode===200) {
+        var jsonObj = JSON.parse(body);
         console.log(jsonObj);
         console.log(jsonObj.id);
         console.log(jsonObj.value);

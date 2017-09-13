@@ -116,7 +116,6 @@ router.post('/',function(req,res){
 router.get('/list/all/:serial/:date/one',function(req,res){
 	var serial = req.params.serial;
 	var update_date = new Date(req.params.date);
-	console.log("call");
 	update_date = update_date.toFormat('YYYY-MM-DD');
 	connection.query('select id from sensor where serial =\''+serial+'\';',function(err,rows){
 		if(err!==null){

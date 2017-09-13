@@ -43,7 +43,8 @@ router.get('/serial/:serial',function(req,res){
 	connection.query('select * from sensor where serial = \''+serial+'\';',
 		function(err,rows){
 			console.log("sensors "+serial+"is requested")
-			if(!rows.length){
+
+			if(rows!== null && rows.length>0){
 				res.status(404).send('Not find serial')
 				winston.log('error','Not find sensor serial : ' + serial);
 				res.end();

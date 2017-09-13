@@ -21,6 +21,7 @@
     </div>
     <div id="addDeviceMask">
         <div onclick="popupClose()" style="position:fixed;width:100%;height:100%;"> </div>
+        <h3 class="w3-text-white" style="margin-top:10%">위치 정보가 없습니다.</h3>
         <h3 class="w3-text-white" style="margin-top:10%">제품이 배치될 장소를 선택해주세요.</h3>
         <div onclick="voidFunction()" id="addDeviceMap"></div>
     </div>
@@ -511,6 +512,8 @@
                 //     }
                 // });
 
+            }
+
                 $('#titleDate').html(getFormatingDate(new Date()));
 
                 setHighchartsOption();
@@ -521,8 +524,7 @@
                     $('#tab-actuator').css('visibility','hidden');
                     $('#div-actuator').css('visibility','hidden');
                 }
-            }
-                            serialListCheck();
+                serialListCheck();
                 var $section = $('#popupSection');
                 $section.find('.panzoom').panzoom({
                     $zoomIn: $section.find(".zoom-in"),

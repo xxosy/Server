@@ -53,27 +53,6 @@ function serialListCheck() {
                 if (response[i].serial != null && response[i].serial != "-") countSensor++;
                 if (response[i].weight_serial != null && response[i].weight_serial != "-") countWeight++;
             }
-
-            if (countSensor == 0) {
-                $('#tab-sensor').attr("href", "#");
-                $('#tab-sensor').css("color", "#777");
-                $('#tab-sensor').removeClass("w3-hover-black");
-            } else if (countSensor != 0) {
-                $('#tab-sensor').attr("href", "http://www.ezsmartfarm.com/");
-                $('#tab-sensor').css("color", "#FFF");
-                $('#tab-sensor').addClass("w3-hover-black");
-            }
-
-            if (countWeight == 0) {
-                $('#tab-weight').attr("href", "#");
-                $('#tab-weight').css("color", "#777");
-                $('#tab-weight').removeClass("w3-hover-black");
-
-            } else if (countWeight != 0) {
-                $('#tab-weight').attr("href", "http://www.ezsmartfarm.com/weight");
-                $('#tab-weight').css("color", "#FFF");
-                $('#tab-weight').addClass("w3-hover-black");
-            }
         },
         error: function(response, status, error) {
             $('#tab-sensor').css("display", "none");
