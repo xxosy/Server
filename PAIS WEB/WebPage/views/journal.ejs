@@ -1,39 +1,8 @@
-<!DOCTYPE html>
-<html>
-<title>온실 모니터링 - 영농일지</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="css/w3.css">
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<link rel="shortcut icon" href="img/logo.png" />
-
-<link rel="stylesheet" href="//code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" />
-<script src="//code.jquery.com/jquery-1.12.4.js"></script>
-<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-<style>
-
-</style>
-
-<body>
-    <div id="loginMask">
-        <div id="logo"></div>
-        <div id="kakao-login-btn" onClick="kakaoLogin()"></div>
-    </div>
-    <div id="addDeviceMask">
-        <div onclick="popupClose()" style="position:fixed;width:100%;height:100%;"> </div>
-        <h3 class="w3-text-white" style="margin-top:10%">제품이 배치될 장소를 선택해주세요.</h3>
-        <div onclick="voidFunction()" id="addDeviceMap"></div>
-    </div>
-
-    <div id="mask" onclick="popupClose()"></div>
-    <div class="popup borderRadius" id="popup">
+<% layout('layout/layout')%>
+<div id="mask" onclick="popupClose()"></div>
+<div class="popup borderRadius" id="popup">
         <!-- [TBD] 이미지 외부 모든 여백 클릭시 팝업 닫히게 해야함(남는 좌우 DIV부분에 클릭하면 안닫힘)
-                  현재 반투명 흰색으로 처리 해뒀으니 추후 체크-->
+        현재 반투명 흰색으로 처리 해뒀으니 추후 체크-->
         <section id="popupSection">
             <div style="padding-bottom: 3px">
                 <button class="zoom-in grayButton">확대</button>
@@ -382,36 +351,36 @@
 
     <script>
         $("#downloadStartDate, #downloadEndDate").datepicker({
-              dateFormat: 'yy-mm-dd',
-              prevText: '이전 달',
-              nextText: '다음 달',
-              monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-              monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-              dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-              dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-              dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-              showMonthAfterYear: true,
-              yearSuffix: '년'
-        });
-    </script>
+          dateFormat: 'yy-mm-dd',
+          prevText: '이전 달',
+          nextText: '다음 달',
+          monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+          monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+          dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+          dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+          dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+          showMonthAfterYear: true,
+          yearSuffix: '년'
+      });
+  </script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
-    <script src="js/journal.js"></script>
-    <script src="js/common.js"></script>
-    <script src="js/lib/cookie.js"></script>
-    <script src="js/lib/kalmanFilter.js"></script>
-    <script src="js/lib/mollier.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
+  <script src="js/journal.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/lib/cookie.js"></script>
+  <script src="js/lib/kalmanFilter.js"></script>
+  <script src="js/lib/mollier.js"></script>
 
-    <script src="js/lib/jquery.min.js"></script>
-    <script src="js/lib/jquery.panzoom.min.js"></script>
+  <script src="js/lib/jquery.min.js"></script>
+  <script src="js/lib/jquery.panzoom.min.js"></script>
 
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/highcharts-more.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-more.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            var cookie_token = getCookie(cookie_accessToken);
+  <script>
+    $(document).ready(function() {
+        var cookie_token = getCookie(cookie_accessToken);
             if (cookie_token == "") { //기존에 로그인되어 있을경우
                 $("#loginMask").css("display", "block");
             } else { //로그인 되어 있을때
@@ -434,10 +403,10 @@
 
                 //데이터 다운로드 창 밖에 클릭시 사라지게
                 $(document).mouseup(function (e) {
-                   var downloadPopup = $('#downloadMask');
-                   var datePicker = $('#ui-datepicker-div');
+                 var downloadPopup = $('#downloadMask');
+                 var datePicker = $('#ui-datepicker-div');
                    if (downloadPopup.has(e.target).length === 0 && datePicker.has(e.target).length === 0) { downloadPopup.hide()} //container.style.display = 'none';
-                });
+               });
             }
             if(getCookie(cookie_usercode) == "425622077" || getCookie(cookie_usercode) == "400102789" ){
                 $('#tab-actuator').css('visibility','visible');
@@ -447,8 +416,4 @@
                 $('#div-actuator').css('visibility','hidden');
             }
         });
-    </script>
-
-</body>
-
-</html>
+</script>
