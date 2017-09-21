@@ -34,7 +34,7 @@ function setSensorValues() {
     var status_bad_up = '<i class="material-icons" style="color:#F88;">arrow_upward</i>';
     var status_bad_down = '<i class="material-icons" style="color:#F88;">arrow_downward</i>';
     
-    var recentValueQuery = "value/recent/serial/" + selectedSensor;
+    var recentValueQuery = "value/recent/" + selectedSensor;
     $.ajax({
         dataType: "jsonp",
         url: myServerIP + ":" + myServerPort + "/" + recentValueQuery,

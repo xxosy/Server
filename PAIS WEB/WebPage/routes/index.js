@@ -263,7 +263,7 @@ router.get('/check', function(req, res, next) {
 
 
 router.get('/value/recent/:sensor', function(req, res, next) {
-    request(myServerIP + ":" + sensorServerPort + '/value/recent/' + req.params.sensor, function(err, res2, body) {
+    request(myServerIP + ":" + sensorServerPort + '/value/recent/serial/' + req.params.sensor, function(err, res2, body) {
         console.log(res2.statusCode);
         if (err === null && body !== null && body !== undefined && body !=="" && res2.statusCode===200) {
         var jsonObj = JSON.parse(body);

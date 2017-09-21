@@ -35,5 +35,10 @@ function handleDisconnect(){
 	var update_date=date.toFormat('YYYY-MM-DD');
 	console.log("CONNECT DATABASE AT "+update_date+update_time);
 }
+function getConnection(){
+	return connection;
+}
 handleDisconnect();
-module.exports = connection;
+module.exports = {
+	getConnection:getConnection
+}

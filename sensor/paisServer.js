@@ -27,10 +27,23 @@ winston.add(winston.transports.File, { filename: 'IpAddress.log' });
 
 require('date-utils');
 var app = express();
+var allowCrossDomain = function(req,response,next){
+	response.header("Access-Control-Allow-Origin", "*");
+	response.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+	response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+	if ('OPTIONS' == req.method) {
+	  response.send(200);
+	}
+	else {
+	  next();
+	}
+}
+app.use(allowCrossDomain);
 var request = require('request');
 app.use(express.static(path.join(__dirname,'public')));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
+
 app.set('views', path.join(__dirname, 'views/ejs'));
 app.set('view engine', 'ejs');
 //router setting
@@ -45,6 +58,5 @@ app.use('/usersensor', r_usersensor);
 app.use('/',index);
 
 var connection = database;
-
 app.listen(3000);
 console.log('Express Listening on port 3000...');

@@ -374,27 +374,37 @@ var prev_addwindow = false;
 var prev_addmarker = false;
 
 function showAddDevice() {
-    var inputSerial = prompt('시리얼을 입력하세요.');
-    var serial = inputSerial;
+    $('#serialMask').fadeTo("slow", 1);
+}
+
+function clickInsert(){
+    var serial = $('#serial2insert').val();
+    popupClose();
     $.ajax({
-        url: myServerIP + ":" + sensorServerPort + "/sensor/serial/" + serial,
+        url: myServerIP + ":" + sensorServerPort + "/sensor/" + serial,
         type: "GET",
         dataType: "jsonp",
         success: function(response) {
-            console.log(response);
-            if(response.lat === null || response.lat === undefined || response.lat ===""){
-                temp(serial);
-            }else{
-                addDevice(serial);
+            if(response.statecode === 200){
+                if(response.data.lat === null || response.data.lat === undefined || response.data.lat ===""){
+                    selectPosition(serial);
+                }else{
+                    addDevice(serial);
+                }
+            }else if(response.statecode === 404){
+                alert("환경센서 시리얼번호가 유효하지 않습니다.");
             }
         },
         error: function(response, status, error) {
-            alert("환경센서 시리얼번호가 유효하지 않습니다.");
-            $('#addSerial').focus();
+            console.log(status + error);
+        },
+        complete:function(){
+            
         }
     });
 }
-function temp(serial){
+
+function selectPosition(serial){
     $('#addDeviceMask').fadeTo("slow", 1);
 
     var zoom = 13;
@@ -435,6 +445,7 @@ function temp(serial){
         var addwindow = new google.maps.InfoWindow({
             content: "<div style='font-size:1.3em;color:#000;text-align:center;'><p>새 제품 등록</p>" +
                 "제품번호 : <input type='text' id='addSerial' value='" + serial + "' readonly/> <br>" +
+                "제품번호 : <input type='text' id='addTitle' value=''/> <br>" +
                 "위　　도 : <input type='text' id='addLat' value='" + event.latLng.lat() + "' readonly/> <br>" +
                 "경　　도 : <input type='text' id='addLng' value='" + event.latLng.lng() + "' readonly/> <br>" +
                 "<input type='button' id='' onclick='updateDevice()' style='margin-top:1em;' value='등록'/> <br>" +
@@ -454,6 +465,7 @@ function updateDevice() {
     var lat = $('#addLat').val();
     var lng = $('#addLng').val();
     var serial = $('#addSerial').val();
+    var title = $('#addTitle').val();
     setTimeout(function() {
         $.ajax({
             url:myServerIP+":"+sensorServerPort+"/sensor/update/serial/"+serial,
@@ -461,19 +473,17 @@ function updateDevice() {
             dataType: "json",
             data:{
                 "lat":lat,
-                "lng":lng
+                "lng":lng,
+                "title":title
             },
             success: function(response){
                 addDevice(serial);
             },
-            error: function(response,status,error){}
+            error: function(response,status,error){
+                console.log(error);
+            }
         });
-        setTimeout(function() {
-            alert("[" + serial + "] 제품 등록이 완료되었습니다.");
-            popupClose();
-            if (document.location.href.indexOf("weight") != -1) createMapWeight();
-            else createMap();
-        }, 300);
+
 
     }, 500);
 }
@@ -487,11 +497,18 @@ function addDevice(serial){
         },
         error: function(response,status,error){}
     });
+    setTimeout(function() {
+        alert("[" + serial + "] 제품 등록이 완료되었습니다.");
+        popupClose();
+        if (document.location.href.indexOf("weight") != -1) createMapWeight();
+        else createMap();
+    }, 300);
 }
 function popupClose() {
     $('#popup').fadeOut();
     $('#mask').fadeOut();
     $('#addDeviceMask').fadeOut();
+    $('#serialMask').fadeOut();
 }
 
 //onclick 겹치지 않게 처리해주는 함수

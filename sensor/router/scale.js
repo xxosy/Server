@@ -10,7 +10,7 @@ router.post('/weight',function(req,res){
 	var serial = req.body.serial;
 	var medium_weight = req.body.medium_weight;
 	var drain_weight = req.body.drain_weight;
-
+	var connection = database.getConnection();
 	var date = new Date();
 	var update_date = date.toFormat('YYYYMMDD');
 	var update_time = date.toFormat('HH24:MI:SS');
@@ -26,6 +26,7 @@ router.post('/weight',function(req,res){
 
 router.get('/weight/recent/serial/:serial',function(req,res){
 	var serial = req.params.serial;
+	var connection = database.getConnection();
 	connection.query('select id from sensor where serial = \''+serial+'\';',function(err,rows){
 		if(rows!==undefined){
 			if(!rows.length){

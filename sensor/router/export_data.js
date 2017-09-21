@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var connection = require('./database');
+var database = require('./database');
 var m_hum2hdvpd = require('../util/hum2hdvpd');
 var json2csv = require('json2csv');		//parsing json to csv
 var fs = require('fs');					//file system
@@ -9,6 +9,7 @@ router.get('/excel/all/:serial/:date',function(req,res){
 	var serial = req.params.serial;
 	var update_date = new Date(req.params.date);
 	update_date = update_date.toFormat('YYYY-MM-DD');
+	var connection = database.getConnection();
 	connection.query('select id from sensor where serial =\''+serial+'\';',function(err,rows){
 		if(err!==null){
 			res.end();
@@ -72,6 +73,7 @@ router.get('/excel/all/:serial/:startdate/:enddate',function(req,res){
 	var end_date = new Date(req.params.enddate);
 	start_date = start_date.toFormat('YYYY-MM-DD');
 	end_date = end_date.toFormat('YYYY-MM-DD');
+	var connection = database.getConnection();
 	connection.query('select id from sensor where serial =\''+serial+'\';',function(err,rows){
 		if(err!==null){
 			res.end();
