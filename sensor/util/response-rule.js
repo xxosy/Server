@@ -16,10 +16,10 @@ var getResponse = function(code,data){
 	}
 
 	var result = {
-		"status":state,
-		"statecode":code,
-		"message":message,
-		"data":data
+		'status':state,
+		'statecode':code,
+		'message':message,
+		'data':data
 	}
 
 	return result;

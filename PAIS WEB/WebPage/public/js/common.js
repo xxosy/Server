@@ -43,7 +43,7 @@ function serialListCheck() {
     var usercode = getCookie(cookie_usercode);
 
     $.ajax({
-        dataType: "jsonp",
+        dataType: "json",
         url: url + usercode,
         type: "GET",
         success: function(response) {
@@ -71,7 +71,7 @@ function kakaoLogin() {
 function kakaoLogout() {
     //카카오 로그아웃 처리
     $.ajax({
-        dataType: "jsonp",
+        dataType: "json",
         url: myServerDomain + "/kakaoLogout/" + getCookie(cookie_accessToken),
         type: "GET",
         success: function(response) {
@@ -124,19 +124,19 @@ function createMap() {
     var usercode = getCookie(cookie_usercode);
 
     $.ajax({
-        dataType: "jsonp",
+        dataType: "json",
         url: url + usercode,
         type: "GET",
         success: function(response) {
-            for (i = 0; i < response.length; i++) {
+            for (i = 0; i < response.data.length; i++) {
                 if (getCookie(cookie_recentSensor) == "") {
-                    if (response[i].serial != "-") {
-                        latlng = new google.maps.LatLng(parseFloat(response[i].lat), parseFloat(response[i].lng));
+                    if (response.data[i].serial != "-") {
+                        latlng = new google.maps.LatLng(parseFloat(response.data[i].lat), parseFloat(response.data[i].lng));
                         break;
                     }
                 } else {
-                    if (response[i].serial == getCookie(cookie_recentSensor)) {
-                        latlng = new google.maps.LatLng(parseFloat(response[i].lat), parseFloat(response[i].lng));
+                    if (response.data[i].serial == getCookie(cookie_recentSensor)) {
+                        latlng = new google.maps.LatLng(parseFloat(response.data[i].lat), parseFloat(response.data[i].lng));
                     }
                 }
             }
@@ -152,12 +152,12 @@ function createMap() {
 
             var markers = new Array();
 
-            for (var i = 0; i < response.length; i++) {
-                if (response[i].serial != "-") {
-                    latlng = new google.maps.LatLng(parseFloat(response[i].lat), parseFloat(response[i].lng));
+            for (var i = 0; i < response.data.length; i++) {
+                if (response.data[i].serial != "-") {
+                    latlng = new google.maps.LatLng(parseFloat(response.data[i].lat), parseFloat(response.data[i].lng));
 
-                    var serial = response[i].serial;
-                    var title = response[i].name;
+                    var serial = response.data[i].serial;
+                    var title = response.data[i].name;
 
                     markers[i] = new google.maps.Marker({
                         position: latlng,
@@ -185,7 +185,7 @@ function createMap() {
 
                         map.setCenter(markers[i].getPosition());
                         selectedSensor = serial;
-                        selectedPosition = Number(response[i].lat).toFixed(5) + ',' + Number(response[i].lng).toFixed(5);
+                        selectedPosition = Number(response.data[i].lat).toFixed(5) + ',' + Number(response.data[i].lng).toFixed(5);
                         setDatas();
                     }
                 }
@@ -195,6 +195,7 @@ function createMap() {
             $("sensorDiv").css("weight", "70%");
         },
         error: function(response, status, error) {
+            console.log(response);
             console.log("실패 : " + status + ", " + error);
         }
     });
@@ -355,7 +356,7 @@ function deleteDevice(serial) {
         $.ajax({
             url: myServerIP + ":" + sensorServerPort + "/usersensor/delete/serial/" + serial + "/usercode/" + getCookie(cookie_usercode),
             type: "GET",
-            dataType: "jsonp",
+            dataType: "json",
             success: function(response) {
                 prev_infowindow.close();
 
@@ -383,7 +384,7 @@ function clickInsert(){
     $.ajax({
         url: myServerIP + ":" + sensorServerPort + "/sensor/" + serial,
         type: "GET",
-        dataType: "jsonp",
+        dataType: "json",
         success: function(response) {
             if(response.statecode === 200){
                 if(response.data.lat === null || response.data.lat === undefined || response.data.lat ===""){

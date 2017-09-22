@@ -267,23 +267,21 @@ router.get('/value/recent/:sensor', function(req, res, next) {
         console.log(res2.statusCode);
         if (err === null && body !== null && body !== undefined && body !=="" && res2.statusCode===200) {
         var jsonObj = JSON.parse(body);
-        console.log(jsonObj);
-        console.log(jsonObj.id);
-        console.log(jsonObj.value);
-        var jsonObj1 = JSON.parse(jsonObj.value);
-        console.log(jsonObj1.temperature);
-            res.jsonp({
-                temperature: jsonObj1.temperature,
-                temperature_ds: jsonObj1.temperature_ds,
-                humidity: jsonObj1.humidity,
-                co2: jsonObj1.co2,
-                light: jsonObj1.light,
-                ec: jsonObj1.ec,
-                ph: jsonObj1.ph,
-                update_time: jsonObj.update_time,
-                update_date: jsonObj.update_date
-            });
-        } else consoleLog(err);
+            if(jsonObj.data !== null){
+                var jsonObj1 = JSON.parse(jsonObj.data.value);
+                    res.jsonp({
+                        temperature: jsonObj1.temperature,
+                        temperature_ds: jsonObj1.temperature_ds,
+                        humidity: jsonObj1.humidity,
+                        co2: jsonObj1.co2,
+                        light: jsonObj1.light,
+                        ec: jsonObj1.ec,
+                        ph: jsonObj1.ph,
+                        update_time: jsonObj.update_time,
+                        update_date: jsonObj.update_date
+                    });
+            } 
+        }else consoleLog(err);
     });
 });
 

@@ -34,85 +34,99 @@ function setSensorValues() {
     var status_bad_up = '<i class="material-icons" style="color:#F88;">arrow_upward</i>';
     var status_bad_down = '<i class="material-icons" style="color:#F88;">arrow_downward</i>';
     
-    var recentValueQuery = "value/recent/" + selectedSensor;
+    var recentValueQuery = "value/recent/serial/" + selectedSensor;
     $.ajax({
-        dataType: "jsonp",
-        url: myServerIP + ":" + myServerPort + "/" + recentValueQuery,
+        dataType: "json",
+        url: myServerIP + ":" + sensorServerPort + "/" + recentValueQuery,
         type: "GET",
         success: function(response) {
-            //*
-            $("#currentInfo_label").html("실시간 미기후 정보 (" + response.update_date + " " + response.update_time + ")");
-            $("#temperature").html(Number(response.temperature).toFixed(2) + " ℃");
-            $("#humidity").html(Number(response.humidity).toFixed(2) + " %");
-            $("#co2").html(Number(response.co2).toFixed(2) + " ppm");
-            $("#light").html((Number(response.light)*2.7).toFixed(2) + " lux");
-            $("#ec").html(Number(response.ec).toFixed(2) + " ms/cm");
-            $("#ph").html(Number(response.ph).toFixed(2) + " ph");
-            $("#ds").html(Number(response.temperature_ds).toFixed(2) + " ℃");
+            if(response.statecode === 200){
+                var data = response.data;
+                var update_time = data.update_time;
+                var update_date = data.update_date;
+                var value = data.value;
+                var recent = JSON.parse(value);
+                var temperature = recent.temperature;
+                var humidity = recent.humidity;
+                var co2 = recent.co2;
+                var light = recent.light;
+                var ec = recent.ec;
+                var ph = recent.ph;
+                var temperature_ds = recent.temperature_ds;
 
-            var pressure = 1013;
-            var dryTemp = Number(response.temperature);
-            var humidity = Number(response.humidity);
-            var wetTemp = getWetTemperature(dryTemp, pressure, humidity);
+                $("#currentInfo_label").html("실시간 미기후 정보 (" + update_date + " " + update_time + ")");
+                $("#temperature").html(Number(temperature).toFixed(2) + " ℃");
+                $("#humidity").html(Number(humidity).toFixed(2) + " %");
+                $("#co2").html(Number(co2).toFixed(2) + " ppm");
+                $("#light").html((Number(light)*2.7).toFixed(2) + " lux");
+                $("#ec").html(Number(ec).toFixed(2) + " ms/cm");
+                $("#ph").html(Number(ph).toFixed(2) + " ph");
+                $("#ds").html(Number(temperature_ds).toFixed(2) + " ℃");
 
-            $("#wetTemp").html(wetTemp.toFixed(2) + " ℃");
-            $("#dew").html(getDEW(dryTemp, wetTemp, pressure).toFixed(2) + " ℃");
-            $("#HD").html(getHD(humidity, dryTemp).toFixed(2) + " g/m³");
-            $("#VPD").html(getVPD(dryTemp, wetTemp, pressure, humidity).toFixed(2) + " kPa");
+                var pressure = 1013;
+                var dryTemp = Number(temperature);
+                var humidity = Number(humidity);
+                var wetTemp = getWetTemperature(dryTemp, pressure, humidity);
 
-            //[TBD] 적정곡선값과 비교해서 할당해야함(적당한지, 높은지, 낮은지)
-            $("#temperature_condition_icon").html(status_good);
-            $("#humidity_condition_icon").html(status_good);
-            $("#co2_condition_icon").html(status_good);
-            $("#light_condition_icon").html(status_good);
-            $("#ec_condition_icon").html(status_bad);
-            $("#ph_condition_icon").html(status_good);
-            $("#ds_condition_icon").html(status_good);
+                $("#wetTemp").html(wetTemp.toFixed(2) + " ℃");
+                $("#dew").html(getDEW(dryTemp, wetTemp, pressure).toFixed(2) + " ℃");
+                $("#HD").html(getHD(humidity, dryTemp).toFixed(2) + " g/m³");
+                $("#VPD").html(getVPD(dryTemp, wetTemp, pressure, humidity).toFixed(2) + " kPa");
 
-            $("#wetTemp_condition_icon").html(status_good);
-            $("#dew_condition_icon").html(status_good);
+                //[TBD] 적정곡선값과 비교해서 할당해야함(적당한지, 높은지, 낮은지)
+                $("#temperature_condition_icon").html(status_good);
+                $("#humidity_condition_icon").html(status_good);
+                $("#co2_condition_icon").html(status_good);
+                $("#light_condition_icon").html(status_good);
+                $("#ec_condition_icon").html(status_bad);
+                $("#ph_condition_icon").html(status_good);
+                $("#ds_condition_icon").html(status_good);
+
+                $("#wetTemp_condition_icon").html(status_good);
+                $("#dew_condition_icon").html(status_good);
 
 
-            $("#HD_condition_icon").html(status_good);
-            $("#VPD_condition_icon").html(status_good);
-
-            $('#VPDHD_temp').html("온도 : " + dryTemp.toFixed(0) + " ℃");
-            $('#VPDHD_humi').html("습도 : " + humidity.toFixed(0) + " %");
-
-            $('#VPDHD_rangeTemp').val(dryTemp.toFixed(0));
-            $('#VPDHD_rangeHumi').val(humidity.toFixed(0));
-
-            var hd = getHD(humidity, dryTemp).toFixed(2);
-            var vpd = getVPD(dryTemp, wetTemp, pressure, humidity).toFixed(2);
-            if (hd >= 3 && hd <= 8) {
                 $("#HD_condition_icon").html(status_good);
-            } else {
-                $("#HD_condition_icon").html(status_bad);
-                if (hd < 3) {
-                    var gap = 3 - hd;
-                    $("#HD_condition_value").html(status_bad_down + gap.toFixed(2) + "g/m³");
-                } else {
-                    var gap = hd - 8;
-                    $("#HD_condition_value").html(status_bad_up + gap.toFixed(2) + "g/m³");
-                }
-            }
-
-            if (vpd >= 0.5 && vpd <= 1.2) {
                 $("#VPD_condition_icon").html(status_good);
-            } else {
-                $("#VPD_condition_icon").html(status_bad);
-                if (vpd < 0.5) {
-                    var gap = 0.5 - vpd;
-                    $("#VPD_condition_value").html(status_bad_down + gap.toFixed(2) + "kPa");
+
+                $('#VPDHD_temp').html("온도 : " + dryTemp.toFixed(0) + " ℃");
+                $('#VPDHD_humi').html("습도 : " + humidity.toFixed(0) + " %");
+
+                $('#VPDHD_rangeTemp').val(dryTemp.toFixed(0));
+                $('#VPDHD_rangeHumi').val(humidity.toFixed(0));
+
+                var hd = getHD(humidity, dryTemp).toFixed(2);
+                var vpd = getVPD(dryTemp, wetTemp, pressure, humidity).toFixed(2);
+                if (hd >= 3 && hd <= 8) {
+                    $("#HD_condition_icon").html(status_good);
                 } else {
-                    var gap = vpd - 1.2;
-                    $("#VPD_condition_value").html(status_bad_up + gap.toFixed(2) + "kPa");
+                    $("#HD_condition_icon").html(status_bad);
+                    if (hd < 3) {
+                        var gap = 3 - hd;
+                        $("#HD_condition_value").html(status_bad_down + gap.toFixed(2) + "g/m³");
+                    } else {
+                        var gap = hd - 8;
+                        $("#HD_condition_value").html(status_bad_up + gap.toFixed(2) + "g/m³");
+                    }
                 }
+
+                if (vpd >= 0.5 && vpd <= 1.2) {
+                    $("#VPD_condition_icon").html(status_good);
+                } else {
+                    $("#VPD_condition_icon").html(status_bad);
+                    if (vpd < 0.5) {
+                        var gap = 0.5 - vpd;
+                        $("#VPD_condition_value").html(status_bad_down + gap.toFixed(2) + "kPa");
+                    } else {
+                        var gap = vpd - 1.2;
+                        $("#VPD_condition_value").html(status_bad_up + gap.toFixed(2) + "kPa");
+                    }
+                }
+
+                setVPDHD(dryTemp, humidity);
+
+                setTimeout("setSensorValues()", 60000);
             }
-
-            setVPDHD(dryTemp, humidity);
-
-            setTimeout("setSensorValues()", 60000);
         },
         error: function(response, status, error) {
             console.log("sensor value loading failure : " + status + ", " + error);
@@ -263,65 +277,66 @@ function setGraph(selectedSensor, date) {
     var datas = new Array(); //0~5 위에 순서대로
     var flgGraphData = 0;
 
-        // 형식 : /list/:factor/:serial/:date/one
-    var graphDataQuery = "value/list/all/" + selectedSensor + "/" + date + "/one";
+    var graphDataQuery = "value/list/all/" + selectedSensor + "/" + date;
 
     $.ajax({
-        dataType: "jsonp",
+        dataType: "json",
         url: myServerIP + ":3000/" + graphDataQuery, //[TBD]추후 baseURL 로 교체해야함 (현재 복호화때문에 별도 서버 우회중, 교체 후 값사용 시 복호화 해서 사용해야함)
         type: "GET",
         success: function(response) {
             var currentSensorIndex = 0;
-            for(var k = 0;k<7;k++){
-                datas[k] = new Array();
-            }
-            for (j = 0; j < response.length; j++) {
-                var item = response[j];
-
-                var hour = Number(item.update_time.split(':')[0]);
-                var min = Number(item.update_time.split(':')[1]);
-                var value = JSON.parse(response[j].value);
-
-                datas[0][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.temperature)];
-                datas[1][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.humidity)];
-                datas[2][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.light)];
-                datas[3][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.co2)];
-                datas[4][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.ph)];
-                datas[5][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.ec)];
-                datas[6][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.temperature_ds)];            
-            }
-
-            //칼만 사용하면 위에꺼 안하면 아래꺼 사용
-            for(var k = 0;k<7;k++){
-                if (response.length > 0) datas[k] = kalman(datas[k]);
-            }
-            //if (response.graphItems.length > 0) datas[currentSensorIndex] = datas[currentSensorIndex];
-            var humidityDatas = new Array();
-
-            humidityDatas[0] = datas[0];
-            humidityDatas[1] = datas[1];
-            humidityDatas[2] = new Array(); //이슬점
-            humidityDatas[3] = new Array(); //HD
-            humidityDatas[4] = new Array(); //VPD
-
-            if (response.length > 0) {
-                for (j = 0; j < datas[0].length; j++) {
-                    var pressure = 1013; //[TBD] 추후 다르게 수집한 기압 대입 해야함
-                    var dryTemp = datas[0][j][1];
-                    var humidity = datas[1][j][1];
-                    var wetTemp = getWetTemperature(dryTemp, pressure, humidity);
-
-                    humidityDatas[2][j] = [datas[0][j][0], getDEW(dryTemp, wetTemp, pressure)];
-                    humidityDatas[3][j] = [datas[0][j][0], getHD(humidity, dryTemp)];
-                    humidityDatas[4][j] = [datas[0][j][0], getVPD(dryTemp, wetTemp, pressure, humidity)];
+            if(response.statecode === 200){
+                for(var k = 0;k<7;k++){
+                    datas[k] = new Array();
                 }
-            }
+                for (j = 0; j < response.data.length; j++) {
+                    var item = response.data[j];
 
-            drawGraphAll(datas);
-            drawGraphAirHumidity(humidityDatas);
-            drawVPDHD(humidityDatas[4], humidityDatas[3]);
-            drawPieChart(humidityDatas[4], humidityDatas[3]);
-            drawGraph(datas);
+                    var hour = Number(item.update_time.split(':')[0]);
+                    var min = Number(item.update_time.split(':')[1]);
+                    var value = JSON.parse(response.data[j].data.value);
+
+                    datas[0][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.temperature)];
+                    datas[1][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.humidity)];
+                    datas[2][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.light)];
+                    datas[3][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.co2)];
+                    datas[4][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.ph)];
+                    datas[5][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.ec)];
+                    datas[6][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.temperature_ds)];            
+                }
+
+                //칼만 사용하면 위에꺼 안하면 아래꺼 사용
+                for(var k = 0;k<7;k++){
+                    if (response.data.length > 0) datas[k] = kalman(datas[k]);
+                }
+                //if (response.graphItems.length > 0) datas[currentSensorIndex] = datas[currentSensorIndex];
+                var humidityDatas = new Array();
+
+                humidityDatas[0] = datas[0];
+                humidityDatas[1] = datas[1];
+                humidityDatas[2] = new Array(); //이슬점
+                humidityDatas[3] = new Array(); //HD
+                humidityDatas[4] = new Array(); //VPD
+
+                if (response.data.length > 0) {
+                    for (j = 0; j < datas[0].length; j++) {
+                        var pressure = 1013; //[TBD] 추후 다르게 수집한 기압 대입 해야함
+                        var dryTemp = datas[0][j][1];
+                        var humidity = datas[1][j][1];
+                        var wetTemp = getWetTemperature(dryTemp, pressure, humidity);
+
+                        humidityDatas[2][j] = [datas[0][j][0], getDEW(dryTemp, wetTemp, pressure)];
+                        humidityDatas[3][j] = [datas[0][j][0], getHD(humidity, dryTemp)];
+                        humidityDatas[4][j] = [datas[0][j][0], getVPD(dryTemp, wetTemp, pressure, humidity)];
+                    }
+                }
+
+                drawGraphAll(datas);
+                drawGraphAirHumidity(humidityDatas);
+                drawVPDHD(humidityDatas[4], humidityDatas[3]);
+                drawPieChart(humidityDatas[4], humidityDatas[3]);
+                drawGraph(datas);
+            }
 
         },
         error: function(response, status, error) {
