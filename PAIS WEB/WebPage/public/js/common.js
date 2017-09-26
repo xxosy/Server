@@ -39,13 +39,15 @@ function w3_close() {
 
 //사용자가 등록한 센서, 저울 시리얼 목록확인하여 보여줄 탭 정하기
 function serialListCheck() {
-    var url = myServerIP + ":" + sensorServerPort + "/usersensor/";
+    var url = myServerIP + ":" + sensorServerPort + "/usersensor/sensors/";
     var usercode = getCookie(cookie_usercode);
-
+    var query = usercode;
+    var signature = createhmac(query);
     $.ajax({
         dataType: "json",
-        url: url + usercode,
+        url: url + query,
         type: "GET",
+        headers:{"x-signature":signature},
         success: function(response) {
             var countSensor = 0;
             var countWeight = 0;
@@ -93,7 +95,12 @@ var selectedPosition;
 
 var map = false;
 var newSensorCount = 0;
-
+function createhmac(query){
+    var sharedSecret = "pais-access-secret";
+    var hmac = new sjcl.misc.hmac(sjcl.codec.utf8String.toBits(sharedSecret), sjcl.hash.sha256);
+    var signature = sjcl.codec.hex.fromBits(hmac.encrypt(query));
+    return signature;
+}
 //CREATE-MAP////////////////////////////////////////////////////////////////////////////////////
 function createMap() {
     $('#googleMap').html("");
@@ -120,12 +127,14 @@ function createMap() {
 
     map = new google.maps.Map(document.getElementById('googleMap'), mapOptions);
 
-    var url = myServerIP + ":" + sensorServerPort + "/usersensor/";
+    var url = myServerIP + ":" + sensorServerPort + "/usersensor/sensors/";
     var usercode = getCookie(cookie_usercode);
-
+    var query = usercode;
+    var signature = createhmac(query);
     $.ajax({
         dataType: "json",
-        url: url + usercode,
+        url: url + query,
+        headers:{"X-Signature":signature},
         type: "GET",
         success: function(response) {
             for (i = 0; i < response.data.length; i++) {
@@ -353,10 +362,14 @@ function showComponentToggle(componentId, iconId) {
 function deleteDevice(serial) {
     //서버로 제품 삭제 요청
     if (confirm(serial + ' 제품을 삭제하시겠습니까?')) {
+        var usercode = getCookie(cookie_usercode);
+        var query = usercode;
+        var signature = createhmac(query);
         $.ajax({
-            url: myServerIP + ":" + sensorServerPort + "/usersensor/delete/serial/" + serial + "/usercode/" + getCookie(cookie_usercode),
-            type: "GET",
+            url: myServerIP + ":" + sensorServerPort + "/usersensor/serial/" + serial + "/usercode/" + usercode,
+            type: "DELETE",
             dataType: "json",
+            headers:{"x-signature":signature},
             success: function(response) {
                 prev_infowindow.close();
 

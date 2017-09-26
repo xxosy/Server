@@ -1,4 +1,5 @@
 var crypto = require('crypto');
+var url = require("url");
 
 var fcrypto = function(value){
 	var cipher = crypto.createCipher('aes-128-ecb', 'pais');
@@ -14,7 +15,17 @@ var fdecrypto = function(value){
 	return cipherd_value;
 }
 
+var hmac = function(retrievedSignature, key){
+	var sharedSecret = "pais-access-secret";
+	var computedSignature = crypto.createHmac("sha256", sharedSecret).update(key).digest("hex");
+	if (computedSignature === retrievedSignature) {
+		return true;
+	} else {
+		return false;
+	}
+}
 module.exports = {
 	fcrypto : fcrypto,
-	fdecrypto : fdecrypto
+	fdecrypto : fdecrypto,
+	hmac:hmac
 };

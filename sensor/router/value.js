@@ -76,7 +76,7 @@ router.post('/',function(req,res){
 	var update_date=date.toFormat('YYYY-MM-DD');
 	var update_time=date.toFormat('HH24:MI');
 	var array = {
-		'temperature':temperature,
+		"temperature":temperature,
 		"temperature_ds":temperature_ds,
 		"humidity":humidity,
 		"co2":co2,

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var HashMap = require('hashmap');
 var database = require('./database');
+var response_maker = require('../util/response-rule');
 var recentHash = new HashMap();
 var connection = database;
 require('date-utils');
@@ -28,9 +29,14 @@ router.get('/weight/recent/serial/:serial',function(req,res){
 	var serial = req.params.serial;
 	var connection = database.getConnection();
 	connection.query('select id from sensor where serial = \''+serial+'\';',function(err,rows){
-		if(rows!==undefined){
+		if(rows===undefined && rows === null){
+			var result = response_maker.getResponse(405, null);
+			res.json(result);
+			res.end();
+		}else{
 			if(!rows.length){
-				res.status(404);
+				var result = response_maker.getResponse(404, "sensor");
+				res.json(result);
 				res.end();
 			}else{
 				var temp = recentHash.get(serial);
@@ -42,15 +48,15 @@ router.get('/weight/recent/serial/:serial',function(req,res){
 						"medium_weight" : temp.medium_weight,
 						"drain_weight" : temp.drain_weight
 					}
-					res.jsonp(recent);
+					var result = response_maker.getResponse(200, recent);
+					res.json(result);
 					res.end();
 				}else{
-					res.status(404);
+					var result = response_maker.getResponse(404, "recent");
+					res.json(result);
 					res.end();
 				}
 			}
-		}else{
-			res.end();
 		}
 	});
 });

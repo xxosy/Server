@@ -29,10 +29,10 @@ require('date-utils');
 var app = express();
 var allowCrossDomain = function(req,response,next){
 	response.header("Access-Control-Allow-Origin", "*");
-	response.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-	response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+	response.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
+	response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization,X-Signature");
 	if ('OPTIONS' == req.method) {
-	  response.send(200);
+	  response.sendStatus(200);
 	}
 	else {
 	  next();
