@@ -5,13 +5,15 @@ var crypto = require('crypto');
 var moment = require('moment');
 var scheduler = require('node-schedule');
 var mkdir = require('mkdirp');
+var crypto = require('crypto');
 
 var myServerIP = "http://localhost";
 var myServerPort = "80";
 var myServerCamPort = "8084";
 var sensorServerPort = "3000";
 var sensorServerWeightPort = "3232";
-
+var temp;
+var temp1;
 /*영어 페이지 연결*/
 router.get('/en', function(req, res, next) {
     res.render('index_en', {
@@ -85,8 +87,8 @@ router.get('/test', function(req, res, next) {
 });
 
 router.get('/kakaoLogin', function(req, res, next) {
-    var kakaoRestKey = "d405df36708ace0f0609039df30e8e80";
-    var redirect_uri = "http://www.ezsmartfarm.com/kakaoOauth";
+    var kakaoRestKey = "3329ed40c17e3764faea4befffcc69f5";
+    var redirect_uri = "http://112.184.93.4/kakaoOauth";
     var request_url = "https://kauth.kakao.com/oauth/authorize?client_id=" + kakaoRestKey + "&redirect_uri=" + redirect_uri + "&response_type=code";
 
     res.redirect(request_url);
@@ -128,7 +130,7 @@ router.get('/kakaoLogout/:access_token', function(req, res, next) {
 router.get('/kakaoTokenCheck/:access_token/:refresh_token', function(req, res, next) {
     var access_token = req.params.access_token;
     var refresh_token = req.params.refresh_token;
-    var kakaoRestKey = "d405df36708ace0f0609039df30e8e80";
+    var kakaoRestKey = "3329ed40c17e3764faea4befffcc69f5";
 
     var options = {
         method: 'GET',
@@ -140,7 +142,6 @@ router.get('/kakaoTokenCheck/:access_token/:refresh_token', function(req, res, n
     };
 
     request(options, function(error, response, body) {
-        consoleLog(body);
         if (response.statusCode == 401) { //토큰 만료시 갱신처리
 
             options = {
@@ -193,8 +194,8 @@ router.get('/kakaoTokenCheck/:access_token/:refresh_token', function(req, res, n
 
 router.get('/kakaoOauth', function(req, res, next) {
     var code = req.query.code;
-    var kakaoRestKey = "d405df36708ace0f0609039df30e8e80";
-    var redirect_uri = "http://www.ezsmartfarm.com/kakaoOauth";
+    var kakaoRestKey = "3329ed40c17e3764faea4befffcc69f5";
+    var redirect_uri = "http://112.184.93.4/kakaoOauth";
 
     var headers = {
         'User-Agent': 'Super Agent/0.0.1',
@@ -218,7 +219,6 @@ router.get('/kakaoOauth', function(req, res, next) {
         if (!error && response.statusCode == 200) {
             // API Access키 발급성공
             var jsonObj = JSON.parse(body);
-
             var access_token = jsonObj.access_token;
             var refresh_token = jsonObj.refresh_token;
 
@@ -241,7 +241,19 @@ router.get('/kakaoOauth', function(req, res, next) {
                         refresh_token: refresh_token,
                         id: jsonObj.id
                     };
-
+                    var sharedSecret = "pais-access-secret";
+                    var query = jsonObj.id;
+                    var nickname = jsonObj.properties.nickname+"";
+                    query +="";
+                    var signature = crypto.createHmac("sha256", sharedSecret).update(query).digest("hex");
+                    var insertuseroptions = {
+                        dataType:'json',
+                        method:'POST',
+                        url:'http://112.184.93.4:3000/user/'+query,
+                        headers:{"X-Signature":signature},
+                        form:{"name": nickname}
+                    };
+                    request(insertuseroptions, function(error, response, body) {});
                     res.render('index', param);
                 } else if (error) {
                     console.log("[error] : " + error);
@@ -252,6 +264,7 @@ router.get('/kakaoOauth', function(req, res, next) {
         }
 
     });
+
 
 });
 

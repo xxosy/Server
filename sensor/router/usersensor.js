@@ -7,13 +7,15 @@ var response_maker = require('../util/response-rule');
 
 router.get('/sensors/:usercode',function(req,res){
 	var usercode = req.params.usercode;
+	console.log(usercode);
 	var retrievedSignature = req.headers["x-signature"];
 	var access = encryption.hmac(retrievedSignature,usercode);
 	if(access){
 		var connection = database.getConnection();
 		connection.query('select user.name, user.code as usercode, sensor.serial, sensor.lat, sensor.lng, sensor.title from usersensor '+
-			'inner join user on usersensor.user_id = (select id from user where user.code = \''+usercode+'\') '+
-			'inner join sensor on sensor.id = usersensor.sensor_id;',function(err,rows){
+			'inner join user on usersensor.user_id = user.id '+
+			'inner join sensor on sensor.id = usersensor.sensor_id '+
+			'where user.code = \''+usercode+'\';',function(err,rows){
 				if(rows === undefined || rows.length === 0 || rows === null){
 					var result = response_maker.getResponse(404,rows);
 					res.json(result);
@@ -73,9 +75,6 @@ router.post('/serial/:serial/usercode/:usercode',function(req,res){
 		res.json(result);
 		res.end();
 	}
-});
-router.get('/serial/test',function(req,res){
-
 });
 
 router.delete('/serial/:serial/usercode/:usercode',function(req,res){

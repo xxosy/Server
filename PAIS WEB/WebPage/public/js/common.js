@@ -3,7 +3,7 @@ var myServerPort = "80";
 var myServerCamPort = "8084";
 var sensorServerPort = "3000";
 var sensorServerWeightPort = "3232";
-var myServerDomain = "http://www.ezsmartfarm.com";
+var myServerDomain = "http://112.184.93.4:80";
 
 var cookie_accessToken = "accessToken";
 var cookie_refreshToken = "refreshToken";
@@ -51,9 +51,14 @@ function serialListCheck() {
         success: function(response) {
             var countSensor = 0;
             var countWeight = 0;
-            for (i = 0; i < response.length; i++) {
-                if (response[i].serial != null && response[i].serial != "-") countSensor++;
-                if (response[i].weight_serial != null && response[i].weight_serial != "-") countWeight++;
+            if(response.statecode === 200){
+                var response_data = response.data;
+                for (i = 0; i < response_data.length; i++) {
+                    if (response_data[i].serial != null && response_data[i].serial != "-") countSensor++;
+                    if (response_data[i].weight_serial != null && response_data[i].weight_serial != "-") countWeight++;
+                }
+            }else{
+
             }
         },
         error: function(response, status, error) {
@@ -129,6 +134,7 @@ function createMap() {
 
     var url = myServerIP + ":" + sensorServerPort + "/usersensor/sensors/";
     var usercode = getCookie(cookie_usercode);
+    console.log(getCookie(cookie_usercode));
     var query = usercode;
     var signature = createhmac(query);
     $.ajax({
@@ -137,71 +143,77 @@ function createMap() {
         headers:{"X-Signature":signature},
         type: "GET",
         success: function(response) {
-            for (i = 0; i < response.data.length; i++) {
-                if (getCookie(cookie_recentSensor) == "") {
-                    if (response.data[i].serial != "-") {
-                        latlng = new google.maps.LatLng(parseFloat(response.data[i].lat), parseFloat(response.data[i].lng));
-                        break;
-                    }
-                } else {
-                    if (response.data[i].serial == getCookie(cookie_recentSensor)) {
-                        latlng = new google.maps.LatLng(parseFloat(response.data[i].lat), parseFloat(response.data[i].lng));
+            if(response.statecode === 200){
+                var response_data = response.data;
+                for (i = 0; i < response_data.length; i++) {
+                    if (getCookie(cookie_recentSensor) == "") {
+                        if (response_data[i].serial != "-") {
+                            latlng = new google.maps.LatLng(parseFloat(response_data[i].lat), parseFloat(response_data[i].lng));
+                            break;
+                        }
+                    } else {
+                        if (response_data[i].serial == getCookie(cookie_recentSensor)) {
+                            latlng = new google.maps.LatLng(parseFloat(response_data[i].lat), parseFloat(response_data[i].lng));
+                        }
                     }
                 }
-            }
-            map.setCenter(latlng);
+                map.setCenter(latlng);
 
-            google.maps.event.addListenerOnce(map, 'idle', function() {
-                //맵 로딩이 완료된 후 실행할 함수 추가
-            });
+                google.maps.event.addListenerOnce(map, 'idle', function() {
+                    //맵 로딩이 완료된 후 실행할 함수 추가
+                });
 
-            map.addListener('zoom_changed', function() {
-                setCookie("zoom", map.getZoom(), 30);
-            });
+                map.addListener('zoom_changed', function() {
+                    setCookie("zoom", map.getZoom(), 30);
+                });
 
-            var markers = new Array();
+                var markers = new Array();
 
-            for (var i = 0; i < response.data.length; i++) {
-                if (response.data[i].serial != "-") {
-                    latlng = new google.maps.LatLng(parseFloat(response.data[i].lat), parseFloat(response.data[i].lng));
+                for (var i = 0; i < response_data.length; i++) {
+                    if (response_data[i].serial != "-") {
+                        latlng = new google.maps.LatLng(parseFloat(response_data[i].lat), parseFloat(response_data[i].lng));
 
-                    var serial = response.data[i].serial;
-                    var title = response.data[i].name;
+                        var serial = response_data[i].serial;
+                        var title = response_data[i].title;
 
-                    markers[i] = new google.maps.Marker({
-                        position: latlng,
-                        map: map,
-                        title: title + " [" + serial + "]"
-                    });
-
-                    markerListener(map, markers[i], title, serial);
-
-                    if (getCookie(cookie_recentSensor) == serial) { //최근에 선택한 센서이면
-
-                        var infowindow = new google.maps.InfoWindow({
-                            content: "<div style='font-size:1.3em;color:#000;'>" +
-                                "명　칭 : <b>" + title + "</b><br/>" +
-                                "시리얼 : <b>" + serial + "</b></div>" +
-                                "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
-                                "<a style='margin-right:5px;' onclick='deleteDevice(\"" + serial + "\");'>삭제</a>" +
-                                "</div>",
-                            maxWidth: 300
+                        markers[i] = new google.maps.Marker({
+                            position: latlng,
+                            map: map,
+                            title: title + " [" + serial + "]"
                         });
 
-                        $("#notifySelect").hide();
-                        prev_infowindow = infowindow;
-                        infowindow.open(map, markers[i]);
+                        markerListener(map, markers[i], title, serial);
 
-                        map.setCenter(markers[i].getPosition());
-                        selectedSensor = serial;
-                        selectedPosition = Number(response.data[i].lat).toFixed(5) + ',' + Number(response.data[i].lng).toFixed(5);
-                        setDatas();
+                        if (getCookie(cookie_recentSensor) == serial) { //최근에 선택한 센서이면
+
+                            var infowindow = new google.maps.InfoWindow({
+                                content: "<div style='font-size:1.3em;color:#000;'>" +
+                                    "명　칭 : <b>" + title + "</b><br/>" +
+                                    "시리얼 : <b>" + serial + "</b></div>" +
+                                    "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
+                                    "<a style='margin-right:5px;' onclick='deleteDevice(\"" + serial + "\");'>삭제</a>" +
+                                    "</div>",
+                                maxWidth: 300
+                            });
+
+                            $("#notifySelect").hide();
+                            prev_infowindow = infowindow;
+                            infowindow.open(map, markers[i]);
+
+                            map.setCenter(markers[i].getPosition());
+                            selectedSensor = serial;
+                            selectedPosition = Number(response_data[i].lat).toFixed(5) + ',' + Number(response_data[i].lng).toFixed(5);
+                            setDatas();
+                        }
                     }
                 }
+
+                $("#sensorMap").css("height", "100%");
+                $("sensorDiv").css("weight", "70%");
+            }else{
+                alert(response.statecode);
             }
 
-            $("#sensorMap").css("height", "100%");
-            $("sensorDiv").css("weight", "70%");
         },
         error: function(response, status, error) {
             console.log(response);
@@ -394,10 +406,13 @@ function showAddDevice() {
 function clickInsert(){
     var serial = $('#serial2insert').val();
     popupClose();
+    var query = serial;
+    var signature = createhmac(query);
     $.ajax({
         url: myServerIP + ":" + sensorServerPort + "/sensor/" + serial,
         type: "GET",
         dataType: "json",
+        headers:{"X-Signature":signature},
         success: function(response) {
             if(response.statecode === 200){
                 if(response.data.lat === null || response.data.lat === undefined || response.data.lat ===""){
@@ -480,11 +495,14 @@ function updateDevice() {
     var lng = $('#addLng').val();
     var serial = $('#addSerial').val();
     var title = $('#addTitle').val();
+    var query = serial;
+    var signature = createhmac(query);
     setTimeout(function() {
         $.ajax({
             url:myServerIP+":"+sensorServerPort+"/sensor/update/serial/"+serial,
             type: "POST",
             dataType: "json",
+            headers:{"X-Signature":signature},
             data:{
                 "lat":lat,
                 "lng":lng,
@@ -502,9 +520,12 @@ function updateDevice() {
     }, 500);
 }
 function addDevice(serial){
+    var query = getCookie(cookie_usercode);
+    var signature = createhmac(query);
     $.ajax({
         url:myServerIP+":"+sensorServerPort+"/usersensor/serial/"+serial+"/usercode/"+getCookie(cookie_usercode),
         type: "POST",
+        headers:{"X-Signature":signature},
         dataType: "json",
         success: function(response){
             console.log(response);

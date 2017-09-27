@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var connection = require('./database');
-
+var database = require('./database');
+var encryption = require('../util/encryption');
+var response_maker = require('../util/response-rule');
 router.get('/:usercode',function(req,res){
 	var usercode = req.params.usercode;
 
@@ -15,11 +16,32 @@ router.get('/:usercode',function(req,res){
 });
 
 router.post('/:usercode',function(req,res){
-	console.log("asasdsa2");
 	var usercode = req.params.usercode;
-	connection.query('insert into user(`usercode`) values(\''+usercode+'\');',function(err){
+	console.log(req.body);
+	var name = req.body.name;
+	var retrievedSignature = req.headers["x-signature"];
+	console.log(name);
+	console.log(retrievedSignature);
+	console.log(usercode);
+	var access = encryption.hmac(retrievedSignature,usercode);
+	if(access){
+		var connection = database.getConnection();
+		connection.query('insert into user(`name`,`code`) values(\''+name+'\',\''+usercode+'\');',function(err){
+			if(err!==null && err!==undefined){
+				var result = response_maker.getResponse(200,null);
+				res.json(result);
+				res.end();
+			}else{
+				var result = response_maker.getResponse(500,err);
+				res.json(result);
+				res.end();
+			}
+		});
+	}else{
+		var result = response_maker.getResponse(401,null);
+		res.json(result);
 		res.end();
-	});
+	}
 });
 
 module.exports = router;

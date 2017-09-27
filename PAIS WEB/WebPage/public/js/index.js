@@ -33,12 +33,14 @@ function setSensorValues() {
     var status_bad = '<i class="material-icons" style="color:#F88;">sentiment_very_dissatisfied</i>';
     var status_bad_up = '<i class="material-icons" style="color:#F88;">arrow_upward</i>';
     var status_bad_down = '<i class="material-icons" style="color:#F88;">arrow_downward</i>';
-    
+    var query = selectedSensor;
+    var signature = createhmac(query);
     var recentValueQuery = "value/recent/serial/" + selectedSensor;
     $.ajax({
         dataType: "json",
         url: myServerIP + ":" + sensorServerPort + "/" + recentValueQuery,
         type: "GET",
+        headers:{"X-Signature":signature},
         success: function(response) {
             if(response.statecode === 200){
                 var data = response.data;
@@ -276,13 +278,16 @@ function setGraph(selectedSensor, date) {
 
     var datas = new Array(); //0~5 위에 순서대로
     var flgGraphData = 0;
-
+    
+    var query = selectedSensor;
+    var signature = createhmac(query);
     var graphDataQuery = "value/list/all/" + selectedSensor + "/" + date;
 
     $.ajax({
         dataType: "json",
         url: myServerIP + ":3000/" + graphDataQuery, //[TBD]추후 baseURL 로 교체해야함 (현재 복호화때문에 별도 서버 우회중, 교체 후 값사용 시 복호화 해서 사용해야함)
         type: "GET",
+        headers:{"X-Signature":signature},
         success: function(response) {
             var currentSensorIndex = 0;
             if(response.statecode === 200){

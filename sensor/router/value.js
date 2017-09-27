@@ -13,27 +13,35 @@ var count = 0;
 
 router.get('/recent/serial/:serial',function(req,res){
 	var serial = req.params.serial;
-	var connection = database.getConnection();
-	connection.query('select * from sensor where serial=\''+serial+'\';',function(err,rows){
-		if(rows=== null || rows.length==0 || rows === undefined){
-			var result = response_maker.getResponse(404, null);
-			res.json(result);
-			res.end();
-		}else{
-			var id = rows[rows.length-1].id;
-			connection.query('select * from value where sensor_id = \''+id+'\'order by id DESC limit 1;',function(err,rows){
-				if(rows=== null || rows.length==0 || rows === undefined){
-					var result = response_maker.getResponse(404, null);
-					res.json(result);
-					res.end();
-				}else{
-					var result = response_maker.getResponse(200,rows[rows.length-1]);
-					res.json(result);
-					res.end();
-				}
-			});
-		}
-	});              
+	var retrievedSignature = req.headers["x-signature"];
+	var access = encryption.hmac(retrievedSignature,serial);
+	if(access){
+		var connection = database.getConnection();
+		connection.query('select * from sensor where serial=\''+serial+'\';',function(err,rows){
+			if(rows=== null || rows.length==0 || rows === undefined){
+				var result = response_maker.getResponse(404, null);
+				res.json(result);
+				res.end();
+			}else{
+				var id = rows[rows.length-1].id;
+				connection.query('select * from value where sensor_id = \''+id+'\'order by id DESC limit 1;',function(err,rows){
+					if(rows=== null || rows.length==0 || rows === undefined){
+						var result = response_maker.getResponse(404, null);
+						res.json(result);
+						res.end();
+					}else{
+						var result = response_maker.getResponse(200,rows[rows.length-1]);
+						res.json(result);
+						res.end();
+					}
+				});
+			}
+		});
+	}else{
+		var result = response_maker.getResponse(401,null);
+		res.json(result);
+		res.end();
+	}     
 });
 
 router.get('/check/sensor/:sensor_id',function(req,res){
@@ -118,37 +126,45 @@ router.post('/',function(req,res){
 
 router.get('/list/all/:serial/:date',function(req,res){
 	var serial = req.params.serial;
-	var update_date = new Date(req.params.date);
-	update_date = update_date.toFormat('YYYY-MM-DD');
-	var connection = database.getConnection();
-	connection.query('select id from sensor where serial =\''+serial+'\';',function(err,rows){
-		if(err!==null){
-			var result = response_maker.getResponse(500, null);
-			res.json(result);
-			res.end();
-		}else{
-			if(rows=== null || rows.length === 0 || rows === undefined){
-				var result = response_maker.getResponse(404, null);
+	var retrievedSignature = req.headers["x-signature"];
+	var access = encryption.hmac(retrievedSignature,serial);
+	if(access){
+		var update_date = new Date(req.params.date);
+		update_date = update_date.toFormat('YYYY-MM-DD');
+		var connection = database.getConnection();
+		connection.query('select id from sensor where serial =\''+serial+'\';',function(err,rows){
+			if(err!==null){
+				var result = response_maker.getResponse(500, null);
 				res.json(result);
 				res.end();
 			}else{
-				var sensor_id = rows[rows.length-1].id;
-				connection.query('select id, value, update_time,sensor_id from value where sensor_id=\''
-					+sensor_id+'\' and update_date = \''
-					+update_date+'\' and update_time between \'00:00\' and \'23:59\';',function(err,rows){
-						if(rows=== null || rows.length === 0 || rows === undefined){
-							var result = response_maker.getResponse(404, null);
-							res.json(result);
-							res.end();
-						}else{
-							var result = response_maker.getResponse(200, rows);
-							res.json(result);
-							res.end();
-						}
-					});
+				if(rows=== null || rows.length === 0 || rows === undefined){
+					var result = response_maker.getResponse(404, null);
+					res.json(result);
+					res.end();
+				}else{
+					var sensor_id = rows[rows.length-1].id;
+					connection.query('select id, value, update_time,sensor_id from value where sensor_id=\''
+						+sensor_id+'\' and update_date = \''
+						+update_date+'\' and update_time between \'00:00\' and \'23:59\';',function(err,rows){
+							if(rows=== null || rows.length === 0 || rows === undefined){
+								var result = response_maker.getResponse(404, null);
+								res.json(result);
+								res.end();
+							}else{
+								var result = response_maker.getResponse(200, rows);
+								res.json(result);
+								res.end();
+							}
+						});
+				}
 			}
-		}
-	});
+		});
+	}else{
+		var result = response_maker.getResponse(401,null);
+		res.json(result);
+		res.end();
+	} 
 });
 
 module.exports = router;
