@@ -196,6 +196,9 @@ router.get('/kakaoOauth', function(req, res, next) {
     var code = req.query.code;
     var kakaoRestKey = "3329ed40c17e3764faea4befffcc69f5";
     var redirect_uri = "http://112.184.93.4/kakaoOauth";
+    var access_token = "";
+    var refresh_token = "";
+    var usercode = "";
 
     var headers = {
         'User-Agent': 'Super Agent/0.0.1',
@@ -219,8 +222,8 @@ router.get('/kakaoOauth', function(req, res, next) {
         if (!error && response.statusCode == 200) {
             // API Access키 발급성공
             var jsonObj = JSON.parse(body);
-            var access_token = jsonObj.access_token;
-            var refresh_token = jsonObj.refresh_token;
+            access_token = jsonObj.access_token;
+            refresh_token = jsonObj.refresh_token;
 
             var options = {
                 method: 'GET',
@@ -233,7 +236,7 @@ router.get('/kakaoOauth', function(req, res, next) {
 
             request(options, function(error, response, body) {
 
-                if (!error && response.statusCode == 200) {
+                if (!error && response.statusCode === 200) {
                     var jsonObj = JSON.parse(body);
                     var param = {
                         title: 'Express',
@@ -241,24 +244,54 @@ router.get('/kakaoOauth', function(req, res, next) {
                         refresh_token: refresh_token,
                         id: jsonObj.id
                     };
-                    var sharedSecret = "pais-access-secret";
-                    var query = jsonObj.id;
-                    var nickname = jsonObj.properties.nickname+"";
-                    query +="";
-                    var signature = crypto.createHmac("sha256", sharedSecret).update(query).digest("hex");
-                    var insertuseroptions = {
-                        dataType:'json',
-                        method:'POST',
-                        url:'http://112.184.93.4:3000/user/'+query,
-                        headers:{"X-Signature":signature},
-                        form:{"name": nickname}
-                    };
-                    request(insertuseroptions, function(error, response, body) {});
                     res.render('index', param);
+                }else if(!error && response.statusCode === 400){
+                    var singnupuoptions ={
+                        method:'POST',
+                        url:'https://kapi.kakao.com/v1/user/signup',
+                        headers:{
+                            Authorization: 'Bearer '+ access_token,
+                            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+                        }
+                    };
+
+                    request(singnupuoptions, function(error,response, body){
+                        if(!error && response.statusCode === 200){
+                            var jsonObj = JSON.parse(body);
+                            var sharedSecret = "pais-access-secret";
+                            var query = jsonObj.id;
+                            query +="";
+                            var nickname = "-"
+                            var signature = crypto.createHmac("sha256", sharedSecret).update(query).digest("hex");
+                            var insertuseroptions = {
+                                dataType:'json',
+                                method:'POST',
+                                url:'http://112.184.93.4:3000/user/'+query,
+                                headers:{"X-Signature":signature},
+                                form:{"name": nickname}
+                            };
+                            request(insertuseroptions, function(error, response, body) {
+                                if (!error && response.statusCode === 200) {
+                                    var param = {
+                                        title: 'Express',
+                                        access_token: access_token,
+                                        refresh_token: refresh_token,
+                                        id: query
+                                    };
+                                    res.render('index', param);
+                                } 
+                            });
+                        }
+                    });
+
+
                 } else if (error) {
+                    consoleLog("에러다냥");
                     console.log("[error] : " + error);
                 }
             });
+        } else if(!error && response.statusCode === 400){
+            consoleLog("400 2번이다냥");
         } else if (error) {
             console.log("[error] : " + error);
         }

@@ -1,4 +1,4 @@
-var myServerIP = "http://localhost";
+var myServerIP = "http://112.184.93.4";
 var myServerPort = "80";
 var myServerCamPort = "8084";
 var sensorServerPort = "3000";
@@ -211,7 +211,7 @@ function createMap() {
                 $("#sensorMap").css("height", "100%");
                 $("sensorDiv").css("weight", "70%");
             }else{
-                alert(response.statecode);
+                alert("사용할 제품을 등록 하세요.");
             }
 
         },
