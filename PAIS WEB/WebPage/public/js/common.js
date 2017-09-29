@@ -45,7 +45,7 @@ function serialListCheck() {
     var signature = createhmac(query);
     $.ajax({
         dataType: "json",
-        url: url + query,
+        url: url,
         type: "GET",
         headers:{"x-signature":signature},
         success: function(response) {
@@ -139,8 +139,11 @@ function createMap() {
     var signature = createhmac(query);
     $.ajax({
         dataType: "json",
-        url: url + query,
-        headers:{"X-Signature":signature},
+        url: url,
+        headers:{
+            "X-Signature":signature,
+            "Authorization":usercode
+        },
         type: "GET",
         success: function(response) {
             if(response.statecode === 200){
@@ -378,10 +381,13 @@ function deleteDevice(serial) {
         var query = usercode;
         var signature = createhmac(query);
         $.ajax({
-            url: myServerIP + ":" + sensorServerPort + "/usersensor/serial/" + serial + "/usercode/" + usercode,
+            url: myServerIP + ":" + sensorServerPort + "/usersensor/serial/" + serial,
             type: "DELETE",
             dataType: "json",
-            headers:{"x-signature":signature},
+            headers:{
+                "x-signature":signature,
+                "authorization":usercode
+            },
             success: function(response) {
                 prev_infowindow.close();
 
@@ -422,6 +428,8 @@ function clickInsert(){
                 }
             }else if(response.statecode === 404){
                 alert("환경센서 시리얼번호가 유효하지 않습니다.");
+            }else if(response.statecode === 401){
+                alert("유효하지 않은 접근입니다.");
             }
         },
         error: function(response, status, error) {
@@ -523,9 +531,12 @@ function addDevice(serial){
     var query = getCookie(cookie_usercode);
     var signature = createhmac(query);
     $.ajax({
-        url:myServerIP+":"+sensorServerPort+"/usersensor/serial/"+serial+"/usercode/"+getCookie(cookie_usercode),
+        url:myServerIP+":"+sensorServerPort+"/usersensor/serial/"+serial,
         type: "POST",
-        headers:{"X-Signature":signature},
+        headers:{
+            "X-Signature":signature,
+            "authorization":query
+        },
         dataType: "json",
         success: function(response){
             console.log(response);

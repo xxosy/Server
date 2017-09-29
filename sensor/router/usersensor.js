@@ -5,11 +5,11 @@ var winston = require('winston');
 var encryption = require('../util/encryption');
 var response_maker = require('../util/response-rule');
 
-router.get('/sensors/:usercode',function(req,res){
-	var usercode = req.params.usercode;
-	console.log(usercode);
+router.get('/sensors',function(req,res){
+	var usercode = req.headers["authorization"];
 	var retrievedSignature = req.headers["x-signature"];
 	var access = encryption.hmac(retrievedSignature,usercode);
+	console.log(usercode);
 	if(access){
 		var connection = database.getConnection();
 		connection.query('select user.name, user.code as usercode, sensor.serial, sensor.lat, sensor.lng, sensor.title from usersensor '+
@@ -25,7 +25,7 @@ router.get('/sensors/:usercode',function(req,res){
 					res.json(result);
 					res.end();
 				}
-				if(err!==undefined || err !== null){
+				if(err!==undefined && err !== null){
 					winston.log('error','usersensor get error : '+err);
 				}
 			});
@@ -36,9 +36,9 @@ router.get('/sensors/:usercode',function(req,res){
 	}
 });
 
-router.post('/serial/:serial/usercode/:usercode',function(req,res){
+router.post('/serial/:serial',function(req,res){
 	var serial = req.params.serial;
-	var usercode = req.params.usercode;
+	var usercode = req.headers["authorization"];
 	var retrievedSignature = req.headers["x-signature"];
 	var access = encryption.hmac(retrievedSignature,usercode);
 	if(access){
@@ -77,9 +77,9 @@ router.post('/serial/:serial/usercode/:usercode',function(req,res){
 	}
 });
 
-router.delete('/serial/:serial/usercode/:usercode',function(req,res){
-	var usercode = req.params.usercode;
+router.delete('/serial/:serial',function(req,res){
 	var serial = req.params.serial;
+	var usercode = req.headers["authorization"];
 	var retrievedSignature = req.headers["x-signature"];
 	var access = encryption.hmac(retrievedSignature,usercode);
 	if(access){

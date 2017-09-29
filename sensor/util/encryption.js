@@ -16,6 +16,7 @@ var fdecrypto = function(value){
 }
 
 var hmac = function(retrievedSignature, key){
+	key+="";
 	var sharedSecret = "pais-access-secret";
 	var computedSignature = crypto.createHmac("sha256", sharedSecret).update(key).digest("hex");
 	if (computedSignature === retrievedSignature) {

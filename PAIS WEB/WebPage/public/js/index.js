@@ -3,7 +3,7 @@
 function setDatas() {
 
     //카메라
-    refreshCameraImage();
+    // refreshCameraImage();
 
     //현재 센서 값
     setSensorValues();

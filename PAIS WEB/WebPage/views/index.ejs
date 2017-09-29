@@ -364,29 +364,23 @@
             var access_token = '<%= access_token %>';
             var refresh_token = '<%= refresh_token %>';
             var cookie_token = getCookie(cookie_accessToken);
-            console.log(cookie_token);
-            console.log(access_token);
-            console.log(getCookie(cookie_accessToken));
-            console.log(getCookie(cookie_refreshToken));
             if (access_token != "-") {
                 setCookie(cookie_accessToken, access_token, 30);
                 setCookie(cookie_refreshToken, refresh_token, 30);
-                console.log(getCookie(cookie_refreshToken));
                 location.replace(myServerDomain);
             }
 
             if (cookie_token == "") {
-                // setCookie(cookie_usercode,'425622077',2);
                 $("#loginMask").css("display", "block");
-            } else { //로그인 되어 있을때
-                //저장되어 있는 토큰 유효성 검사 후 고고싱
-                // setCookie(cookie_usercode,'425622077',2);
+            } else { 
+
                 $.ajax({
-                    dataType: "jsonp",
+                    dataType: "json",
                     url: myServerIP + ":" + myServerPort + "/kakaoTokenCheck/" + getCookie(cookie_accessToken) + "/" + getCookie(cookie_refreshToken),
                     type: "GET",
                     success: function(response) {
                         if (response.status == "refresh") {
+                            console.log(response);
                             //갱신된 토큰 받아서 쿠키에 갱신
                             setCookie(cookie_accessToken, access_token, 2);
                             setCookie(cookie_refreshToken, refresh_token, 30);
@@ -395,7 +389,7 @@
                         }
                         if (response.status !== "undefined") setCookie(cookie_usercode, response.id, 2);
                         else kakaoLogout();
-
+                        console.log("dasda2");
                         serialListCheck();
                         var $section = $('#popupSection');
                         $section.find('.panzoom').panzoom({
@@ -413,6 +407,9 @@
                         //$('#title').html("센서 현황 [" + today + "]");
 
                         setHighchartsOption();
+                    },
+                    error:function(err){
+                        console.log(err);
                     }
                 });
 

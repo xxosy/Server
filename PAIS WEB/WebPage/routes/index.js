@@ -143,48 +143,49 @@ router.get('/kakaoTokenCheck/:access_token/:refresh_token', function(req, res, n
 
     request(options, function(error, response, body) {
         if (response.statusCode == 401) { //토큰 만료시 갱신처리
-
+        consoleLog("2"+access_token);
             options = {
                 method: 'POST',
                 url: 'https://kauth.kakao.com/oauth/token',
                 headers: {
                     'content-type': 'application/x-www-form-urlencoded'
                 },
-                postData: {
+                form: {
                     'grant_type': 'refresh_token',
                     'client_id': kakaoRestKey,
                     'refresh_token': refresh_token
                 }
             };
 
-            request(options, function(error2, response2, error2) {
-                if (error2 === null && error2 !== null && error2 !== undefined && error2 !=="") {
+            request(options, function(error2, response2, body2) {
+                consoleLog("3 : "+body2);
+                consoleLog("4 : "+error2);
+                if (error2 === null && body2 !== null && body2 !== undefined && body2 !=="") {
                     var jsonObj = JSON.parse(body2);
                     //refresh_token이 갱신되었을 경우 언디파인이 아니고 유저한테 넘겨줘야함
                     if (jsonObj.refresh_token !== undefined) refresh_token = jsonObj.refresh_token;
-                    if (jsonObj.id !== undefined) {
-                        res.jsonp({
+                    if (jsonObj.access_token !== undefined) {
+                        res.json({
                             "status": "refresh",
-                            "id": jsonObj.id,
-                            "expires_in": jsonObj.expiresInMillis,
+                            "expires_in": jsonObj.expires_in,
                             "access_token": jsonObj.access_token,
-                            "refresh_token": refresh_token
                         });
-                    } else res.jsonp({
+                    } else res.json({
                         "status": "undefined"
                     });
                 }
             });
 
         } else { //만료 아닐때 (정상일때)
+            consoleLog("1"+access_token);
             var jsonObj = JSON.parse(body);
             if (jsonObj.id !== undefined) {
-                res.jsonp({
+                res.json({
                     "status": "ok",
                     "id": jsonObj.id,
                     "expires_in": jsonObj.expiresInMillis
                 });
-            } else res.jsonp({
+            } else res.json({
                 "status": "undefined"
             });
         }
