@@ -196,31 +196,36 @@ var preSerial = "";
 var setCurrentWeightFirst = true;
 
 function setCurrentWeight() {
-    if (preSerial != getCookie(cookie_recentWeight) && !setCurrentWeightFirst) {
+    if (preSerial != getCookie(cookie_recentSensor) && !setCurrentWeightFirst) {
         setCurrentWeightFirst = true;
         return;
     }
-
-    var dataQuery = "scale/weight/recent/serial/" + getCookie(cookie_recentWeight);
-    preSerial = getCookie(cookie_recentWeight);
+    var query = getCookie(cookie_recentSensor);
+    var signature = createhmac(query);
+    var dataQuery = "scale/weight/recent/serial/" + query;
+    preSerial = getCookie(cookie_recentSensor);
     setCurrentWeightFirst = false;
-
     $.ajax({
-        dataType: "jsonp",
+        dataType: "json",
         url: myServerIP + ":" + sensorServerPort + "/" + dataQuery,
         type: "GET",
+        headers:{"X-Signature":signature},
         success: function(response) {
-            var medium_weight = (response.medium_weight / 1000).toFixed(2) + "";
-            if (medium_weight.length == 2) medium_weight += ".00";
-            $('#currentWeight').html(medium_weight + "kg");
+            if(response.status !== "fail"){
+                var medium_weight = (response.data.medium_weight / 1000).toFixed(2) + "";
+                if (medium_weight.length == 2) medium_weight += ".00";
+                $('#currentWeight').html(medium_weight + "kg");
 
-            if (response.drain_weight != null && response.drain_weight != undefined) {
-                var drain_weight = (response.drain_weight / 1000).toFixed(2) + "";
-                if (drain_weight.length == 2) medium_weight += ".00";
-                if (drain_weight.length == 4) medium_weight += "0";
-                $('#currentLiquid').html(drain_weight + "kg");
-            } else {
-                $('#currentLiquid').html("ㅡ");
+                if (response.data.drain_weight != null && response.data.drain_weight != undefined) {
+                    var drain_weight = (response.data.drain_weight / 1000).toFixed(2) + "";
+                    if (drain_weight.length == 2) medium_weight += ".00";
+                    if (drain_weight.length == 4) medium_weight += "0";
+                    $('#currentLiquid').html(drain_weight + "kg");
+                } else {
+                    $('#currentLiquid').html("ㅡ");
+                }
+            }else{
+
             }
         },
         error: function(response, status, error) {
@@ -441,10 +446,13 @@ function getWeatherText(code) {
 //그래프 세팅
 
 function setWeightGraph(date) {
-    var serial = getCookie(cookie_recentWeight);
+    var serial = getCookie(cookie_recentSensor);
     var usercode = getCookie(cookie_usercode);
+
+    var query = serial;
+    var signature = createhmac(query);
     //var date = "2017-02-24"
-    var graphDataQuery = "value/list/all/" + serial + "/" + date + "/one";
+    var graphDataQuery = "value/list/all/" + serial + "/" + date;
 
     var datas = new Array();
     var lightDatas = new Array();
@@ -468,161 +476,163 @@ function setWeightGraph(date) {
     var prev = -1;
 
     $.ajax({
-        dataType: "jsonp",
+        dataType: "json",
         url: myServerIP + ":" + sensorServerPort + "/" + graphDataQuery,
         type: "GET",
+        headers:{"X-Signature":signature},
         success: function(response) {
-            var currentSensorIndex = 0;
-            var index = 0;
-            var items = response;
+            if(response.status !== "fail"){
+                var currentSensorIndex = 0;
+                var index = 0;
+                var items = response.data;
 
-            var test = false;
+                var test = false;
 
-            var isRapidDecrease = false;
-            var isRapidIncrease = false;
-            var maxliquid = 0;
+                var isRapidDecrease = false;
+                var isRapidIncrease = false;
+                var maxliquid = 0;
 
-            var isIncreasing = false;
-            var minWeight = 0;
-            var currWeight = 0;
-            var preWeight = 0;
-            var diffWeight = 0;
-            var count = 0;
-            var supplyIndex = 0;
-            var nutrientSupplyTime = '<tr>';
+                var isIncreasing = false;
+                var minWeight = 0;
+                var currWeight = 0;
+                var preWeight = 0;
+                var diffWeight = 0;
+                var count = 0;
+                var supplyIndex = 0;
+                var nutrientSupplyTime = '<tr>';
 
-            var maxWeight = 0;
-            var nutrientSupplyAmount = 0;
-            var isWeightSensorError = false;
+                var maxWeight = 0;
+                var nutrientSupplyAmount = 0;
+                var isWeightSensorError = false;
 
-            function convertKoraTime(date) {
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var time = "";
+                function convertKoraTime(date) {
+                    var hours = date.getHours();
+                    var minutes = date.getMinutes();
+                    var time = "";
 
-                hours -= 9;
-                if (hours < 0) hours = 24 + hours;
-                if (hours < 10) time += "0";
-                time += hours + " : ";
+                    hours -= 9;
+                    if (hours < 0) hours = 24 + hours;
+                    if (hours < 10) time += "0";
+                    time += hours + " : ";
 
-                if (minutes < 10) time += "0";
-                time += minutes;
+                    if (minutes < 10) time += "0";
+                    time += minutes;
 
-                return time;
-            }
-
-            for (i = 0; i <items.length; i++) {
-                var item = items[i];
-                var hour = Number(item.update_time.split(':')[0]);
-                var min = Number(item.update_time.split(':')[1]);
-                // var sec = Number(item.update_time.split(':')[2]);
-                var value = JSON.parse(item.value);
-                console.log(value);
-                                console.log(value.drain_weigth);
-                var medium_weight = Number(value.medium_weight) / 1000;
-                var drain_weigth = Number(value.drain_weigth) / 1000;
-                var light = Number(value.light)*2.7;
-                console.log(drain_weigth);
-                datas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), medium_weight];
-                liquidDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), drain_weigth];
-                lightDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), light];
-
-                if (index == 0) {
-                    maxliquid = drain_weigth;
-                    preWeight = medium_weight;
+                    return time;
                 }
-                if (index != 0) {
-                    //급액량
-                    if (preValue < medium_weight) supValue += medium_weight - preValue;
 
-                    //배액량
-                    if(isRapidDecrease) {
-                        if(isRapidIncrease) {
-                            isRapidDecrease = false;
-                            isRapidIncrease = false;
+                for (i = 0; i <items.length; i++) {
+                    var item = items[i];
+                    var hour = Number(item.update_time.split(':')[0]);
+                    var min = Number(item.update_time.split(':')[1]);
+                    // var sec = Number(item.update_time.split(':')[2]);
+                    var value = JSON.parse(item.value);
+                    console.log(value);
+                    console.log(value.drain_weigth);
+                    var medium_weight = Number(value.medium_weight) / 1000;
+                    var drain_weigth = Number(value.drain_weigth) / 1000;
+                    var light = Number(value.light)*2.7;
+                    console.log(drain_weigth);
+                    datas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), medium_weight];
+                    liquidDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), drain_weigth];
+                    lightDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), light];
+
+                    if (index == 0) {
+                        maxliquid = drain_weigth;
+                        preWeight = medium_weight;
+                    }
+                    if (index != 0) {
+                        //급액량
+                        if (preValue < medium_weight) supValue += medium_weight - preValue;
+
+                        //배액량
+                        if(isRapidDecrease) {
+                            if(isRapidIncrease) {
+                                isRapidDecrease = false;
+                                isRapidIncrease = false;
+                            }
+                            if(!isRapidIncrease) {
+                                maxliquid = drain_weigth;
+                                isRapidDecrease = false;
+                            }
                         }
-                        if(!isRapidIncrease) {
+
+                        if(preliquid - drain_weigth > 0.5)   isRapidDecrease = true;
+                        if(drain_weigth - preliquid > 0.5)   isRapidIncrease = true;
+
+                        if (preliquid - drain_weigth > 0.16) {
+                            isRapidDecrease = true;
+                        } else if (isRapidDecrease && drain_weigth - preliquid < 0.16) {  //급감 후 유지 : 비움
                             maxliquid = drain_weigth;
                             isRapidDecrease = false;
+                        } else isRapidDecrease = false;    // 급감후 급상승 : 무시
+
+                        if (maxliquid < drain_weigth ) {
+                            useValue += drain_weigth - maxliquid;
+                            maxliquid = drain_weigth;
                         }
+
+                        // 급액 횟수&시간 구하기
+                        currWeight = medium_weight;
+                        if( isWeightSensorError ) { isWeightSensorError = false; }
+                        else if( isIncreasing && currWeight - preWeight < 0 ) {
+                           diffWeight = currWeight - minWeight;
+                            maxWeight = preWeight;
+                           if( diffWeight > 0.2 ) {   // 증가량이 200g 이상이면 급액한 것으로 간주
+                                var da = new Date(datas[supplyIndex][0]);
+                                nutrientSupplyAmount = parseInt((maxWeight - minWeight) * 1000);
+                                nutrientSupplyTime += '<td>' + convertKoraTime(da) +' ('+ nutrientSupplyAmount +'ml)'+ '</td>';
+                                count++;
+                                if(count % 3 == 0) nutrientSupplyTime += '</tr> <tr>';
+                           }
+                          isIncreasing = false;
+                        }
+                        else if( !isIncreasing && currWeight - preWeight > 0.02 ) {
+                            isIncreasing = true;
+                            minWeight = preWeight;
+                            supplyIndex = index-1;
+                        }
+
+                        if( preWeight - currWeight > 0.2) { isWeightSensorError = true; }
+                        preWeight = currWeight;
                     }
 
-                    if(preliquid - drain_weigth > 0.5)   isRapidDecrease = true;
-                    if(drain_weigth - preliquid > 0.5)   isRapidIncrease = true;
+                    //liquid 값으로 변경해야함 현재 null 이라 사용 x
+                    useDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), useValue];
 
-                    if (preliquid - drain_weigth > 0.16) {
-                        isRapidDecrease = true;
-                    } else if (isRapidDecrease && drain_weigth - preliquid < 0.16) {  //급감 후 유지 : 비움
-                        maxliquid = drain_weigth;
-                        isRapidDecrease = false;
-                    } else isRapidDecrease = false;    // 급감후 급상승 : 무시
-
-                    if (maxliquid < drain_weigth ) {
-                        useValue += drain_weigth - maxliquid;
-                        maxliquid = drain_weigth;
-                    }
-
-                    // 급액 횟수&시간 구하기
-                    currWeight = medium_weight;
-                    if( isWeightSensorError ) { isWeightSensorError = false; }
-                    else if( isIncreasing && currWeight - preWeight < 0 ) {
-                       diffWeight = currWeight - minWeight;
-                        maxWeight = preWeight;
-                       if( diffWeight > 0.2 ) {   // 증가량이 200g 이상이면 급액한 것으로 간주
-                            var da = new Date(datas[supplyIndex][0]);
-                            nutrientSupplyAmount = parseInt((maxWeight - minWeight) * 1000);
-                            nutrientSupplyTime += '<td>' + convertKoraTime(da) +' ('+ nutrientSupplyAmount +'ml)'+ '</td>';
-                            count++;
-                            if(count % 3 == 0) nutrientSupplyTime += '</tr> <tr>';
-                       }
-                      isIncreasing = false;
-                    }
-                    else if( !isIncreasing && currWeight - preWeight > 0.02 ) {
-                        isIncreasing = true;
-                        minWeight = preWeight;
-                        supplyIndex = index-1;
-                    }
-
-                    if( preWeight - currWeight > 0.2) { isWeightSensorError = true; }
-                    preWeight = currWeight;
+                    preliquid = drain_weigth;
+                    preValue = medium_weight;
+                    index++;
                 }
+                nutrientSupplyTime  += '</tr>';
 
-                //liquid 값으로 변경해야함 현재 null 이라 사용 x
-                useDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), useValue];
+                // for (i = 0; i < datas.length; i++) {
+                //     if (current == -1) {
+                //         current = datas[i][1];
+                //         prev = datas[i][1];
+                //     }
+                // }
 
-                preliquid = drain_weigth;
-                preValue = medium_weight;
-                index++;
+
+
+                //총 공급량 배액량 세팅
+                $("#supply_number").html(count + " 회");
+                $("#supply_time").html(nutrientSupplyTime);
+                $("#supply").html(supValue.toFixed(2) + "kg");
+                $("#use").html(useValue.toFixed(2) + "kg");
+                $("#plantWeight").html("(구현예정)");
+                $("#eva").html("(구현예정)");
+
+
+                //연결되어 있는 센서 시리얼 획득 후(success 안) 광센서 값 가져오기
+                console.log(datas);
+                console.log(useDatas);
+                console.log(lightDatas);
+                console.log(liquidDatas);
+                drawWeightGraph(datas, useDatas, kalman(lightDatas));
+
+                drawWeightEachGraph(datas, useDatas, liquidDatas);
             }
-            nutrientSupplyTime  += '</tr>';
-
-            // for (i = 0; i < datas.length; i++) {
-            //     if (current == -1) {
-            //         current = datas[i][1];
-            //         prev = datas[i][1];
-            //     }
-            // }
-
-
-
-            //총 공급량 배액량 세팅
-            $("#supply_number").html(count + " 회");
-            $("#supply_time").html(nutrientSupplyTime);
-            $("#supply").html(supValue.toFixed(2) + "kg");
-            $("#use").html(useValue.toFixed(2) + "kg");
-            $("#plantWeight").html("(구현예정)");
-            $("#eva").html("(구현예정)");
-
-
-            //연결되어 있는 센서 시리얼 획득 후(success 안) 광센서 값 가져오기
-            console.log(datas);
-            console.log(useDatas);
-            console.log(lightDatas);
-            console.log(liquidDatas);
-            drawWeightGraph(datas, useDatas, kalman(lightDatas));
-
-            drawWeightEachGraph(datas, useDatas, liquidDatas);
-
 
         },
         error: function(response, status, error) {

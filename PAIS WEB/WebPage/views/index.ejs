@@ -106,6 +106,9 @@
         <div class="cameraImg">
             <img style="width:100%;height:auto;" id="image_bug" onclick="popupShow('bug')" src="" alt="" />
         </div>
+        <div class="cameraImg" style="text-align:center;">
+            <img style="width:50%;height:auto;" id="image_add" onclick="popupShow('bug')" src="..\img\add.png" alt="" />
+        </div>
     </div>
 </div>
 
@@ -382,6 +385,7 @@
                         if (response.status == "refresh") {
                             console.log(response);
                             //갱신된 토큰 받아서 쿠키에 갱신
+                            access_token = response.access_token;
                             setCookie(cookie_accessToken, access_token, 2);
                             setCookie(cookie_refreshToken, refresh_token, 30);
                             console.log(getCookie(cookie_accessToken));

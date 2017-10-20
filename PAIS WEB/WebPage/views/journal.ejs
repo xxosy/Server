@@ -99,42 +99,6 @@
     <!-- 배경 어둡거나 색감 변경 하고 싶을때 -->
     <!-- <div style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background-color: rgba(0,0,0,0.6); background-size: cover; z-index: -1;"></div> -->
 
-    <!-- Navbar -->
-    <div class="w3-top">
-        <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
-            <a class="w3-bar-item w3-button w3-opennav w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()">
-                <i class="fa fa-bars"></i>
-            </a>
-            <a href="#" class="w3-bar-item w3-button w3-theme-l1"><b>SSL</b></a>
-            <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white" id="titleDate"></a>
-            <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white" id="titleText">영농일지</a>
-
-            <a href="/en/journal" class="w3-bar-item w3-hover-white" style="position:relative; float:right; right:0px">English(US)</a>
-            <a href="#" class="w3-bar-item w3-white" style="position:relative; float:right; right:0px">한국어</a>
-        </div>
-    </div>
-
-    <!-- Sidenav -->
-    <nav class="w3-sidenav w3-collapse w3-animate-left" id="mySidenav">
-        <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="close menu">
-            <i class="fa fa-remove"></i>
-        </a>
-        <div style="background-color:rgba(255,255,255,0.85);text-align:center;padding-top:1.5em;padding-bottom:1.5em;">
-            <img src="img/logo.png" style="width:9em;height:auto;" />
-        </div>
-        <h4><b>Menu</b></h4>
-        <a href="#" onclick="showAddDevice()" class="w3-hover-black">제품 등록</a>
-        <hr>
-        <a id="tab-sensor" href="http://localhost/" class="w3-hover-black">미기후 정보</a>
-        <a id="tab-weight" href="http://localhost/weight" class="w3-hover-black">배지 정보</a>
-        <hr>
-        <a id="tab-journal" href="#" class="w3-hover-black"><b>영농 일지 <</b></a>
-        <hr>
-        <a id="tab-actuator" href="http://localhost/actuator" class="w3-hover-black" style = "visibility:hidden;">온실제어</a>
-        <hr id = "div-actuator" style = "visibility:hidden;">
-        <a href="#" onclick="kakaoLogout()" class="w3-hover-black">로그아웃</a>
-    </nav>
-
     <!-- Overlay effect when opening sidenav on small screens -->
     <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
 
@@ -159,16 +123,18 @@
         <!-- 우측 라인 -->
         <div class="w3-col w3-half" style="margin-top:38px">
             <div class="w3-container w3-alpha-black w3-margin">
-                <h4 class="w3-text-white w3-border-bottom">기록</h4>
-
+                <div class="w3-border-bottom" style="margin-top:10px;padding-bottom:10px">
+                    <h7 class="w3-text-white" style="font-size:20px;width:100px">기록</h7>
+                    <input type="button" value="저 장" style="float:right;color: #6496c8;background: rgba(0,0,0,0);border: solid 2px #6496c8;" onclick="saveJournal()">
+                </div>
                 <div>
                     <div class="w3-half w3-padding-small" style="text-align:center;">
                         <h5 class="w3-text-white" style="font-size:1.1em;">재배현황</h5>
-                        <textarea class="textArea"></textarea>
+                        <textarea id="condition" class="textArea"></textarea>
                     </div>
                     <div class="w3-half w3-padding-small" style="text-align:center;">
                         <h5 class="w3-text-white" style="font-size:1.1em;">특이사항</h5>
-                        <textarea class="textArea"></textarea>
+                        <textarea id="significant" class="textArea"></textarea>
                     </div>
                 </div>
             </div>
@@ -377,6 +343,7 @@
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/highcharts-more.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
 
   <script>
     $(document).ready(function() {
@@ -400,7 +367,7 @@
                 drawCalendar();
                 createMap();
                 setHighchartsOption();
-
+                
                 //데이터 다운로드 창 밖에 클릭시 사라지게
                 $(document).mouseup(function (e) {
                  var downloadPopup = $('#downloadMask');

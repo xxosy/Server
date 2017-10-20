@@ -17,6 +17,7 @@ var r_scale = require('./router/scale');
 var r_export_data = require('./router/export_data');
 var r_journal = require('./router/journal');
 var r_actuator = require('./router/actuator');
+var r_camera = require('./router/camera');
 var r_usersensor = require('./router/usersensor');
 //module
 var m_hum2hdvpd = require('./util/hum2hdvpd');
@@ -55,6 +56,7 @@ app.use('/journal', r_journal);
 app.use('/actuator', r_actuator);
 app.use('/scale', r_scale);
 app.use('/usersensor', r_usersensor);
+app.use('/camera', r_camera);
 app.use('/',index);
 
 var connection = database;

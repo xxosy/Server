@@ -56,6 +56,7 @@ function setDatas(selectedDate) {
     //엑셀 다운로드 링크 갱신
     //http://221.159.48.9:3000/export/excel/all/P5224/2017-06-11
     //$("#allDataDown").attr("href", "http://221.159.48.9:3000/export/excel/all/" + selectedSensor + "/" + currentDate);
+    refreshJournal();
 
 }
 
@@ -400,24 +401,27 @@ function setCamURL() {
     cropCamPORT='';
     bugCamIP = '';
     bugCamPORT = '';
-    
+    var query = selectedSensor;
+    var signature = createhmac(query);
     $.ajax({
-        url: myServerIP + ":" + sensorServerPort + "/sensor/" + selectedSensor,
+        url: myServerIP + ":" + sensorServerPort + "/camera/list/sensor/" + selectedSensor,
         type: "GET",
-        dataType: "jsonp",
+        dataType: "json",
+        headers:{"X-Signature":signature},
         success: function(response) {
-            if (response.url != null && response.url != "") {
-                console.log(response.url);
-                cropCamIP = response.url.split(":")[1].split("//")[1];
-                cropCamPORT = response.url.split(":")[2];
-            }
+            if(response.status !== 'fail'){
+                if (response.data[0].url != null && response.data[0].url != "") {
+                    cropCamIP = response.data[0].url.split(":")[1].split("//")[1];
+                    cropCamPORT = response.data[0].url.split(":")[2];
+                }
 
-            if (response.mosquito_url != null && response.mosquito_url != "") {
-                bugCamIP = response.mosquito_url.split(":")[1].split("//")[1];
-                bugCamPORT = response.mosquito_url.split(":")[2];
-            }
+                if (response.data[1].url != null && response.data[1].url != "") {
+                    cropCamIP = response.data[1].url.split(":")[1].split("//")[1];
+                    cropCamPORT = response.data[1].url.split(":")[2];
+                }
 
-            setJournalCameraImg(selectedDate_);
+                setJournalCameraImg(selectedDate_);
+            }
         },
         error: function(response, status, error) {}
     });
@@ -486,6 +490,59 @@ function dateCompare(startDate, endDate) {
   else return 2;
 }
 
+function saveJournal(){
+    var significant = $("#significant").val();
+    var condition = $("#condition").val();
+    var usercode = getCookie(cookie_usercode);
+    var serial = selectedSensor;
+    var date = selectedDate_;
+
+    var query = usercode;
+    var signature = createhmac(query);
+    $.ajax({
+        url: myServerIP + ":" + sensorServerPort + "/journal",
+        type: "POST",
+        dataType: "json",
+        headers:{"X-Signature":signature},
+        data:{
+            significant : significant,
+            condition : condition,
+            usercode :usercode,
+            serial : serial,
+            date : date
+        },
+        success: function(response) {
+            if(response.status !== 'fail')
+                alert('저장하였습니다.');
+            else{
+                alert('저장하지 못하였습니다.');
+            }
+        },
+        error: function(response, status, error) {}
+    });
+}
+
+function refreshJournal(){
+    var serial = selectedSensor;
+    var date = selectedDate_;
+    var query = serial+"";
+    console.log(serial);
+    console.log(date);
+    var signature = createhmac(query);
+    $.ajax({
+        url: myServerIP + ":" + sensorServerPort + "/journal/"+query+"/"+date,
+        type: "GET",
+        dataType: "json",
+        headers:{"X-Signature":signature},
+        success: function(response) {
+            if(response.status !== 'fail'){
+                $("#significant").val(response.data[0].significant);
+                $("#condition").val(response.data[0].condition);
+            }
+        },
+        error: function(response, status, error) {}
+    });
+}
 function convertDate(text) {
   return new Date(text.split('-')[0], text.split('-')[1], text.split('-')[2]);
 }

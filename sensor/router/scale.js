@@ -29,11 +29,16 @@ router.post('/weight',function(req,res){
 router.get('/weight/recent/serial/:serial',function(req,res){
 	var serial = req.params.serial;
 	var retrievedSignature = req.headers["x-signature"];
-	var access = encryption.hmac(retrievedSignature,usercode);
+	var access = encryption.hmac(retrievedSignature,serial);
+	console.log("asd1");
+	console.log(retrievedSignature);
+	console.log(serial);
 	if(access){
 		var connection = database.getConnection();
+		console.log("asd2");
 		connection.query('select id from sensor where serial = \''+serial+'\';',function(err,rows){
-			if(rows===undefined && rows === null){
+			console.log("asd3");
+			if(rows===undefined || rows === null){
 				var result = response_maker.getResponse(405, null);
 				res.json(result);
 				res.end();
