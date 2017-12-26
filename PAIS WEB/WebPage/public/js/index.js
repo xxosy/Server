@@ -46,15 +46,13 @@ function setSensorValues() {
                 var data = response.data;
                 var update_time = data.update_time;
                 var update_date = data.update_date;
-                var value = data.value;
-                var recent = JSON.parse(value);
-                var temperature = recent.temperature;
-                var humidity = recent.humidity;
-                var co2 = recent.co2;
-                var light = recent.light;
-                var ec = recent.ec;
-                var ph = recent.ph;
-                var temperature_ds = recent.temperature_ds;
+                var temperature = data.temperature;
+                var humidity = data.humidity;
+                var co2 = data.co2;
+                var light = data.light;
+                var ec = data.ec;
+                var ph = data.ph;
+                var temperature_ds = data.temperature_ds;
 
                 $("#currentInfo_label").html("실시간 미기후 정보 (" + update_date + " " + update_time + ")");
                 $("#temperature").html(Number(temperature).toFixed(2) + " ℃");

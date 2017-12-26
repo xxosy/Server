@@ -137,7 +137,7 @@ function setGraph(selectedSensor, date) {
 
                     var hour = Number(item.update_time.split(':')[0]);
                     var min = Number(item.update_time.split(':')[1]);
-                    var value = JSON.parse(response.data[j].value);
+                    var value = item;
 
                     datas[0][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.temperature)];
                     datas[1][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.humidity)];

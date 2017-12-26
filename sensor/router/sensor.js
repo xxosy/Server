@@ -62,6 +62,23 @@ router.get('/:serial',function(req,res){
 	}
 });
 
+router.get('/list/all',function(req,res){
+	var connection = database.getConnection();
+	console.log('asda');
+	connection.query('select * from sensor;',
+		function(err,rows){
+			if(rows=== null || rows.length==0 || rows === undefined){
+				var result = response_maker.getResponse(404, null);
+				res.jsonp(result);
+				res.end();
+			}else{
+				var result = response_maker.getResponse(200,rows);
+				res.jsonp(result);
+				res.end();
+			}
+		});
+});
+
 router.post('/:serial',function(req,res){
 	var serial = req.params.serial;
 	var connection = database.getConnection();

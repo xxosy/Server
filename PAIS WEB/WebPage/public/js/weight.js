@@ -526,7 +526,7 @@ function setWeightGraph(date) {
                     var hour = Number(item.update_time.split(':')[0]);
                     var min = Number(item.update_time.split(':')[1]);
                     // var sec = Number(item.update_time.split(':')[2]);
-                    var value = JSON.parse(item.value);
+                    var value = item;
                     console.log(value);
                     console.log(value.drain_weigth);
                     var medium_weight = Number(value.medium_weight) / 1000;

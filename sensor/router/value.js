@@ -47,7 +47,8 @@ router.get('/recent/serial/:serial',function(req,res){
 router.get('/check/sensor/:sensor_id',function(req,res){
 	var sensor_id = req.params.sensor_id;
 	var connection = database.getConnection();
-	connection.query('select update_date, update_time from value where sensor_id = \''+sensor_id+'\'order by id DESC limit 1;',function(err,rows){
+	console.log(sensor_id);
+	connection.query('select sensor_id, update_date, update_time from value where sensor_id = \''+sensor_id+'\'order by id DESC limit 1;',function(err,rows){
 		res.json(rows[rows.length-1]);
 	});
 });
@@ -83,20 +84,6 @@ router.post('/',function(req,res){
 
 	var update_date=date.toFormat('YYYY-MM-DD');
 	var update_time=date.toFormat('HH24:MI');
-	var array = {
-		"temperature":temperature,
-		"temperature_ds":temperature_ds,
-		"humidity":humidity,
-		"co2":co2,
-		"light":light,
-		"ec":ec,
-		"ph":ph,
-		"medium_weight":medium_weight,
-		"drain_weight":drain_weight
-	};
-	console.log(array);
-	var json_value = JSON.stringify(array);
-	console.log(json_value);
 
 	// var cipherd_temperature = encryption.fcrypto(temperature);
 
@@ -106,8 +93,17 @@ router.post('/',function(req,res){
 			if(!rows.length){
 				res.status(404).send('NOT find list for serial :'+serial);
 			}else{
-				connection.query('insert into value(`value`,`update_time`,`update_date`,`sensor_id`) '+
-					'values(\''+json_value+'\',\''+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
+				connection.query('insert into value(`temperature`,`temperature_ds`,`humidity`,`co2`,`light`,`ec`,`ph`,`medium_weight`,`drain_weight`,`update_time`,`update_date`,`sensor_id`) '+
+					'values(\''+temperature+'\',\''
+					+temperature_ds+'\',\''
+					+humidity+'\',\''
+					+co2+'\',\''
+					+light+'\',\''
+					+ec+'\',\''
+					+ph+'\',\''
+					+medium_weight+'\',\''
+					+drain_weight+'\',\''
+					+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
 						if(err == null){
 							console.log('sensor '+sensor_id+'value is inserted : '+update_time);
 
@@ -144,7 +140,7 @@ router.get('/list/all/:serial/:date',function(req,res){
 					res.end();
 				}else{
 					var sensor_id = rows[rows.length-1].id;
-					connection.query('select id, value, update_time,sensor_id from value where sensor_id=\''
+					connection.query('select id, temperature,temperature_ds,humidity,co2,light,ec,ph,medium_weight,drain_weight, update_time,sensor_id from value where sensor_id=\''
 						+sensor_id+'\' and update_date = \''
 						+update_date+'\' and update_time between \'00:00\' and \'23:59\';',function(err,rows){
 							if(rows=== null || rows.length === 0 || rows === undefined){
@@ -165,6 +161,40 @@ router.get('/list/all/:serial/:date',function(req,res){
 		res.json(result);
 		res.end();
 	} 
+});
+
+
+router.get('/test',function(req,res){
+	var connection = database.getConnection();
+	connection.query('select * from `valuetest_nopk` limit 1000000, 500000;',function(err,rows){
+		var sequense = 100000;
+		for(var i = 0;i<rows.length;i++){
+			var date = new Date(rows[i].update_date);
+			var yy = date.toFormat('YYYY');
+			var mm = date.toFormat('MM');
+			var dd = date.toFormat('DD');
+
+			var indexkey = yy+mm+dd+rows[i].sensor_id+sequense;
+			indexkey = indexkey*1;
+			// console.log(indexkey);
+			connection.query('insert into valuetest_new(`temperature`,`temperature_ds`,`humidity`,`co2`,`light`,`ec`,`ph`,`indexkey`,`update_time`,`update_date`,`sensor_id`) '+
+					'values(\''+rows[i].temperature+'\',\''
+					+rows[i].temperature_ds+'\',\''
+					+rows[i].humidity+'\',\''
+					+rows[i].co2+'\',\''
+					+rows[i].light+'\',\''
+					+rows[i].ec+'\',\''
+					+rows[i].ph+'\','+indexkey+',\''
+					+rows[i].update_time+'\',\''+rows[i].update_date+'\',\''+rows[i].sensor_id+'\');',function(err){
+						console.log(err);
+					});
+			sequense++;
+			if(sequense>999999){
+				sequense = 100000;
+			}
+		}
+		res.end();
+	});
 });
 
 module.exports = router;

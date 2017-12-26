@@ -538,6 +538,9 @@ function refreshJournal(){
             if(response.status !== 'fail'){
                 $("#significant").val(response.data[0].significant);
                 $("#condition").val(response.data[0].condition);
+            }else{
+                $("#significant").val('');
+                $("#condition").val('');
             }
         },
         error: function(response, status, error) {}

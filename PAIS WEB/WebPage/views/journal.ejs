@@ -367,7 +367,7 @@
                 drawCalendar();
                 createMap();
                 setHighchartsOption();
-                
+
                 //데이터 다운로드 창 밖에 클릭시 사라지게
                 $(document).mouseup(function (e) {
                  var downloadPopup = $('#downloadMask');
@@ -383,4 +383,8 @@
                 $('#div-actuator').css('visibility','hidden');
             }
         });
+        $('#tab-sensor').html("미기후 정보");
+        $('#tab-weight').html("배지 정보");
+        $('#tab-journal').html("영농 일지 <");
+        $('#tab-actuator').html("온실제어");
 </script>
