@@ -1,9 +1,9 @@
-var myServerIP = "http://112.184.93.4";
+var myServerIP = "http://175.208.94.97";
 var myServerPort = "80";
 var myServerCamPort = "8084";
 var sensorServerPort = "3000";
 var sensorServerWeightPort = "3232";
-var myServerDomain = "http://112.184.93.4:80";
+var myServerDomain = "http://175.208.94.97";
 
 var cookie_accessToken = "accessToken";
 var cookie_refreshToken = "refreshToken";

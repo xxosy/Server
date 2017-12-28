@@ -6,7 +6,7 @@ function handleDisconnect(){
 		host : 'localhost',
 		port : 3306,
 		user : 'root',
-		password : 'wkdduddnjs1!',
+		password : 'wkdduddnjs1!@',
 		database : 'paisdb'
 		
 	});

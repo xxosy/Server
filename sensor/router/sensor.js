@@ -10,7 +10,7 @@ var response_maker = require('../util/response-rule');
 router.post('/update/serial/:serial',function(req,res){
 	var serial = req.params.serial;
 	var retrievedSignature = req.headers["x-signature"];
-	var access = encryption.hmac(retrievedSignature,usercode);
+	var access = encryption.hmac(retrievedSignature,serial);
 	if(access){
 		var lat = req.body.lat;
 		var lng = req.body.lng;

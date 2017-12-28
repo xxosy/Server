@@ -390,6 +390,7 @@
                         }
                         if (response.status !== "undefined") setCookie(cookie_usercode, response.id, 2);
                         else kakaoLogout();
+                        if(getCookie(cookie_usercode) ==="undefined") kakaoLogout();
                         console.log("dasda2");
                         serialListCheck();
                         var $section = $('#popupSection');
