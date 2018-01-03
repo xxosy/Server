@@ -26,9 +26,9 @@ router.get('/recent/serial/:serial',function(req,res){
 				var id = rows[rows.length-1].id;
 				connection.query('select value.id,value.sensor_id,'+
 					'value.temperature,value.temperature_ds,value.humidity,'+
-					'value.co2-zeropoint.co2,value.light,value.ec-zeropoint.ec,'+
-					'value.ph-zeropoint.ph,value.medium_weight-zeropoint.medium_weight,'+
-					'value.drain_weight-zeropoint.drain_weight,update_date,update_time '+
+					'value.co2-zeropoint.co2 as co2,value.light,value.ec-zeropoint.ec as ec,'+
+					'value.ph-zeropoint.ph as ph ,value.medium_weight-zeropoint.medium_weight as medium_weight,'+
+					'value.drain_weight-zeropoint.drain_weight as drain_weight,update_date,update_time '+
 					'from value,zeropoint '+
 					'where value.sensor_id = \''+id+'\' and '+
 					'value.sensor_id = zeropoint.sensor_id order by id DESC limit 1;',function(err,rows){
