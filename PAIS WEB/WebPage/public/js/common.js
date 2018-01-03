@@ -1387,7 +1387,7 @@ function selectPosition(serial){
         var addwindow = new google.maps.InfoWindow({
             content: "<div style='font-size:1.3em;color:#000;text-align:center;'><p>새 제품 등록</p>" +
                 "제품번호 : <input type='text' id='addSerial' value='" + serial + "' readonly/> <br>" +
-                "제품번호 : <input type='text' id='addTitle' value=''/> <br>" +
+                "명    칭 : <input type='text' id='addTitle' value=''/> <br>" +
                 "위　　도 : <input type='text' id='addLat' value='" + event.latLng.lat() + "' readonly/> <br>" +
                 "경　　도 : <input type='text' id='addLng' value='" + event.latLng.lng() + "' readonly/> <br>" +
                 "<input type='button' id='' onclick='updateDevice()' style='margin-top:1em;' value='등록'/> <br>" +
