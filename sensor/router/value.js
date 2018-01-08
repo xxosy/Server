@@ -74,7 +74,7 @@ router.post('/',function(req,res){
 	var serial = req.body.serial;
 	var medium_weight = req.body.medium_weight;
 	var drain_weight = req.body.drain_weight;
-
+	// console.log(req.body);
 	var num_light = Number(light);
 	if(num_light>25000){
 		num_light = 25000;
@@ -147,9 +147,9 @@ router.get('/list/all/:serial/:date',function(req,res){
 					res.end();
 				}else{
 					var sensor_id = rows[rows.length-1].id;
-					connection.query('select id, temperature,temperature_ds,humidity,co2,light,ec,ph,medium_weight,drain_weight, update_time,sensor_id from value where sensor_id=\''
+					connection.query('select v.id, v.temperature,v.temperature_ds,v.humidity,v.co2-z.co2 as co2,light,v.ec-z.ec as ec,v.ph-z.ph as ph,v.medium_weight-z.medium_weight as medium_weight,v.drain_weight-z.drain_weight as drain_weight, update_time,v.sensor_id from value v, zeropoint z where v.sensor_id=\''
 						+sensor_id+'\' and update_date = \''
-						+update_date+'\' and update_time between \'00:00\' and \'23:59\';',function(err,rows){
+						+update_date+'\' and z.sensor_id = \''+sensor_id+'\';',function(err,rows){
 							if(rows=== null || rows.length === 0 || rows === undefined){
 								var result = response_maker.getResponse(404, null);
 								res.json(result);

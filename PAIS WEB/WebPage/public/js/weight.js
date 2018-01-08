@@ -202,7 +202,7 @@ function setCurrentWeight() {
     }
     var query = getCookie(cookie_recentSensor);
     var signature = createhmac(query);
-    var dataQuery = "scale/weight/recent/serial/" + query;
+    var dataQuery = "value/recent/serial/" + query;
     preSerial = getCookie(cookie_recentSensor);
     setCurrentWeightFirst = false;
     $.ajax({
@@ -528,17 +528,19 @@ function setWeightGraph(date) {
                     // var sec = Number(item.update_time.split(':')[2]);
                     var value = item;
                     console.log(value);
-                    console.log(value.drain_weigth);
+                    
                     var medium_weight = Number(value.medium_weight) / 1000;
-                    var drain_weigth = Number(value.drain_weigth) / 1000;
+                    var drain_weight = Number(value.drain_weight) / 1000;
                     var light = Number(value.light)*2.7;
-                    console.log(drain_weigth);
+                    console.log(medium_weight);
+                    console.log(drain_weight);
+                    console.log(light);
                     datas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), medium_weight];
-                    liquidDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), drain_weigth];
+                    liquidDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), drain_weight];
                     lightDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), light];
 
                     if (index == 0) {
-                        maxliquid = drain_weigth;
+                        maxliquid = drain_weight;
                         preWeight = medium_weight;
                     }
                     if (index != 0) {
@@ -552,24 +554,24 @@ function setWeightGraph(date) {
                                 isRapidIncrease = false;
                             }
                             if(!isRapidIncrease) {
-                                maxliquid = drain_weigth;
+                                maxliquid = drain_weight;
                                 isRapidDecrease = false;
                             }
                         }
 
-                        if(preliquid - drain_weigth > 0.5)   isRapidDecrease = true;
-                        if(drain_weigth - preliquid > 0.5)   isRapidIncrease = true;
+                        if(preliquid - drain_weight > 0.5)   isRapidDecrease = true;
+                        if(drain_weight - preliquid > 0.5)   isRapidIncrease = true;
 
-                        if (preliquid - drain_weigth > 0.16) {
+                        if (preliquid - drain_weight > 0.16) {
                             isRapidDecrease = true;
-                        } else if (isRapidDecrease && drain_weigth - preliquid < 0.16) {  //급감 후 유지 : 비움
-                            maxliquid = drain_weigth;
+                        } else if (isRapidDecrease && drain_weight - preliquid < 0.16) {  //급감 후 유지 : 비움
+                            maxliquid = drain_weight;
                             isRapidDecrease = false;
                         } else isRapidDecrease = false;    // 급감후 급상승 : 무시
 
-                        if (maxliquid < drain_weigth ) {
-                            useValue += drain_weigth - maxliquid;
-                            maxliquid = drain_weigth;
+                        if (maxliquid < drain_weight ) {
+                            useValue += drain_weight - maxliquid;
+                            maxliquid = drain_weight;
                         }
 
                         // 급액 횟수&시간 구하기
@@ -600,7 +602,7 @@ function setWeightGraph(date) {
                     //liquid 값으로 변경해야함 현재 null 이라 사용 x
                     useDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), useValue];
 
-                    preliquid = drain_weigth;
+                    preliquid = drain_weight;
                     preValue = medium_weight;
                     index++;
                 }

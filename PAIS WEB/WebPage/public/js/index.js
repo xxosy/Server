@@ -54,7 +54,13 @@ function setSensorValues() {
                 var ph = data.ph;
                 var temperature_ds = data.temperature_ds;
 
-                $("#currentInfo_label").html("실시간 미기후 정보 (" + update_date + " " + update_time + ")");
+                update_date = new Date(update_date);
+                var dd = update_date.getDate();
+                var MM = update_date.getMonth()+1;
+                var yy = update_date.getFullYear();
+                update_date = yy+'-'+MM+'-'+dd;
+
+                $("#currentInfo_label").html("실시간 미기후 정보 (" + update_date + " " + update_time.split(".")[0] + ")");
                 $("#temperature").html(Number(temperature).toFixed(2) + " ℃");
                 $("#humidity").html(Number(humidity).toFixed(2) + " %");
                 $("#co2").html(Number(co2).toFixed(2) + " ppm");

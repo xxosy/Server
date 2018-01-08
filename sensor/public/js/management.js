@@ -1,14 +1,15 @@
 var sensor_id;
+var current_sensor;
 function setSensorList(){
 	sensor_id = new Array();
 	$.ajax({
 		dataType: "json",
-		url: "http://localhost:3000/sensor/list/all",
+		url: "http://175.208.94.97:3000/sensor/list/all",
 		type: "GET",
 		success: function(response){
 			var contents = "";
 			for(var i = 0;i<response.data.length;i++){
-				contents+="<li id = sensor_"+response.data[i].id+">"+response.data[i].serial+"</li>"
+				contents+="<li id = sensor_"+response.data[i].id+" onclick='clickSensor(\""+response.data[i].id+"\");'>"+response.data[i].serial+"</li>"
 				sensor_id.push(response.data[i].id);
 			}
 			$('#sensors').html(contents);
@@ -27,7 +28,7 @@ function setSensorConnectionState(){
 		var sensor_id_temp = sensor_id;
 		$.ajax({
 			dataType: "json",
-			url: "http://localhost:3000/value/check/sensor/"+sensor_id[i],
+			url: "http://175.208.94.97:3000/value/check/sensor/"+sensor_id[i],
 			type: "GET",
 			success: function(response){
 				var current_date = new Date();
@@ -53,15 +54,105 @@ function setSensorConnectionState(){
 				console.log(time);
 				console.log(date === update_date);
 				console.log(t>time);
-				if(date === response.update_date && t>time){
-					$('#sensor_'+response.sensor_id).html('  alive');
+				console.log(date === update_date && t>time);
+				if(date === update_date && t>time){
+					$('#sensor_'+response.sensor_id).append('  alive');
 				}else{
 					$('#sensor_'+response.sensor_id).append('  dead');
 				}
 			},
 			error: function(response, status, error){
-				console.log("error");
+				console.log(error);
 			}
 		});
 	}
 }
+
+function clickSensor(sensor_id){
+	current_sensor = sensor_id;
+	$.ajax({
+		dataType: "json",
+		url: "http://175.208.94.97:3000/zeropoint/id/"+current_sensor,
+		type: "GET",
+		success: function(response){
+			var zeropoint = response[0];
+			$('#medium_weight_input').val(zeropoint.medium_weight);
+			$('#drain_weight_input').val(zeropoint.drain_weight);
+			$('#ec_input').val(zeropoint.ec);
+			$('#ph_input').val(zeropoint.ph);
+			$('#co2_input').val(zeropoint.co2);
+		},
+		error: function(response, status, error){
+			console.log("error");
+		}
+	});
+}
+
+function clickReadCurrentValue(){
+	$.ajax({
+		dataType: "json",
+		url: "http://175.208.94.97:3000/zeropoint/recent/id/"+current_sensor,
+		type: "GET",
+		success: function(response){
+			if(response.status == 'fail'){
+				alert('해당 센서가 아직 데이터를 수신하지 못했습니다.');
+			}else{
+				var zeropoint_cuttent_value = response.data;
+				$('#medium_weight_text').text(zeropoint_cuttent_value.medium_weight);
+				$('#drain_weight_text').text(zeropoint_cuttent_value.drain_weight);
+				$('#ec_text').text(zeropoint_cuttent_value.ec);
+				$('#ph_text').text(zeropoint_cuttent_value.ph);
+				$('#co2_text').text(zeropoint_cuttent_value.co2);
+			}
+		},
+		error: function(response, status, error){
+			console.log("error");
+		}
+	});
+}
+
+function setZeropoint(){
+	var medium_weight = $('#medium_weight_input').val();
+	var drain_weight = $('#drain_weight_input').val();
+	var ec = $('#ec_input').val();
+	var ph = $('#ph_input').val();
+	var co2 = $('#co2_input').val();
+	$.ajax({
+		dataType: "json",
+		url: "http://175.208.94.97:3000/zeropoint/update/id/"+current_sensor,
+		type: "POST",
+		data:{
+			"medium_weight":medium_weight,
+			"drain_weight":drain_weight,
+			"ec":ec,
+			"ph":ph,
+			"co2":co2
+		},
+		success: function(response){
+			console.log(response);
+		},
+		error: function(response, status, error){
+			console.log("error");
+		}
+	});
+}
+
+function clickInsertSensor(){
+	var serial = $('#serial_input').val();
+	$.ajax({
+		dataType: "json",
+		url: "http://175.208.94.97:3000/sensor/"+serial,
+		type: "POST",
+		success: function(response){
+			console.log(response);
+		},
+		error: function(response, status, error){
+			console.log(error);
+		}
+	});
+}
+
+function getZeropoint(sensor_id){
+
+}
+

@@ -81,14 +81,18 @@ router.get('/list/all',function(req,res){
 
 router.post('/:serial',function(req,res){
 	var serial = req.params.serial;
+	console.log(serial);
 	var connection = database.getConnection();
 	connection.query('select * from sensor where serial = \''+serial+'\';',
 		function(err,rows){
 			if(rows.length == 0){
-				var query = connection.query('insert into sensor (`name`,`serial`) '+
-					'values (\''+serial+'\',\''+serial+'\');');
-				res.send("insert sensor");
-				console.log("insert sensor");
+				connection.query('insert into sensor (`title`,`serial`) '+
+					'values (\''+serial+'\',\''+serial+'\');',function(err,result){
+						connection.query('insert into zeropoint (`sensor_id`) values (\''+result.insertId+'\');',function(err,result){
+							res.send("insert sensor");
+							console.log("insert sensor");
+						});
+					});
 			}else{
 				res.send("this serial is already exist");
 				console.log("this serial is already exist");

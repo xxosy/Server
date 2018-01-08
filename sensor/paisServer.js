@@ -19,6 +19,7 @@ var r_journal = require('./router/journal');
 var r_actuator = require('./router/actuator');
 var r_camera = require('./router/camera');
 var r_usersensor = require('./router/usersensor');
+var r_zeropoint = require('./router/zeropoint');
 //module
 var m_hum2hdvpd = require('./util/hum2hdvpd');
 //web
@@ -57,6 +58,7 @@ app.use('/actuator', r_actuator);
 app.use('/scale', r_scale);
 app.use('/usersensor', r_usersensor);
 app.use('/camera', r_camera);
+app.use('/zeropoint', r_zeropoint);
 app.use('/',index);
 
 var connection = database;
