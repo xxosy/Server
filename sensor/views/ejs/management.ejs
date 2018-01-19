@@ -10,11 +10,11 @@
 	</header>
 	<div class="section">
 		<h2>센서 등록</h2>
-		<ul>
-			<li style="text-align:center;padding-right:40px"><b>신규 등록 시리얼</b></li>
-			<li style="text-align:center;padding-right:40px"><input id="serial_input" type="text" style="text-align:center;"></li>
-			<li style="text-align:center;padding-right:40px"><label style="font-size:8px">등록할 시리얼을 입력하여 주세요.</label></li>
-			<li style="text-align:center;padding-right:40px"><input type="button" style="margin-top:16px" value="등록" onclick="clickInsertSensor()"></li>
+		<ul class ="register-serial">
+			<li><b>신규 등록 시리얼</b></li>
+			<li><input id="serial_input" type="text" style="text-align:center;"></li>
+			<li><label style="font-size:8px">등록할 시리얼을 입력하여 주세요.</label></li>
+			<li><input type="button" style="margin-top:16px" value="등록" onclick="clickInsertSensor()"></li>
 		</ul>
 	</div>
 	<div class="section">
@@ -24,7 +24,9 @@
 		</ul>
 	</div>
 	<div class="section">
-		<h2>영점 설정</h2>
+		<h2 id ="selected-sensor">영점 설정</h2>
+		<div style="text-align: center;margin-bottom:10px;">
+		</div>
 		<div>
 			<label class = "label_zeropoint_tag">요소</label>
 			<label class = "label_zeropoint_tag">영점</label>
@@ -32,35 +34,36 @@
 		</div>
 
 		<div>
-			<b style="float:left;width:80px;margin-left: 25px;">배액저울</b>
+			<b class="zeropoint-label">배액저울</b>
 			<input id ="medium_weight_input" type="text" style="width:80px">
 			<label id = "medium_weight_text" class = "label_current_value"></label>
 		</div>
 		<div>
-			<b style="float:left;width:80px;margin-left: 25px;">배지저울</b>
+			<b class="zeropoint-label">배지저울</b>
 			<input id ="drain_weight_input" type="text" style="width:80px">
 			<label id = "drain_weight_text" class = "label_current_value"></label>
 		</div>
 		<div>
-			<b style="float:left;width:80px;margin-left: 25px;">ec</b>
+			<b class="zeropoint-label">ec</b>
 			<input id ="ec_input" type="text" style="width:80px">
 			<label id = "ec_text" class = "label_current_value"></label>
 		</div>
 		<div>
-			<b style="float:left;width:80px;margin-left: 25px;">ph</b>
+			<b class="zeropoint-label">ph</b>
 			<input id ="ph_input" type="text" style="width:80px">
 			<label id = "ph_text" class = "label_current_value"></label>
 		</div>
 		<div>
-			<b style="float:left;width:80px;margin-left: 25px;">co2</b>
+			<b class="zeropoint-label">co2</b>
 			<input id ="co2_input" type="text" style="width:80px">
 			<label id = "co2_text" class = "label_current_value"></label>
 		</div>
 
 		<input type="button" value = "설정" style = "margin-top:25px;margin-right:25px;float:right;" onclick="setZeropoint()";>
 		<input type="button" value = "현재 값" style = "margin-top:25px;margin-right:25px;float:right;" onclick="clickReadCurrentValue()";>
-
 	</div>
+
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="js/management.js"></script>
 	<script src="js/test.js"></script>

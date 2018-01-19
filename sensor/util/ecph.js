@@ -22,6 +22,7 @@ var calcec = function(temperature, ec){
 var calcph = function(ph){
 	var result = ph;
 	result = 3.5*result;
+	result = result.toFixed(2);
 	result = result+"";
 	return result;
 }

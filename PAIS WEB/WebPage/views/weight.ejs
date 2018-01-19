@@ -1,5 +1,23 @@
-<% layout('layout/layout')%>
-   <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
+<!DOCTYPE html>
+<html>
+<title>온실 모니터링 - 온실현황</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="shortcut icon" href="img/logo.png" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" />
+<script src="//code.jquery.com/jquery-1.12.4.js"></script>
+<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<body>
+    <%include layout/popup.ejs %>
+    <%include layout/nav.ejs %>
+    <%include layout/nav-top.ejs %>
+    <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
 
     <!-- Main content: shift it to the right by 250 pixels when the sidenav is visible -->
     <div class="w3-main" style="margin-left: 220px;margin-top:38px;">
@@ -14,13 +32,7 @@
                     <div id="calendar"> </div>
                 </div>
             </div>
-
-            <div class="w3-container w3-alpha-black w3-margin">
-                <h4 class="w3-text-white w3-border-bottom">설치 위치 정보</h4>
-                <div id="googleMap" style="height:30em;padding-bottom:2em;"></div>
-            </div>
-
-
+            <%include layout/sensor-location.ejs%>
         </div>
 
 
@@ -37,84 +49,84 @@
                             </div>
                         </div>
                         <h5 class="w3-text-white">배지 무게</h4>
-                    </div>
-                    <div style="width:50%;text-align:center;float:left;">
-                        <div style="text-align:center;vertical-align:middle;width:100%;height:13em;background:url('img/dial.png') no-repeat center;background-size:contain;">
-                            <div style="line-height:13em;">
-                                <h1 id="currentLiquid"></h1>
-                            </div>
                         </div>
+                        <div style="width:50%;text-align:center;float:left;">
+                            <div style="text-align:center;vertical-align:middle;width:100%;height:13em;background:url('img/dial.png') no-repeat center;background-size:contain;">
+                                <div style="line-height:13em;">
+                                    <h1 id="currentLiquid"></h1>
+                                </div>
+                            </div>
                             <h5 class="w3-text-white">배액 무게</h4>
-                    </div>
-                </div>
-            </div>
-
-            <div class="w3-container w3-alpha-black w3-margin">
-                <h4 class="w3-text-white w3-border-bottom">외부 날씨 및 예보</h4>
-
-                <div id="weather" style="text-align:center;">
-                    <!-- 현재 날씨 -->
-                    <div class="forecast_current">
-                        <div style="width:100%; margin-bottom:0.5em;">
-                            <div>
-                                <div id="weatherImage_0" style="text-align:center;"> </div>
-                            </div>
-                            <div>
-                                <h4 class="korea" id="temperatureHL_0" style="margin-bottom:0; margin-top:0.5em;"></h4>
-                                <h2 class="korea" id="temperature_0" style="margin-bottom:0;"></h2>
-                                <h4 class="korea" id="wind_0"></h4>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 향후 날씨 -->
-                    <div style="width:50%; float:left;">
-                        <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
-                            <div id="forecastDate_1" class="forecast_date"></div>
-                            <div class="forecast_inner_wrapper">
-                                <div id="weatherImage_1" class="forecast_img"></div>
-                                <div id="temperatureHL_1" class="forecast_temperature"></div>
+                    <div class="w3-container w3-alpha-black w3-margin">
+                        <h4 class="w3-text-white w3-border-bottom">외부 날씨 및 예보</h4>
+
+                        <div id="weather" style="text-align:center;">
+                            <!-- 현재 날씨 -->
+                            <div class="forecast_current">
+                                <div style="width:100%; margin-bottom:0.5em;">
+                                    <div>
+                                        <div id="weatherImage_0" style="text-align:center;"> </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="korea" id="temperatureHL_0" style="margin-bottom:0; margin-top:0.5em;"></h4>
+                                        <h2 class="korea" id="temperature_0" style="margin-bottom:0;"></h2>
+                                        <h4 class="korea" id="wind_0"></h4>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
-                            <div id="forecastDate_2" class="forecast_date"></div>
-                            <div class="forecast_inner_wrapper">
-                                <div id="weatherImage_2" class="forecast_img"></div>
-                                <div id="temperatureHL_2" class="forecast_temperature"></div>
-                            </div>
-                        </div>
-                        <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
-                            <div id="forecastDate_3" class="forecast_date"></div>
-                            <div class="forecast_inner_wrapper">
-                                <div id="weatherImage_3" class="forecast_img"></div>
-                                <div id="temperatureHL_3" class="forecast_temperature"></div>
-                            </div>
-                        </div>
-                        <div class="w3-border-left-dotted forecast_wrapper" style="padding-bottom:0;">
-                            <div id="forecastDate_4" class="forecast_date"></div>
-                            <div class="forecast_inner_wrapper" style="padding-bottom:0.5em;">
-                                <div id="weatherImage_4" class="forecast_img"></div>
-                                <div id="temperatureHL_4" class="forecast_temperature"></div>
+
+                            <!-- 향후 날씨 -->
+                            <div style="width:50%; float:left;">
+                                <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
+                                    <div id="forecastDate_1" class="forecast_date"></div>
+                                    <div class="forecast_inner_wrapper">
+                                        <div id="weatherImage_1" class="forecast_img"></div>
+                                        <div id="temperatureHL_1" class="forecast_temperature"></div>
+                                    </div>
+                                </div>
+                                <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
+                                    <div id="forecastDate_2" class="forecast_date"></div>
+                                    <div class="forecast_inner_wrapper">
+                                        <div id="weatherImage_2" class="forecast_img"></div>
+                                        <div id="temperatureHL_2" class="forecast_temperature"></div>
+                                    </div>
+                                </div>
+                                <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
+                                    <div id="forecastDate_3" class="forecast_date"></div>
+                                    <div class="forecast_inner_wrapper">
+                                        <div id="weatherImage_3" class="forecast_img"></div>
+                                        <div id="temperatureHL_3" class="forecast_temperature"></div>
+                                    </div>
+                                </div>
+                                <div class="w3-border-left-dotted forecast_wrapper" style="padding-bottom:0;">
+                                    <div id="forecastDate_4" class="forecast_date"></div>
+                                    <div class="forecast_inner_wrapper" style="padding-bottom:0.5em;">
+                                        <div id="weatherImage_4" class="forecast_img"></div>
+                                        <div id="temperatureHL_4" class="forecast_temperature"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="w3-container w3-alpha-black w3-margin">
+                    <div class="w3-container w3-alpha-black w3-margin">
 
-                <span onclick="showComponentToggle('currentValuesTable', 'currentValuesTableMinus')" class="w3-hover-text-grey w3-closebtn">
-                  <i id="currentValuesTableMinus" class="fa fa-minus-square-o"></i>
-                </span>
+                        <span onclick="showComponentToggle('currentValuesTable', 'currentValuesTableMinus')" class="w3-hover-text-grey w3-closebtn">
+                          <i id="currentValuesTableMinus" class="fa fa-minus-square-o"></i>
+                      </span>
 
-                <h4 id="currentInfo_label" class="w3-text-white w3-border-bottom" style="margin-bottom: 0px">실시간 배지 정보</h4>
+                      <h4 id="currentInfo_label" class="w3-text-white w3-border-bottom" style="margin-bottom: 0px">실시간 배지 정보</h4>
 
-                <div class="w3-responsive" id="currentValuesTable">
-                    <table class="w3-fixed-table-weight">
-                        <tr class="w3-border-bottom-dotted">
-                            <td class="w3-right-align"><i class="fa fa-tint fa-fw w3-margin-right w3-xlarge" aria-hidden="true"></i></td>
-                            <td class="w3-left-align">총급액횟수</td>
-                            <td id="supply_number"></td>
+                      <div class="w3-responsive" id="currentValuesTable">
+                        <table class="w3-fixed-table-weight">
+                            <tr class="w3-border-bottom-dotted">
+                                <td class="w3-right-align"><i class="fa fa-tint fa-fw w3-margin-right w3-xlarge" aria-hidden="true"></i></td>
+                                <td class="w3-left-align">총급액횟수</td>
+                                <td id="supply_number"></td>
                             <!-- <td class="w3-right-align"></td>
                             <td class="w3-left-align"></td> -->
                         </tr>
@@ -202,38 +214,40 @@
 
     <script>
         $("#downloadStartDate, #downloadEndDate").datepicker({
-              dateFormat: 'yy-mm-dd',
-              prevText: '이전 달',
-              nextText: '다음 달',
-              monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-              monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-              dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-              dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-              dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-              showMonthAfterYear: true,
-              yearSuffix: '년'
-        });
-    </script>
+          dateFormat: 'yy-mm-dd',
+          prevText: '이전 달',
+          nextText: '다음 달',
+          monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+          monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+          dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+          dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+          dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+          showMonthAfterYear: true,
+          yearSuffix: '년'
+      });
+  </script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
-    <script src="js/weight.js"></script>
-    <script src="js/common.js"></script>
-    <script src="js/lib/cookie.js"></script>
-    <script src="js/lib/kalmanFilter.js"></script>
-    <script src="js/lib/jquery.min.js"></script>
-    <script src="js/lib/jquery.simpleWeather.js"></script>
-    <!-- <script src="js/lib/jquery.panzoom.min.js"></script> -->
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
-    <script>
-        var selectedPosition = '35,48.6';
-        $(document).ready(function() {
-            var cookie_token = getCookie(cookie_accessToken);
+  <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
+  <script src="js/weight.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/weather.js"></script>
+
+  <script src="js/lib/cookie.js"></script>
+  <script src="js/lib/kalmanFilter.js"></script>
+  <script src="js/lib/jquery.min.js"></script>
+  <script src="js/lib/jquery.simpleWeather.js"></script>
+  <!-- <script src="js/lib/jquery.panzoom.min.js"></script> -->
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
+  <script>
+    var selectedPosition = '35,48.6';
+    $(document).ready(function() {
+        var cookie_token = getCookie(cookie_accessToken);
             if (cookie_token == "") { //기존에 로그인되어 있을경우
                 $("#loginMask").css("display", "block");
             } else { //로그인 되어 있을때
-                
+
                 // 저장되어 있는 토큰 유효성 검사 후 화면 출력
                 serialListCheck();
                 createMap();
@@ -243,10 +257,10 @@
 
                 //데이터 다운로드 창 밖에 클릭시 사라지게
                 $(document).mouseup(function (e) {
-                   var downloadPopup = $('#downloadMask');
-                   var datePicker = $('#ui-datepicker-div');
+                 var downloadPopup = $('#downloadMask');
+                 var datePicker = $('#ui-datepicker-div');
                    if (downloadPopup.has(e.target).length === 0 && datePicker.has(e.target).length === 0) { downloadPopup.hide()} //container.style.display = 'none';
-                });
+               });
 
                 setHighchartsOption();
                 if(getCookie(cookie_usercode) == "425622077" || getCookie(cookie_usercode) == "400102789" ){
@@ -257,11 +271,13 @@
                     $('#div-actuator').css('visibility','hidden');
                 }
             }
-                
+
 
         });
-        $('#tab-sensor').html("미기후 정보");
-        $('#tab-weight').html("배지 정보 <");
-        $('#tab-journal').html("영농 일지");
-        $('#tab-actuator').html("온실제어");
-    </script>
+    $('#tab-sensor').html("미기후 정보");
+    $('#tab-weight').html("배지 정보 <");
+    $('#tab-journal').html("영농 일지");
+    $('#tab-actuator').html("온실제어");
+</script>
+</body>
+</html>

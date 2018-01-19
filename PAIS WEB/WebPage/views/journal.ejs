@@ -1,6 +1,22 @@
-<% layout('layout/layout')%>
-<div id="mask" onclick="popupClose()"></div>
-<div class="popup borderRadius" id="popup">
+<!DOCTYPE html>
+<html>
+<title>온실 모니터링 - 온실현황</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<link rel="stylesheet" href="css/w3.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="shortcut icon" href="img/logo.png" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" />
+<body>
+    <%include layout/popup.ejs %>
+    <%include layout/nav.ejs %>
+    <%include layout/nav-top.ejs %>
+    <div id="mask" onclick="popupClose()"></div>
+    <div class="popup borderRadius" id="popup">
         <!-- [TBD] 이미지 외부 모든 여백 클릭시 팝업 닫히게 해야함(남는 좌우 DIV부분에 클릭하면 안닫힘)
         현재 반투명 흰색으로 처리 해뒀으니 추후 체크-->
         <section id="popupSection">
@@ -127,6 +143,11 @@
                     <h7 class="w3-text-white" style="font-size:20px;width:100px">기록</h7>
                     <input type="button" value="저 장" style="float:right;color: #6496c8;background: rgba(0,0,0,0);border: solid 2px #6496c8;" onclick="saveJournal()">
                 </div>
+                <div style="font-size:1.2em">
+                    <span id="DailyTemperatureLabel">일 평균 온실 온도</span> : <em id='averageTemp'></em> ℃
+                    <br/>
+                    <span id="DailyHumidityLabel">일 평균 온실 습도</span> : <em id='averageHumi'></em> %
+                </div>
                 <div>
                     <div class="w3-half w3-padding-small" style="text-align:center;">
                         <h5 class="w3-text-white" style="font-size:1.1em;">재배현황</h5>
@@ -144,16 +165,7 @@
                 <div id="weatherGraph" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
             </div>
 
-            <div class="w3-container w3-alpha-black w3-margin">
-                <span onclick="showComponentToggle('dailyVPD_HDPieChart', 'dailyVPD_HDPieChartMinus')" class="w3-hover-text-grey w3-closebtn">
-                    <i id="dailyVPD_HDPieChartMinus" class="fa fa-minus-square-o"></i>
-                </span>
-                <h4 class="w3-text-white w3-border-bottom">일일 VPD&HD 적합성</h4>
-                <div id="dailyVPD_HDPieChart">
-                    <div id="vpdPieChart" style="width:50%; height:auto; float:left"></div>
-                    <div id="hdPieChart" style="width:50%; height:auto; float:left"></div>
-                </div>
-            </div>
+            <%include layout/daily-vpd-hd.ejs%>
 
         </div>
 
@@ -316,23 +328,14 @@
     </div>
 
     <script>
-        $("#downloadStartDate, #downloadEndDate").datepicker({
-          dateFormat: 'yy-mm-dd',
-          prevText: '이전 달',
-          nextText: '다음 달',
-          monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-          monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-          dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-          dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-          dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-          showMonthAfterYear: true,
-          yearSuffix: '년'
-      });
+
   </script>
 
   <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
   <script src="js/journal.js"></script>
   <script src="js/common.js"></script>
+  <script src="js/weather.js"></script>
+
   <script src="js/lib/cookie.js"></script>
   <script src="js/lib/kalmanFilter.js"></script>
   <script src="js/lib/mollier.js"></script>
@@ -345,8 +348,23 @@
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
 
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script>
     $(document).ready(function() {
+                $("#downloadStartDate, #downloadEndDate").datepicker({
+          dateFormat: 'yy-mm-dd',
+          prevText: '이전 달',
+          nextText: '다음 달',
+          monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+          monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+          dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+          dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+          dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+          showMonthAfterYear: true,
+          yearSuffix: '년'
+      });
+
         var cookie_token = getCookie(cookie_accessToken);
             if (cookie_token == "") { //기존에 로그인되어 있을경우
                 $("#loginMask").css("display", "block");
@@ -354,13 +372,13 @@
                 //저장되어 있는 토큰 유효성 검사 후 고고싱
 
                 serialListCheck();
-                var $section = $('#popupSection');
-                $section.find('.panzoom').panzoom({
-                    $zoomIn: $section.find(".zoom-in"),
-                    $zoomOut: $section.find(".zoom-out"),
-                    $zoomRange: $section.find(".zoom-range"),
-                    $reset: $section.find(".reset")
-                });
+                // var $section = $('#popupSection');
+                // $section.find('.panzoom').panzoom({
+                //     $zoomIn: $section.find(".zoom-in"),
+                //     $zoomOut: $section.find(".zoom-out"),
+                //     $zoomRange: $section.find(".zoom-range"),
+                //     $reset: $section.find(".reset")
+                // });
                 var today = '';
 
                 $('#titleDate').html(getFormatingDate(new Date()));
@@ -370,8 +388,8 @@
 
                 //데이터 다운로드 창 밖에 클릭시 사라지게
                 $(document).mouseup(function (e) {
-                 var downloadPopup = $('#downloadMask');
-                 var datePicker = $('#ui-datepicker-div');
+                   var downloadPopup = $('#downloadMask');
+                   var datePicker = $('#ui-datepicker-div');
                    if (downloadPopup.has(e.target).length === 0 && datePicker.has(e.target).length === 0) { downloadPopup.hide()} //container.style.display = 'none';
                });
             }
@@ -383,8 +401,10 @@
                 $('#div-actuator').css('visibility','hidden');
             }
         });
-        $('#tab-sensor').html("미기후 정보");
-        $('#tab-weight').html("배지 정보");
-        $('#tab-journal').html("영농 일지 <");
-        $('#tab-actuator').html("온실제어");
+    $('#tab-sensor').html("미기후 정보");
+    $('#tab-weight').html("배지 정보");
+    $('#tab-journal').html("영농 일지 <");
+    $('#tab-actuator').html("온실제어");
 </script>
+</body>
+</html>

@@ -60,135 +60,7 @@ function setDatas(date) {
 //============================================================================================
 //배지 센서(저울) 지도 생성 (마커랑 common 거랑 비슷하게 해서 다해줘야함)
 
-function createMapWeight() {
-    $('#googleMapWeight').html("");
-
-    var zoom = 13;
-    if (getCookie("zoom") != "") {
-        zoom = Number(getCookie("zoom"));
-    }
-    var latlng = new google.maps.LatLng(35.825, 127.15);
-    var mapOptions = {
-        zoom: zoom,
-        center: latlng,
-        mapTypeId: google.maps.MapTypeId.SATELLITE,
-        streetViewControl: false
-    }
-
-    map = new google.maps.Map(document.getElementById('googleMapWeight'), mapOptions);
-
-    var url = myServerIP + ":" + sensorServerPort + "/usersensor/";
-    var usercode = getCookie(cookie_usercode);
-
-    $.ajax({
-        dataType: "jsonp",
-        url: url + usercode,
-        type: "GET",
-        success: function(response) {
-            for (i = 0; i < response.length; i++) {
-                if (getCookie(cookie_recentWeight) == "") {
-                    if (response[i].serial != "-") {
-                        latlng = new google.maps.LatLng(parseFloat(response[i].lat), parseFloat(response[i].lng));
-                        break;
-                    }
-                } else {
-                    if (response[i].serial == getCookie(cookie_recentWeight)) {
-                        latlng = new google.maps.LatLng(parseFloat(response[i].lat), parseFloat(response[i].lng));
-                    }
-                }
-            }
-            map.setCenter(latlng);
-
-            google.maps.event.addListenerOnce(map, 'idle', function() {
-                //맵 로딩이 완료된 후 실행할 함수 추가
-            });
-
-            map.addListener('zoom_changed', function() {
-                setCookie("zoom", map.getZoom(), 30);
-            });
-
-            var markers = new Array();
-
-            for (var i = 0; i < response.length; i++) {
-                if (response[i].serial != "-") {
-                    latlng = new google.maps.LatLng(parseFloat(response[i].lat), parseFloat(response[i].lng));
-
-                    var serial = response[i].serial;
-                    var title = response[i].name;
-
-                    markers[i] = new google.maps.Marker({
-                        position: latlng,
-                        map: map,
-                        title: title + " [" + serial + "]"
-                    });
-
-                    markerListenerWeight(map, markers[i], title, serial);
-
-                    if (getCookie(cookie_recentWeight) == serial) { //최근에 선택한 센서이면
-
-                        var infowindow = new google.maps.InfoWindow({
-                            content: "<div style='font-size:1.3em;color:#000;'>" +
-                                "명　칭 : <b>" + title + "</b><br/>" +
-                                "시리얼 : <b>" + serial + "</b></div>" +
-                                "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
-                                "<a style='margin-right:5px;' onclick='deleteDevice(\"" + serial + "\");'>삭제</a>" +
-                                "</div>",
-                            maxWidth: 300
-                        });
-
-                        $("#notifySelect").hide();
-                        prev_infowindow = infowindow;
-                        infowindow.open(map, markers[i]);
-
-                        map.setCenter(markers[i].getPosition());
-                        selectedSensor = serial;
-                        selectedWeightPosition = Number(response[i].lat).toFixed(5) + ',' + Number(response[i].lng).toFixed(5);
-                        setDatas();
-                    }
-                }
-            }
-
-            $("#sensorMap").css("height", "100%");
-            $("sensorDiv").css("weight", "70%");
-            $(".gm-style-iw").next("div").hide();
-        },
-        error: function(response, status, error) {
-            console.log("실패 : " + status + ", " + error);
-        }
-    });
-}
-
 var prev_infowindow = false;
-
-function markerListenerWeight(map, marker, title, serial) {
-    google.maps.event.addListener(marker, 'click', function() {
-        setCookie(cookie_recentWeight, serial, 30);
-        //센서 선택 요청 툴팁 지우기
-        //$("#notifySelect").hide();
-
-        var position = marker.position + "";
-        var lat = (position.split('(')[1]).split(',')[0].trim();
-        var lng = (position.split(')')[0]).split(',')[1].trim();
-        position = lat + ',' + lng;
-        selectedWeightPosition = position;
-        setDatas(selectedDate);
-
-        if (prev_infowindow) prev_infowindow.close();
-
-        var infowindow = new google.maps.InfoWindow({
-            content: "<div style='font-size:1.3em;color:#000;'>" +
-                "명　칭 : <b>" + title + "</b><br/>" +
-                "시리얼 : <b>" + serial + "</b></div>" +
-                "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
-                "<a style='margin-right:5px;' onclick='deleteDevice(\"" + serial + "\")'>삭제</a>" +
-                "</div>",
-            maxWidth: 300
-        });
-
-        prev_infowindow = infowindow;
-        infowindow.open(map, marker);
-    });
-}
 
 //============================================================================================
 //현재값 갱신(1초에 한번)
@@ -369,8 +241,9 @@ function changeCalender(destation) {
 //============================================================================================
 //날씨 세팅
 function setWeather() {
+    console.log(selectedPosition);
     $.simpleWeather({
-        location: selectedWeightPosition,
+        location: selectedPosition,
         woeid: '',
         unit: 'c',
         success: function(weather) {
@@ -527,14 +400,11 @@ function setWeightGraph(date) {
                     var min = Number(item.update_time.split(':')[1]);
                     // var sec = Number(item.update_time.split(':')[2]);
                     var value = item;
-                    console.log(value);
                     
                     var medium_weight = Number(value.medium_weight) / 1000;
                     var drain_weight = Number(value.drain_weight) / 1000;
                     var light = Number(value.light)*2.7;
-                    console.log(medium_weight);
-                    console.log(drain_weight);
-                    console.log(light);
+
                     datas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), medium_weight];
                     liquidDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), drain_weight];
                     lightDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), light];

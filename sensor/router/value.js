@@ -118,6 +118,7 @@ router.post('/',function(req,res){
 							res.send('sensor id is not exist')
 						}else{
 							console.log(err.code);
+							console.log(err);
 						}
 					});
 			}

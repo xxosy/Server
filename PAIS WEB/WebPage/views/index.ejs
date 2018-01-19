@@ -1,425 +1,319 @@
-<% layout('layout/layout')%>
+<!DOCTYPE html>
+<html>
+    <title>온실 모니터링 - 온실현황</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="stylesheet" href="css/w3.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="shortcut icon" href="img/logo.png" />
 
-<!-- Overlay effect when opening sidenav on small screens -->
-<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
+    <body>
+    <%include layout/popup.ejs %>
+    <%include layout/nav.ejs %>
+    <%include layout/nav-top.ejs %>
+    <!-- Overlay effect when opening sidenav on small screens -->
+    <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
 
-<!-- Main content: shift it to the right by 250 pixels when the sidenav is visible -->
-<div class="w3-main" style="margin-left: 220px;">
-    <!-- 좌측 라인 -->
+    <!-- Main content: shift it to the right by 250 pixels when the sidenav is visible -->
+    <div class="w3-main" style="margin-left: 220px;">
+        <!-- 좌측 라인 -->
+        <div class="w3-col w3-half" style="margin-top:38px">
+            <!-- 38px -->
+            <%include layout/sensor-location.ejs %>
+            <%include layout/weather.ejs %>
+            <%include layout/daily-vpd-hd.ejs%>
+    </div>
+
+    <!-- 우측 라인 -->
     <div class="w3-col w3-half" style="margin-top:38px">
         <!-- 38px -->
         <div class="w3-container w3-alpha-black w3-margin">
 
-            <span onclick="showComponentToggle('googleMap', 'googleMapMinus')" class="w3-hover-text-grey w3-closebtn">
-                <i id="googleMapMinus" class="fa fa-minus-square-o"></i>
-            </span>
-            <h4 class="w3-text-white w3-border-bottom">설치 위치 정보</h4>
-            <div id="googleMap" style="height:30em;padding-bottom:2em;"></div>
-
-        </div>
-
-        <div class="w3-container w3-alpha-black w3-margin">
-
-            <span onclick="showComponentToggle('weather', 'weatherMinus')" class="w3-hover-text-grey w3-closebtn">
-              <i id="weatherMinus" class="fa fa-minus-square-o"></i>
+            <span onclick="showComponentToggle('cameraView', 'cameraViewMinus')" class="w3-hover-text-grey w3-closebtn">
+              <i id="cameraViewMinus" class="fa fa-minus-square-o"></i>
           </span>
 
-          <h4 class="w3-text-white w3-border-bottom">외부 날씨 및 예보</h4>
-
-          <div id="weather" style="text-align:center;">
-            <!-- 현재 날씨 -->
-            <div class="forecast_current">
-                <div style="width:100%; margin-bottom:0.5em;">
-                    <div>
-                        <div id="weatherImage_0" style="text-align:center;"> </div>
-                    </div>
-                    <div>
-                        <h4 class="korea" id="temperatureHL_0" style="margin-bottom:0; margin-top:0.5em;"></h4>
-                        <h2 class="korea" id="temperature_0" style="margin-bottom:0;"></h2>
-                        <h4 class="korea" id="wind_0"></h4>
-                    </div>
-                </div>
+          <h4 class="w3-text-white w3-border-bottom">실시간 작물 이미지</h4>
+          <div id="cameraView" style="width:100%;">
+            <div class="cameraImg">
+                <!-- 스타일을 클래스로  -->
+                <img style="width:100%;height:auto;" id="image_crop" onclick="popupShow('crop')" src="" alt="" />
             </div>
-
-            <!-- 향후 날씨 -->
-            <div style="width:50%; float:left;">
-                <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
-                    <div id="forecastDate_1" class="forecast_date"></div>
-                    <div class="forecast_inner_wrapper">
-                        <div id="weatherImage_1" class="forecast_img"></div>
-                        <div id="temperatureHL_1" class="forecast_temperature"></div>
-                    </div>
-                </div>
-                <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
-                    <div id="forecastDate_2" class="forecast_date"></div>
-                    <div class="forecast_inner_wrapper">
-                        <div id="weatherImage_2" class="forecast_img"></div>
-                        <div id="temperatureHL_2" class="forecast_temperature"></div>
-                    </div>
-                </div>
-                <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
-                    <div id="forecastDate_3" class="forecast_date"></div>
-                    <div class="forecast_inner_wrapper">
-                        <div id="weatherImage_3" class="forecast_img"></div>
-                        <div id="temperatureHL_3" class="forecast_temperature"></div>
-                    </div>
-                </div>
-                <div class="w3-border-left-dotted forecast_wrapper" style="padding-bottom:0;">
-                    <div id="forecastDate_4" class="forecast_date"></div>
-                    <div class="forecast_inner_wrapper" style="padding-bottom:0.5em;">
-                        <div id="weatherImage_4" class="forecast_img"></div>
-                        <div id="temperatureHL_4" class="forecast_temperature"></div>
-                    </div>
-                </div>
+            <div class="cameraImg">
+                <img style="width:100%;height:auto;" id="image_bug" onclick="popupShow('bug')" src="" alt="" />
             </div>
         </div>
     </div>
 
     <div class="w3-container w3-alpha-black w3-margin">
-        <span onclick="showComponentToggle('dailyVPD_HDPieChart', 'dailyVPD_HDPieChartMinus')" class="w3-hover-text-grey w3-closebtn">
-            <i id="dailyVPD_HDPieChartMinus" class="fa fa-minus-square-o"></i>
+
+        <span onclick="showComponentToggle('currentValuesTable', 'currentValuesTableMinus')" class="w3-hover-text-grey w3-closebtn">
+          <i id="currentValuesTableMinus" class="fa fa-minus-square-o"></i>
         </span>
-        <h4 class="w3-text-white w3-border-bottom">일일 VPD&HD 적합성</h4>
-        <div id="dailyVPD_HDPieChart">
-            <div id="vpdPieChart" style="width:50%; height:auto; float:left"></div>
-            <div id="hdPieChart" style="width:50%; height:auto; float:left"></div>
+
+        <h4 id="currentInfo_label" class="w3-text-white w3-border-bottom" style="margin-bottom: 0px">실시간 미기후 정보</h4>
+
+        <div class="w3-responsive" id="currentValuesTable">
+            <table class="w3-fixed-table">
+                <%var factor = new Array(7);
+                factor[0] = "온도";
+                factor[1] = "습도";
+                factor[2] = "조도";
+                factor[3] = "EC";
+                factor[4] = "PH";
+                factor[5] = "CO2";
+                factor[6] = "지온";
+
+                var factor_en = new Array(7);
+                factor_en[0] = "temperature";
+                factor_en[1] = "humidity";
+                factor_en[2] = "light";
+                factor_en[3] = "ec";
+                factor_en[4] = "ph";
+                factor_en[5] = "co2";
+                factor_en[6] = "ds";
+
+                var icon = new Array(7);
+                icon[0] = "fa fa-thermometer-full fa-fw w3-margin-right w3-xlarge";
+                icon[1] = "fa fa-tint fa-fw w3-margin-right w3-xlarge";
+                icon[2] = "fa fa-sun-o fa-fw w3-margin-right w3-xlarge";
+                icon[3] = "fa fa-bolt fa-fw w3-margin-right w3-xlarge";
+                icon[4] = "fa fa-tachometer fa-fw w3-margin-right w3-xlarge";
+                icon[5] = "fa fa-industry fa-fw w3-margin-right w3-xlarge";
+                icon[6] = "fa fa-thermometer-full fa-fw w3-margin-right w3-xlarge";
+                %>
+                <%for(var i = 0;i<7;i++){%>
+                <tr class="w3-border-bottom-dotted">
+                    <td class="w3-right-align"><i class="<%=icon[i]%>" aria-hidden="true"></i></td>
+                    <td class="w3-left-align"><%=factor[i]%></td>
+                    <td id="<%=factor_en[i]%>"></td>
+                    <td id="<%=factor_en[i]%>_condition_icon" class="w3-right-align"></td>
+                    <td id="<%=factor_en[i]%>_condition_value" class="w3-left-align"></td>
+                </tr>
+                <%}%>
+            </table>
         </div>
     </div>
 
-</div>
-
-<!-- 우측 라인 -->
-<div class="w3-col w3-half" style="margin-top:38px">
-    <!-- 38px -->
     <div class="w3-container w3-alpha-black w3-margin">
+        <span class="w3-closebtn">
+            <i onclick="showComponentToggle('addCurrentValuesTable', 'addCurrentValuesTableMinus')" id="addCurrentValuesTableMinus" class="fa fa-minus-square-o w3-hover-text-grey"></i>
+        </span>
 
-        <span onclick="showComponentToggle('cameraView', 'cameraViewMinus')" class="w3-hover-text-grey w3-closebtn">
-          <i id="cameraViewMinus" class="fa fa-minus-square-o"></i>
-      </span>
+        <h4 class="w3-text-white w3-border-bottom" style="margin-bottom: 0px" id = "right_3">온·습도 제어 기초정보</h4>
 
-      <h4 class="w3-text-white w3-border-bottom">실시간 작물 이미지</h4>
-      <div id="cameraView" style="width:100%;">
-        <div class="cameraImg">
-            <!-- 스타일을 클래스로  -->
-            <img style="width:100%;height:auto;" id="image_crop" onclick="popupShow('crop')" src="" alt="" />
+        <div class="w3-responsive" id="addCurrentValuesTable">
+            <table class="w3-fixed-table">
+                <%var factor = new Array(4);
+                factor[0] = "습구온도";
+                factor[1] = "이슬점";
+                factor[2] = "HD";
+                factor[3] = "VPD";
+
+                var factor_en = new Array(4);
+                factor_en[0] = "wetTemp";
+                factor_en[1] = "dew";
+                factor_en[2] = "HD";
+                factor_en[3] = "VPD";
+
+                var icon = new Array(4);
+                icon[0] = "fa fa-thermometer-full fa-fw w3-margin-right w3-xlarge";
+                icon[1] = "fa fa-tint fa-fw w3-margin-right w3-xlarge";
+                icon[2] = "fa fa-shower fa-fw w3-margin-right w3-xlarge";
+                icon[3] = "fa fa-sort-amount-desc fa-fw w3-margin-right w3-xlarge";
+                %>
+                <%for(var i = 0;i<4;i++){%>
+                <tr class="w3-border-bottom-dotted">
+                    <td class="w3-right-align"><i class="<%=icon[i]%>" aria-hidden="true"></i></td>
+                    <td class="w3-left-align"><%=factor[i]%></td>
+                    <td id="<%=factor_en[i]%>"></td>
+                    <td id="<%=factor_en[i]%>_condition_icon" class="w3-right-align"></td>
+                    <td id="<%=factor_en[i]%>_condition_value" class="w3-left-align"></td>
+                </tr>
+                <%}%>
+            </table>
         </div>
-        <div class="cameraImg">
-            <img style="width:100%;height:auto;" id="image_bug" onclick="popupShow('bug')" src="" alt="" />
-        </div>
     </div>
-</div>
 
-<div class="w3-container w3-alpha-black w3-margin">
+    <div class="w3-container w3-alpha-black w3-margin">
+        <span class="w3-closebtn">
+            <i onclick="showComponentToggle('addHumidityHelper', 'addHumidityHelperMinus')" id="addHumidityHelperMinus" class="fa fa-minus-square-o w3-hover-text-grey"></i>
+        </span>
 
-    <span onclick="showComponentToggle('currentValuesTable', 'currentValuesTableMinus')" class="w3-hover-text-grey w3-closebtn">
-      <i id="currentValuesTableMinus" class="fa fa-minus-square-o"></i>
-    </span>
+        <h4 class="w3-text-white w3-border-bottom" style="margin-bottom: 0px" id = "right_4">습도 제어 도우미</h4>
 
-    <h4 id="currentInfo_label" class="w3-text-white w3-border-bottom" style="margin-bottom: 0px">실시간 미기후 정보</h4>
-
-    <div class="w3-responsive" id="currentValuesTable">
-        <table class="w3-fixed-table">
-            <%var factor = new Array(7);
-            factor[0] = "온도";
-            factor[1] = "습도";
-            factor[2] = "조도";
-            factor[3] = "EC";
-            factor[4] = "PH";
-            factor[5] = "CO2";
-            factor[6] = "지온";
-
-            var factor_en = new Array(7);
-            factor_en[0] = "temperature";
-            factor_en[1] = "humidity";
-            factor_en[2] = "light";
-            factor_en[3] = "ec";
-            factor_en[4] = "ph";
-            factor_en[5] = "co2";
-            factor_en[6] = "ds";
-
-            var icon = new Array(7);
-            icon[0] = "fa fa-thermometer-full fa-fw w3-margin-right w3-xlarge";
-            icon[1] = "fa fa-tint fa-fw w3-margin-right w3-xlarge";
-            icon[2] = "fa fa-sun-o fa-fw w3-margin-right w3-xlarge";
-            icon[3] = "fa fa-bolt fa-fw w3-margin-right w3-xlarge";
-            icon[4] = "fa fa-tachometer fa-fw w3-margin-right w3-xlarge";
-            icon[5] = "fa fa-industry fa-fw w3-margin-right w3-xlarge";
-            icon[6] = "fa fa-thermometer-full fa-fw w3-margin-right w3-xlarge";
-            %>
-            <%for(var i = 0;i<7;i++){%>
-            <tr class="w3-border-bottom-dotted">
-                <td class="w3-right-align"><i class="<%=icon[i]%>" aria-hidden="true"></i></td>
-                <td class="w3-left-align"><%=factor[i]%></td>
-                <td id="<%=factor_en[i]%>"></td>
-                <td id="<%=factor_en[i]%>_condition_icon" class="w3-right-align"></td>
-                <td id="<%=factor_en[i]%>_condition_value" class="w3-left-align"></td>
-            </tr>
-            <%}%>
-        </table>
-    </div>
-</div>
-
-<div class="w3-container w3-alpha-black w3-margin">
-    <span class="w3-closebtn">
-        <i onclick="showComponentToggle('addCurrentValuesTable', 'addCurrentValuesTableMinus')" id="addCurrentValuesTableMinus" class="fa fa-minus-square-o w3-hover-text-grey"></i>
-    </span>
-
-    <h4 class="w3-text-white w3-border-bottom" style="margin-bottom: 0px">온·습도 제어 기초정보</h4>
-
-    <div class="w3-responsive" id="addCurrentValuesTable">
-        <table class="w3-fixed-table">
-            <%var factor = new Array(4);
-            factor[0] = "습구온도";
-            factor[1] = "이슬점";
-            factor[2] = "HD";
-            factor[3] = "VPD";
-
-            var factor_en = new Array(4);
-            factor_en[0] = "wetTemp";
-            factor_en[1] = "dew";
-            factor_en[2] = "HD";
-            factor_en[3] = "VPD";
-
-            var icon = new Array(4);
-            icon[0] = "fa fa-thermometer-full fa-fw w3-margin-right w3-xlarge";
-            icon[1] = "fa fa-tint fa-fw w3-margin-right w3-xlarge";
-            icon[2] = "fa fa-shower fa-fw w3-margin-right w3-xlarge";
-            icon[3] = "fa fa-sort-amount-desc fa-fw w3-margin-right w3-xlarge";
-            %>
-            <%for(var i = 0;i<4;i++){%>
-            <tr class="w3-border-bottom-dotted">
-                <td class="w3-right-align"><i class="<%=icon[i]%>" aria-hidden="true"></i></td>
-                <td class="w3-left-align"><%=factor[i]%></td>
-                <td id="<%=factor_en[i]%>"></td>
-                <td id="<%=factor_en[i]%>_condition_icon" class="w3-right-align"></td>
-                <td id="<%=factor_en[i]%>_condition_value" class="w3-left-align"></td>
-            </tr>
-            <%}%>
-        </table>
-    </div>
-</div>
-
-<div class="w3-container w3-alpha-black w3-margin">
-    <span class="w3-closebtn">
-        <i onclick="showComponentToggle('addHumidityHelper', 'addHumidityHelperMinus')" id="addHumidityHelperMinus" class="fa fa-minus-square-o w3-hover-text-grey"></i>
-    </span>
-
-    <h4 class="w3-text-white w3-border-bottom" style="margin-bottom: 0px">습도 제어 도우미</h4>
-
-    <div class="w3-responsive" id="addHumidityHelper">
-        <div class="w3-half w3-left" style="text-align:center;">
-            <div style="padding-top:20px; padding-bottom:20px">
-                <h4>VPD기반 온실 습도 상태</h4>
+        <div class="w3-responsive" id="addHumidityHelper">
+            <div class="w3-half w3-left" style="text-align:center;">
+                <div style="padding-top:20px; padding-bottom:20px">
+                    <h4 id = "right_4_1">VPD기반 온실 습도 상태</h4>
+                </div>
+                <table style="width:100%;">
+                    <td>
+                        <h1 id="greenhouseCondition">  </h1>
+                        <br>
+                        <h4 id="solution">  </h4>
+                    </td>
+                </table>
             </div>
-            <table style="width:100%;">
-                <td>
-                    <h1 id="greenhouseCondition">  </h1>
-                    <br>
-                    <h4 id="solution">  </h4>
-                </td>
-            </table>
-        </div>
 
-        <div class="w3-half w3-right" style="text-align:center;">
-            <table style="width:100%;">
-                <tr>
-                    <h4 id="VPDHD_temp">온도 : 0%</h4>
-                    <input id="VPDHD_rangeTemp" type="range" min="0" max="100" step="1" style="width:90%;">
-                </tr>
-                <tr>
-                    <h4 id="VPDHD_humi">습도 : 0%</h4>
-                    <input id="VPDHD_rangeHumi" type="range" min="0" max="100" step="1" style="width:90%;">
-                </tr>
+            <div class="w3-half w3-right" style="text-align:center;">
+                <table style="width:100%;">
+                    <tr>
+                        <h4 id="VPDHD_temp">온도 : 0%</h4>
+                        <input id="VPDHD_rangeTemp" type="range" min="0" max="100" step="1" style="width:90%;">
+                    </tr>
+                    <tr>
+                        <h4 id="VPDHD_humi">습도 : 0%</h4>
+                        <input id="VPDHD_rangeHumi" type="range" min="0" max="100" step="1" style="width:90%;">
+                    </tr>
 
-                <tr>
-                    <td>
-                        <h4 id="VPDHD_HD">HD : 0 g/m³</h4>
-                        <h4 style="margin-top:-0.6em;">(권장 3~8 g/m³)</h4>
-                    </td>
-                    <td>
-                        <h4 id="VPDHD_VPD">VPD : 0 kPa</h4>
-                        <h4 style="margin-top:-0.6em;">(권장 0.5~1.2 kPa)</h4>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>
+                            <h4 id="VPDHD_HD">HD : 0 g/m³</h4>
+                            <h4 style="margin-top:-0.6em;" id = "right_4_3">(권장 3~8 g/m³)</h4>
+                        </td>
+                        <td>
+                            <h4 id="VPDHD_VPD">VPD : 0 kPa</h4>
+                            <h4 style="margin-top:-0.6em;" id = "right_4_4">(권장 0.5~1.2 kPa)</h4>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <button onclick="initVPDHD()" class="grayButton" style="font-size:1.1em; margin-top:5%">현재값으로</button>
-                </tr>
-            </table>
+                    <tr>
+                        <button onclick="initVPDHD()" class="grayButton" style="font-size:1.1em; margin-top:5%" id = "right_4_2">현재값으로</button>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 
-</div>
-
-<div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-    <span onclick="showComponentToggle('graphAll', 'graphAllMinus')" class="w3-hover-text-grey w3-closebtn">
-        <i id="graphAllMinus" class="fa fa-minus-square-o"></i>
-    </span>
-    <h4 class="w3-text-white w3-border-bottom">미기후 통합 정보</h4>
-    <div id="graphAll" class="borderRadius"></div>
-</div>
-
-<div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-    <span onclick="showComponentToggle('graphAirHumidity', 'graphAirHumidityMinus')" class="w3-hover-text-grey w3-closebtn">
-        <i id="graphAirHumidityMinus" class="fa fa-minus-square-o"></i>
-    </span>
-    <h4 class="w3-text-white w3-border-bottom">온실 대기 변화 추이</h4>
-    <div id="graphAirHumidity" class="borderRadius"></div>
-</div>
-
-<div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-    <span onclick="showComponentToggle('graphVpdHd', 'graphVpdHdMinus')" class="w3-hover-text-grey w3-closebtn">
-        <i id="graphVpdHdMinus" class="fa fa-minus-square-o"></i>
-    </span>
-    <h4 class="w3-text-white w3-border-bottom">VPD&HD 적합성 변화 추이</h4>
-    <div id="graphVpdHd">
-        <div id="graphVpd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
-        <div id="graphHd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
     </div>
-</div>
 
-<div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-    <span onclick="showComponentToggle('graph', 'graphMinus')" class="w3-hover-text-grey w3-closebtn">
-        <i id="graphMinus" class="fa fa-minus-square-o"></i>
-    </span>
-    <h4 class="w3-text-white w3-border-bottom">미기후 항목별 변화 추이</h4>
-    <div id="graph" class="borderRadius"></div>
-</div>
+    <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
+        <span onclick="showComponentToggle('graphAll', 'graphAllMinus')" class="w3-hover-text-grey w3-closebtn">
+            <i id="graphAllMinus" class="fa fa-minus-square-o"></i>
+        </span>
+        <h4 class="w3-text-white w3-border-bottom" id = "long_1">미기후 통합 정보</h4>
+        <div id="graphAll" class="borderRadius"></div>
+    </div>
+
+    <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
+        <span onclick="showComponentToggle('graphAirHumidity', 'graphAirHumidityMinus')" class="w3-hover-text-grey w3-closebtn">
+            <i id="graphAirHumidityMinus" class="fa fa-minus-square-o"></i>
+        </span>
+        <h4 class="w3-text-white w3-border-bottom" id = "long_2">온실 대기 변화 추이</h4>
+        <div id="graphAirHumidity" class="borderRadius"></div>
+    </div>
+
+    <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
+        <span onclick="showComponentToggle('graphVpdHd', 'graphVpdHdMinus')" class="w3-hover-text-grey w3-closebtn">
+            <i id="graphVpdHdMinus" class="fa fa-minus-square-o"></i>
+        </span>
+        <h4 class="w3-text-white w3-border-bottom" id = "long_3">VPD&HD 적합성 변화 추이</h4>
+        <div id="graphVpdHd">
+            <div id="graphVpd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
+            <div id="graphHd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
+        </div>
+    </div>
+
+    <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
+        <span onclick="showComponentToggle('graph', 'graphMinus')" class="w3-hover-text-grey w3-closebtn">
+            <i id="graphMinus" class="fa fa-minus-square-o"></i>
+        </span>
+        <h4 class="w3-text-white w3-border-bottom" id = "long_5">미기후 항목별 변화 추이</h4>
+        <div id="graph" class="borderRadius"></div>
+    </div>
 
 
-<!-- END MAIN -->
-</div>
+    <!-- END MAIN -->
+    </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
-<script src="js/index.js"></script>
-<script src="js/common.js"></script>
-<script src="js/lib/cookie.js"></script>
-<script src="js/lib/kalmanFilter.js"></script>
-<script src="js/lib/mollier.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
+    <script src="js/index.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/weather.js"></script>
 
-<script src="js/lib/jquery.min.js"></script>
-<script src="js/lib/jquery.simpleWeather.js"></script>
-<script src="js/lib/jquery.panzoom.min.js"></script>
+    <script src="js/lib/cookie.js"></script>
+    <script src="js/lib/kalmanFilter.js"></script>
+    <script src="js/lib/mollier.js"></script>
 
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/highcharts-more.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
-<script>
-    function test() {
-            // /kakaoTokenCheck/:access_token/:refresh_token
-            /*console.log(myServerIP + ":" + myServerPort + "/kakaoTokenCheck/" + getCookie(cookie_accessToken) + "/" + getCookie(cookie_refreshToken));
-            $.ajax({
-                dataType: "jsonp",
-                url: myServerIP + ":" + myServerPort + "/kakaoTokenCheck/" + getCookie(cookie_accessToken) + "/" + getCookie(cookie_refreshToken),
-                type: "GET",
-                success: function(response) {
+    <script src="js/lib/jquery.min.js"></script>
+    <script src="js/lib/jquery.simpleWeather.js"></script>
+    <script src="js/lib/jquery.panzoom.min.js"></script>
 
-                    console.log(response);
-                }
-
-            });*/
-            if (navigator.geolocation == undefined) {
-                alert("위치 정보 기능을 지원하지 않습니다!")
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(success, fail);
-        }
-
-        function success(position) { //성공시
-            log("위치정보 확인 성공!");
-            for (var property in position.coords) { //반복문 돌면서 출력
-                console.log("Key 값:" + property + " 정보:" + position.coords[property]);
-            }
-            var lat = position.coords["latitude"];
-            var lon = position.coords["longitude"];
-        }
-
-        //실패시
-        function fail(err) {
-            switch (err.code) {
-                case err.PERMISSION_DENIED:
-                msg = "사용자 거부";
-                break;
-
-                case err.PERMISSION_UNAVAILABLE:
-                msg = "지리정보를 얻을 수 없음";
-                break;
-
-                case err.TIMEOUT:
-                msg = "시간초과";
-                break;
-
-                case err.UNKNOWN_ERROR:
-                msg = "알 수 없는 오류 발생";
-                break;
-            }
-            console.log(msg);
-        }
-
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
+    <script>
         $(document).ready(function() {
-            /////////////////////////////////////////////
-            //토큰처리
+                /////////////////////////////////////////////
+                //토큰처리
             var access_token = '<%= access_token %>';
             var refresh_token = '<%= refresh_token %>';
             var cookie_token = getCookie(cookie_accessToken);
             if (access_token != "-") {
                 setCookie(cookie_accessToken, access_token, 30);
                 setCookie(cookie_refreshToken, refresh_token, 30);
-                location.replace(myServerDomain);
+                location.replace(myServerIP);
             }
 
             if (cookie_token == "") {
                 $("#loginMask").css("display", "block");
             } else { 
-
                 $.ajax({
                     dataType: "json",
                     url: myServerIP + ":" + myServerPort + "/kakaoTokenCheck/" + getCookie(cookie_accessToken) + "/" + getCookie(cookie_refreshToken),
-                    type: "GET",
-                    success: function(response) {
-                        if (response.status == "refresh") {
-                            console.log(response);
-                            //갱신된 토큰 받아서 쿠키에 갱신
-                            access_token = response.access_token;
-                            setCookie(cookie_accessToken, access_token, 2);
-                            setCookie(cookie_refreshToken, refresh_token, 30);
-                            console.log(getCookie(cookie_accessToken));
-                            console.log(getCookie(cookie_refreshToken));
+                        type: "GET",
+                        success: function(response) {
+                            if (response.status == "refresh") {
+                                console.log(response);
+                                //갱신된 토큰 받아서 쿠키에 갱신
+                                access_token = response.access_token;
+                                setCookie(cookie_accessToken, access_token, 2);
+                                setCookie(cookie_refreshToken, refresh_token, 30);
+                                console.log(getCookie(cookie_accessToken));
+                                console.log(getCookie(cookie_refreshToken));
+                            }
+                            if (response.status !== "undefined") {
+                                setCookie(cookie_usercode, response.id, 2);
+                            }
+                            else kakaoLogout();
+                            if(getCookie(cookie_usercode) ==="undefined") kakaoLogout();
+
+                            serialListCheck();
+                            var $section = $('#popupSection');
+                            $section.find('.panzoom').panzoom({
+                                $zoomIn: $section.find(".zoom-in"),
+                                $zoomOut: $section.find(".zoom-out"),
+                                $zoomRange: $section.find(".zoom-range"),
+                                $reset: $section.find(".reset"),
+                                maxScale: 10,
+                                minScale: 1
+                            });
+                            console.log(getCookie(cookie_usercode));
+                            createMap();
+
+                            $('#titleDate').html(getFormatingDate(new Date()));
+                            //$('#title').html("센서 현황 [" + today + "]");
+
+                            setHighchartsOption();
+                        },
+                        error:function(err){
+                            console.log(err);
                         }
-                        if (response.status !== "undefined") setCookie(cookie_usercode, response.id, 2);
-                        else kakaoLogout();
-                        if(getCookie(cookie_usercode) ==="undefined") kakaoLogout();
-                        console.log("dasda2");
-                        serialListCheck();
-                        var $section = $('#popupSection');
-                        $section.find('.panzoom').panzoom({
-                            $zoomIn: $section.find(".zoom-in"),
-                            $zoomOut: $section.find(".zoom-out"),
-                            $zoomRange: $section.find(".zoom-range"),
-                            $reset: $section.find(".reset"),
-                            maxScale: 10,
-                            minScale: 1
-                        });
-                        console.log(getCookie(cookie_usercode));
-                        createMap();
+                    });
 
-                        $('#titleDate').html(getFormatingDate(new Date()));
-                        //$('#title').html("센서 현황 [" + today + "]");
+                }
+            });
 
-                        setHighchartsOption();
-                    },
-                    error:function(err){
-                        console.log(err);
-                    }
-                });
-
-            }
-        });
-
-        $('#tab-sensor').html("미기후 정보 <");
-        $('#tab-weight').html("배지 정보");
-        $('#tab-journal').html("영농 일지");
-        $('#tab-actuator').html("온실제어");
-    </script>
+            $('#tab-sensor').html("미기후 정보 <");
+            $('#tab-weight').html("배지 정보");
+            $('#tab-journal').html("영농 일지");
+            $('#tab-actuator').html("온실제어");
+        </script>
+        </body>
+</html>

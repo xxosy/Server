@@ -26,3 +26,32 @@ ul {
 	text-align: center;
 	float:left;
 }
+
+.register-serial>li{
+	text-align:center;
+	padding-right:40px;
+}
+
+#test {
+	
+}
+
+#sensors{
+	cursor:pointer;
+	padding-left:0;
+}
+#sensors>li{
+	margin-top:5px;
+	padding-left: 80px
+}
+
+#sensors>li:hover{
+	background-color: #aaaaaa;
+}
+
+.zeropoint-label{
+	float:left;
+	width:80px;
+	margin-left: 25px;
+}
+

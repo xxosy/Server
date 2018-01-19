@@ -1,9 +1,8 @@
-var myServerIP = "http://175.208.94.97";
+var myServerIP = "http://211.230.136.100";
 var myServerPort = "80";
 var myServerCamPort = "8084";
 var sensorServerPort = "3000";
 var sensorServerWeightPort = "3232";
-var myServerDomain = "http://175.208.94.97";
 
 var cookie_accessToken = "accessToken";
 var cookie_refreshToken = "refreshToken";
@@ -72,14 +71,14 @@ function serialListCheck() {
 
 //카카오 로그인 링크
 function kakaoLogin() {
-    location.replace(myServerDomain + "/kakaoLogin");
+    location.replace(myServerIP + "/kakaoLogin");
 }
 
 function kakaoLogout() {
     //카카오 로그아웃 처리
     $.ajax({
         dataType: "json",
-        url: myServerDomain + "/kakaoLogout/" + getCookie(cookie_accessToken),
+        url: myServerIP + "/kakaoLogout/" + getCookie(cookie_accessToken),
         type: "GET",
         success: function(response) {
 
@@ -87,7 +86,7 @@ function kakaoLogout() {
             deleteCookie(cookie_accessToken);
             deleteCookie(cookie_refreshToken);
 
-            location.replace(myServerDomain);
+            location.replace(myServerIP);
         }
     });
 }
@@ -179,6 +178,10 @@ function setGraph(selectedSensor, date) {
                 drawVPDHD(humidityDatas[4], humidityDatas[3]);
                 drawPieChart(humidityDatas[4], humidityDatas[3]);
                 drawGraph(datas);
+
+                if (typeof(journal_page) != 'undefined') {
+                    calculateAverage(datas[0], datas[1]);
+                }
             }
 
         },

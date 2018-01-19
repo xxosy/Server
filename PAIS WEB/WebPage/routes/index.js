@@ -7,7 +7,7 @@ var scheduler = require('node-schedule');
 var mkdir = require('mkdirp');
 var crypto = require('crypto');
 
-var myServerIP = "http://localhost";
+var myServerIP = "http://211.230.136.100";
 var myServerPort = "80";
 var myServerCamPort = "8084";
 var sensorServerPort = "3000";
@@ -88,7 +88,7 @@ router.get('/test', function(req, res, next) {
 
 router.get('/kakaoLogin', function(req, res, next) {
     var kakaoRestKey = "3329ed40c17e3764faea4befffcc69f5";
-    var redirect_uri = "http://175.208.94.97/kakaoOauth";
+    var redirect_uri = myServerIP+"/kakaoOauth";
     var request_url = "https://kauth.kakao.com/oauth/authorize?client_id=" + kakaoRestKey + "&redirect_uri=" + redirect_uri + "&response_type=code";
 
     res.redirect(request_url);
@@ -196,7 +196,7 @@ router.get('/kakaoTokenCheck/:access_token/:refresh_token', function(req, res, n
 router.get('/kakaoOauth', function(req, res, next) {
     var code = req.query.code;
     var kakaoRestKey = "3329ed40c17e3764faea4befffcc69f5";
-    var redirect_uri = "http://175.208.94.97/kakaoOauth";
+    var redirect_uri = myServerIP+"/kakaoOauth";
     var access_token = "";
     var refresh_token = "";
     var usercode = "";
@@ -267,7 +267,7 @@ router.get('/kakaoOauth', function(req, res, next) {
                             var insertuseroptions = {
                                 dataType:'json',
                                 method:'POST',
-                                url:'http://175.208.94.97:3000/user/'+query,
+                                url:myServerIP+':3000/user/'+query,
                                 headers:{"X-Signature":signature},
                                 form:{"name": nickname}
                             };

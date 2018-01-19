@@ -1,0 +1,56 @@
+<div class="w3-container w3-alpha-black w3-margin">
+
+    <span onclick="showComponentToggle('weather', 'weatherMinus')" class="w3-hover-text-grey w3-closebtn">
+        <i id="weatherMinus" class="fa fa-minus-square-o"></i>
+    </span>
+
+    <h4 class="w3-text-white w3-border-bottom">외부 날씨 및 예보</h4>
+
+    <div id="weather" style="text-align:center;">
+        <!-- 현재 날씨 -->
+        <div class="forecast_current">
+            <div style="width:100%; margin-bottom:0.5em;">
+                <div>
+                    <div id="weatherImage_0" style="text-align:center;"> </div>
+                </div>
+                <div>
+                    <h4 class="korea" id="temperatureHL_0" style="margin-bottom:0; margin-top:0.5em;"></h4>
+                    <h2 class="korea" id="temperature_0" style="margin-bottom:0;"></h2>
+                    <h4 class="korea" id="wind_0"></h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- 향후 날씨 -->
+        <div style="width:50%; float:left;">
+            <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
+                <div id="forecastDate_1" class="forecast_date"></div>
+                <div class="forecast_inner_wrapper">
+                    <div id="weatherImage_1" class="forecast_img"></div>
+                    <div id="temperatureHL_1" class="forecast_temperature"></div>
+                </div>
+            </div>
+            <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
+                <div id="forecastDate_2" class="forecast_date"></div>
+                <div class="forecast_inner_wrapper">
+                    <div id="weatherImage_2" class="forecast_img"></div>
+                    <div id="temperatureHL_2" class="forecast_temperature"></div>
+                </div>
+            </div>
+            <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
+                <div id="forecastDate_3" class="forecast_date"></div>
+                <div class="forecast_inner_wrapper">
+                    <div id="weatherImage_3" class="forecast_img"></div>
+                    <div id="temperatureHL_3" class="forecast_temperature"></div>
+                </div>
+            </div>
+            <div class="w3-border-left-dotted forecast_wrapper" style="padding-bottom:0;">
+                <div id="forecastDate_4" class="forecast_date"></div>
+                <div class="forecast_inner_wrapper" style="padding-bottom:0.5em;">
+                    <div id="weatherImage_4" class="forecast_img"></div>
+                    <div id="temperatureHL_4" class="forecast_temperature"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

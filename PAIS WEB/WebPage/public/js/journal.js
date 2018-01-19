@@ -1,5 +1,6 @@
 //===========================================================================
 //각종 데이터 세팅
+var journal_page = true;
 
 var preSelectedYear = -1;
 var preSelectedMonth = -1;
@@ -555,4 +556,29 @@ function downloadUrl(url) {
     iframe.src = url;
     iframe.style.display = "none";
     document.body.appendChild(iframe);
+}
+
+function calculateAverage(temperatureDatas, humidityDatas) {
+    var averageTemp = 0;
+    var averageHumi = 0;
+
+    var arrayLength = temperatureDatas.length;
+    var countTemp = 0;
+    var countHumi = 0;
+    for (var i = 0; i < arrayLength; i++){
+        if (temperatureDatas[i][1] != null) {
+            averageTemp += temperatureDatas[i][1];
+            countTemp++;
+        }
+        if (humidityDatas[i][1] != null) {
+            averageHumi += humidityDatas[i][1];
+            countHumi++;
+        }
+    }
+
+    averageTemp = averageTemp / countTemp;
+    averageHumi = averageHumi / countHumi;
+
+    $('#averageTemp').html(averageTemp.toFixed(2));
+    $('#averageHumi').html(averageHumi.toFixed(2));
 }

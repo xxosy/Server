@@ -35,7 +35,7 @@ router.get('/weight/recent/serial/:serial',function(req,res){
 	if(access){
 		var connection = database.getConnection();
 		connection.query('select id from sensor where serial = \''+serial+'\';',function(err,rows){
-			console.log("asd3");
+
 			if(rows===undefined || rows === null){
 				var result = response_maker.getResponse(405, null);
 				res.json(result);
@@ -47,6 +47,7 @@ router.get('/weight/recent/serial/:serial',function(req,res){
 					res.end();
 				}else{
 					var temp = recentHash.get(serial);
+					
 					if(temp!==undefined){
 						var recent = {
 							"serial_id" : rows[0].id,

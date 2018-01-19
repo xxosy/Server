@@ -1,9 +1,9 @@
-var myServerIP = "http://221.159.48.9";
+var myServerIP = "http://211.230.136.100";
 var myServerPort = "80";
 var myServerCamPort = "8084";
 var sensorServerPort = "3000";
 var sensorServerWeightPort = "3232";
-var myServerDomain = "http://www.ezsmartfarm.com";
+var myServerDomain = "http://211.230.136.100";
 
 var cookie_accessToken = "accessToken";
 var cookie_refreshToken = "refreshToken";
