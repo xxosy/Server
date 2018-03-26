@@ -21,8 +21,23 @@
             </div>
         </div>
     </div>
+    
     <div class="popup borderRadius" style="width: 50%; height: 40%;" id="popup">
         <img id="popupImg" src="img/farm_.jpg" alt="" style="width:100%;hegith:auto;">
+    </div>
+
+    <!-- Video Stream Popup -->
+    <div id="ptzPopup">
+        <img id="camStream" style="width:100%; border:2px solid grey;" src="">
+        <div class="ptz-ctl-box">
+            <div class="ptz-pad-box">
+                <button type="button" class="ptz-goto-home"><span class="glyphicon glyphicon-home"></span></button>
+                <span class="left glyphicon glyphicon-menu-left" onmousedown="ptz_onmousedown(3)" onmouseup="ptz_onmouseup(3)">◀</span>
+                <span class="right glyphicon glyphicon-menu-right" onmousedown="ptz_onmousedown(5)" onmouseup="ptz_onmouseup(5)">▶</span>
+                <span class="up glyphicon glyphicon-menu-up" onmousedown="ptz_onmousedown(0)" onmouseup="ptz_onmouseup(0)">▲</span>
+                <span class="down glyphicon glyphicon-menu-down" onmousedown="ptz_onmousedown(7)" onmouseup="ptz_onmouseup(7)">▼</span>
+            </div>
+        </div>
     </div>
 
     <div style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background-image: url('../img/farm.jpg'); background-size: cover; z-index: -2;"></div>

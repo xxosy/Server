@@ -3,11 +3,13 @@
 <title>정밀 온실 시스템</title>
 <meta charset="UTF-8">
 <meta name = "viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-<link rel="stylesheet" href="css/index.css">
+<link rel="stylesheet" href="../css/index.css">
 <body>
 	<header>
 		<h1>시스템 관리</h1>
 	</header>
+	<div style="clear:both;"></div>
+
 	<div class="section">
 		<h2>센서 등록</h2>
 		<ul class ="register-serial">
@@ -16,12 +18,25 @@
 			<li><label style="font-size:8px">등록할 시리얼을 입력하여 주세요.</label></li>
 			<li><input type="button" style="margin-top:16px" value="등록" onclick="clickInsertSensor()"></li>
 		</ul>
+
+		<h2>센서 삭제</h2>
+		<ul class ="register-serial">
+			<li><b>삭제할 시리얼</b></li>
+			<li><input id="serial_delete" type="text" style="text-align:center;"></li>
+			<li><label style="font-size:8px">삭제할 시리얼을 입력하여 주세요.</label></li>
+			<li><input type="button" style="margin-top:16px" value="삭제" onclick="clickDeleteSensor()"></li>
+		</ul>
 	</div>
 	<div class="section">
 		<h2>센서 연결 상태 확인</h2>
-		<ul id = "sensors">
-			
-		</ul>
+		<input id = "find-sensor" type="text" style="width:150px;margin-left:75px;text-align:center;">
+		<div class="view">
+			<div class="scrollBlind">
+				<ul id = "sensors">
+					
+				</ul>
+			</div>
+		</div>
 	</div>
 	<div class="section">
 		<h2 id ="selected-sensor">영점 설정</h2>
@@ -61,16 +76,30 @@
 
 		<input type="button" value = "설정" style = "margin-top:25px;margin-right:25px;float:right;" onclick="setZeropoint()";>
 		<input type="button" value = "현재 값" style = "margin-top:25px;margin-right:25px;float:right;" onclick="clickReadCurrentValue()";>
+
+		<h2 id ="selected-sensor" style="margin-top:80px">카메라 IP 설정</h2>
+		<div style="text-align: center;margin-bottom:10px;">
+		</div>
+
+		<div>
+			<b class="zeropoint-label">IP</b>
+			<input id ="ip" type="text" style="width:160px">
+		</div>
+	
+		<input type="button" value = "설정" style = "margin-top:25px;margin-right:25px;float:right;" onclick="setIP()";>
 	</div>
 
-
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-	<script src="js/management.js"></script>
-	<script src="js/test.js"></script>
+	<script src="../js/management.js"></script>
+	<script src="../js/test.js"></script>
 	<script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
 	<script>
 		$(document).ready(function(){
 			setSensorList();
+			 $("#find-sensor").keyup(function() {
+				findSensor();
+			});
 		});
 	</script>
 </body>
+</html>

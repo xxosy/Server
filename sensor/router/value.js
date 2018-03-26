@@ -91,7 +91,7 @@ router.post('/',function(req,res){
 
 	var update_date=date.toFormat('YYYY-MM-DD');
 	var update_time=date.toFormat('HH24:MI');
-
+	console.log(serial);
 	// var cipherd_temperature = encryption.fcrypto(temperature);
 
 	connection.query('select id from sensor where serial=\''+serial+'\';',function(err,rows){

@@ -1,4 +1,4 @@
-var myServerIP = "http://211.230.136.100";
+﻿var myServerIP = "http://www.ezsmartfarm.com";
 var myServerPort = "80";
 var myServerCamPort = "8084";
 var sensorServerPort = "3000";
@@ -93,10 +93,10 @@ function kakaoLogout() {
 
 //구글 지도 생성
 //서버 URL 및 포트
-var today;
+var selectedDate_;
 var selectedSensor;
 var selectedPosition;
-
+var roop_graph;
 var map = false;
 var newSensorCount = 0;
 function createhmac(query){
@@ -108,7 +108,8 @@ function createhmac(query){
 //============================================================================================
 //그래프 세팅
 //그래프 들어갈 div 아이디 : graph
-function setGraph(selectedSensor, date) {
+function setGraph() {
+    date = selectedDate_;
     var year = Number(date.split('-')[0]);
     var month = Number(date.split('-')[1]);
     var day = Number(date.split('-')[2]);
@@ -147,10 +148,13 @@ function setGraph(selectedSensor, date) {
                     datas[6][j] = [Date.UTC(year, month - 1, day, hour, min, 0), Number(value.temperature_ds)];            
                 }
 
-                //칼만 사용하면 위에꺼 안하면 아래꺼 사용
+
+
                 for(var k = 0;k<7;k++){
                     if (response.data.length > 0) datas[k] = kalman(datas[k]);
                 }
+
+
                 //if (response.graphItems.length > 0) datas[currentSensorIndex] = datas[currentSensorIndex];
                 var humidityDatas = new Array();
 
@@ -172,6 +176,18 @@ function setGraph(selectedSensor, date) {
                         humidityDatas[4][j] = [datas[0][j][0], getVPD(dryTemp, wetTemp, pressure, humidity)];
                     }
                 }
+                datas[0][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                datas[1][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                datas[2][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                datas[3][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                datas[4][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                datas[5][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                datas[6][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                humidityDatas[0][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                humidityDatas[1][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                humidityDatas[2][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                humidityDatas[3][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
+                humidityDatas[4][j] = [Date.UTC(year, month - 1, day, 23, 59, 0), null];
 
                 drawGraphAll(datas);
                 drawGraphAirHumidity(humidityDatas);
@@ -182,6 +198,7 @@ function setGraph(selectedSensor, date) {
                 if (typeof(journal_page) != 'undefined') {
                     calculateAverage(datas[0], datas[1]);
                 }
+                roop_graph = setTimeout("setGraph()", 60000);
             }
 
         },
@@ -862,14 +879,20 @@ function drawVPDHD(vpdDatas, hdDatas) {
 
 // VPD & HD Pie차트로 그리기
 function drawPieChart(vpdDatas, hdDatas) {
-    var high = 0;
-    var right = 0;
-    var low = 0;
+    //VPD 단계 : 낮음(Level1) ~ 높음(Level5)
+    // ※ level2가 적정수준
+    var level1 = 0,
+        level2 = 0,
+        level3 = 0,
+        level4 = 0,
+        level5 = 0;
 
     for (var i = 0; i < vpdDatas.length; i++) {
-        if(vpdDatas[i][1] > 1.2) high++;
-        else if(vpdDatas[i][1] < 0.5) low++
-        else right++;
+        if(vpdDatas[i][1] < 0.3) level1++;
+        else if(vpdDatas[i][1] >= 0.3 && vpdDatas[i][1] <= 0.5) level2++;
+        else if(vpdDatas[i][1] > 0.5 && vpdDatas[i][1] <= 1.2) level3++;
+        else if(vpdDatas[i][1] > 1.2 && vpdDatas[i][1] <= 1.4) level4++;
+        else if(vpdDatas[i][1] > 1.4) level5++;
     }
 
     Highcharts.chart('vpdPieChart', {
@@ -916,36 +939,50 @@ function drawPieChart(vpdDatas, hdDatas) {
                     //     color: 'white'
                     // }
                 },
-                 showInLegend: true
+                 showInLegend: false
             }
         },
         series: [{
             name: ' ',
             colorByPoint: true,
             data: [{
+                name: '매우 낮음',
+                y: level1,
+                color: '#8ebcff'//6EB5EF
+            }, {
                 name: '낮음',
-                y: low,
-                color: '#86b9ff'
+                y: level2,
+                color: '#60a2ff'//6EEFDC
             }, {
                 name: '적정',
-                y: right,
+                y: level3,
+                sliced: true,
+                selected: true,
                 color: '#006bff'
             }, {
                 name: '높음',
-                y: high,
-                color: '#0044a1'
+                y: level4,
+                color: '#0049b2'//EFE06E
+            }, {
+                name: '매우 높음',
+                y: level5,
+                color: '#002963'//EFB96E
             }]
         }]
     });
 
-    high = 0;
-    right = 0;
-    low = 0;
+    level1 = 0,
+    level2 = 0,
+    level3 = 0,
+    level4 = 0,
+    level5 = 0;
 
     for (var i = 0; i < hdDatas.length; i++) {
-        if(hdDatas[i][1] > 8) high++;
-        else if(hdDatas[i][1] < 3) low++
-        else right++;
+        if(hdDatas[i][1] < 2.14) level1++;
+        else if(hdDatas[i][1] >= 2.14 && hdDatas[i][1] <= 3) level2++;
+        else if(hdDatas[i][1] > 3 && hdDatas[i][1] <= 8) level3++;
+        else if(hdDatas[i][1] > 8 && hdDatas[i][1] <= 10.08) level4++;
+        else if(hdDatas[i][1] > 10.08) level5++;
     }
 
     Highcharts.chart('hdPieChart', {
@@ -992,24 +1029,34 @@ function drawPieChart(vpdDatas, hdDatas) {
                     //     color: 'white'
                     // }
                 },
-                 showInLegend: true
+                 showInLegend: false
             }
         },
         series: [{
             name: ' ',
             colorByPoint: true,
             data: [{
+                name: '매우 낮음',
+                y: level1,
+                color: '#8ebcff'//6EB5EF
+            }, {
                 name: '낮음',
-                y: low,
-                color: '#86b9ff'
+                y: level2,
+                color: '#60a2ff'//6EEFDC
             }, {
                 name: '적정',
-                y: right,
+                y: level3,
+                sliced: true,
+                selected: true,
                 color: '#006bff'
             }, {
                 name: '높음',
-                y: high,
-                color: '#0044a1'
+                y: level4,
+                color: '#0049b2'//EFE06E
+            }, {
+                name: '매우 높음',
+                y: level5,
+                color: '#002963'//EFB96E
             }]
         }]
     });
@@ -1024,7 +1071,7 @@ function createMap() {
     var dd = date.getDate();
     if (mm < 10) mm = '0' + mm;
     if (dd < 10) dd = '0' + dd;
-    today = yyyy + "-" + mm + "-" + dd;
+    selectedDate_ = yyyy + "-" + mm + "-" + dd;
 
     var zoom = 13;
     if (getCookie("zoom") != "") {
@@ -1463,6 +1510,8 @@ function popupClose() {
     $('#mask').fadeOut();
     $('#addDeviceMask').fadeOut();
     $('#serialMask').fadeOut();
+    $('#ptzPopup').fadeOut();
+    $('#journalPopup').fadeOut();
 }
 
 //onclick 겹치지 않게 처리해주는 함수

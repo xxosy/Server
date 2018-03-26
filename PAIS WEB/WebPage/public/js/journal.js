@@ -15,7 +15,7 @@ function setDatas(selectedDate) {
     var selectedYear = Number($('#date').html().split('-')[0]);
     var selectedMonth = Number($('#date').html().split('-')[1]);
 
-    if (selectedDate == null) selectedDate = Number(today.split('-')[2]);
+    if (selectedDate == null) selectedDate = Number(selectedDate_.split('-')[2]);
 
     selectedDay = $('#' + selectedDate);
     var currentDate = $('#date').html() + '-';
@@ -58,7 +58,6 @@ function setDatas(selectedDate) {
     //http://221.159.48.9:3000/export/excel/all/P5224/2017-06-11
     //$("#allDataDown").attr("href", "http://221.159.48.9:3000/export/excel/all/" + selectedSensor + "/" + currentDate);
     refreshJournal();
-
 }
 
 
@@ -310,8 +309,8 @@ function getImageSrc(code) {
 function setJournalCameraImg(date) {
     var noImagePath = "this.src='img/noImage.png'";
     for (var i = 0; i < 12; i++) {
-        $("#cropImg_" + i).html('<img style="width:100%; height:auto;" onclick="popupShow(' + i + ', \'crop\', \'' + date + '\')" onerror="' + noImagePath + '" src="' + getCamImageSrc("crop", date, i * 2) + '">');
-        $("#bugImg_" + i).html('<img style="width:100%; height:auto;" onclick="popupShow(' + i + ', \'bug\', \'' + date + '\')" onerror="' + noImagePath + '" src="' + getCamImageSrc("bug", date, i * 2) + '">');
+        $("#cam01_" + i).html('<img style="width:100%; height:auto;" onclick="popupShow(' + i + ', \'cam01\', \'' + date + '\')" onerror="' + noImagePath + '" src="' + getCamImageSrc("cam01", date, i * 2) + '">');
+        $("#cam02_" + i).html('<img style="width:100%; height:auto;" onclick="popupShow(' + i + ', \'cam02\', \'' + date + '\')" onerror="' + noImagePath + '" src="' + getCamImageSrc("cam02", date, i * 2) + '">');
     }
 }
 
@@ -326,7 +325,8 @@ function popupShow(num, type, date) {
     var noImagePath = "this.src='img/noImage.png'";
     selectedCamImgNum = num;
     selectedCamType = type;
-    $('#popupImg').attr("src", getCamImageSrc(type, date, num * 2));
+    $('#journalPopupImg').css("width", '80%');
+    $('#journalPopupImg').attr("src", getCamImageSrc(type, date, num * 2));
 
     for (var i = 0; i < 12; i++) {
         $("#popupBottomDiv_" + i).html('<img id="popupBottomImg' + i + '" style="width:100%; height:4em;" onerror="' + noImagePath + '" src="' + getCamImageSrc(type, date, i * 2) + '" alt=""></div>');
@@ -335,7 +335,7 @@ function popupShow(num, type, date) {
 
     $("#popupBottomText_" + num).addClass('selectedImgBorder');
 
-    $('#popup').fadeIn();
+    $('#journalPopup').fadeIn();
     $('#mask').fadeTo("slow", 0.8);
 }
 
@@ -363,7 +363,8 @@ function clickPreCamImg() {
 }
 
 function changeCamImg(imgNum) {
-    $('#popupImg').attr("src", getCamImageSrc(selectedCamType, selectedDate_, imgNum * 2));
+    $('#journalPopupImg').css("width", '80%');
+    $('#journalPopupImg').attr("src", getCamImageSrc(selectedCamType, selectedDate_, imgNum * 2));
 
     selectedImgHilight(imgNum);
     selectedCamImgNum = imgNum;
@@ -389,21 +390,25 @@ function selectedImgHilight(currentSeletedImgNum) {
 }
 
 //해당하는 카메라 이미지 주소 리턴
-//type : crop, bug 두타입으로 나뉨
+//type : cam01, cam02 두타입으로 나뉨
 //date : 언제 카메라 영상인지
 //time : 몇시 카메라 영상인지
-var cropCamIP;
-var cropCamPORT;
-var bugCamIP;
-var bugCamPORT;
+var cam01_IP;
+var cam01_Port;
+var cam02_IP;
+var cam02_Port;
 
 function setCamURL() {
-    cropCamIP = '';
-    cropCamPORT='';
-    bugCamIP = '';
-    bugCamPORT = '';
+    cam01_IP = '';
+    cam01_Port='';
+    cam02_IP = '';
+    cam02_Port = '';
     var query = selectedSensor;
     var signature = createhmac(query);
+
+    // 영농일지 이미지에 noImage를 띄우기 위함
+    setJournalCameraImg(selectedDate_);
+
     $.ajax({
         url: myServerIP + ":" + sensorServerPort + "/camera/list/sensor/" + selectedSensor,
         type: "GET",
@@ -412,19 +417,20 @@ function setCamURL() {
         success: function(response) {
             if(response.status !== 'fail'){
                 if (response.data[0].url != null && response.data[0].url != "") {
-                    cropCamIP = response.data[0].url.split(":")[1].split("//")[1];
-                    cropCamPORT = response.data[0].url.split(":")[2];
+                    cam01_IP = response.data[0].url.split(":")[1].split("//")[1];
+                    cam01_Port = response.data[0].url.split(":")[2];
                 }
 
                 if (response.data[1].url != null && response.data[1].url != "") {
-                    cropCamIP = response.data[1].url.split(":")[1].split("//")[1];
-                    cropCamPORT = response.data[1].url.split(":")[2];
+                    cam02_IP = response.data[1].url.split(":")[1].split("//")[1];
+                    cam02_Port = response.data[1].url.split(":")[2];
                 }
 
                 setJournalCameraImg(selectedDate_);
             }
         },
-        error: function(response, status, error) {}
+        error: function(response, status, error) {
+        }
     });
 }
 
@@ -432,8 +438,8 @@ function getCamImageSrc(type, date, time) {
 
     var imgRootPath = "../img/camera";
     var folderDir = imgRootPath + "/" + date + "/";
-    if (type == "crop") folderDir += cropCamIP + "_" + cropCamPORT + "/";
-    else if (type == "bug") folderDir += bugCamIP + "_" + bugCamPORT + "/";
+    if (type == "cam01") folderDir += cam01_IP + "_" + cam01_Port + "/";
+    else if (type == "cam02") folderDir += cam02_IP + "_" + cam02_Port + "/";
     if (time < 10) time = '0' + time;
     return folderDir + time + '.png';
 }
@@ -521,6 +527,7 @@ function saveJournal(){
         },
         error: function(response, status, error) {}
     });
+    uploadImage();
 }
 
 function refreshJournal(){
@@ -539,9 +546,13 @@ function refreshJournal(){
             if(response.status !== 'fail'){
                 $("#significant").val(response.data[0].significant);
                 $("#condition").val(response.data[0].condition);
+                $('#image_journal').attr("src", "");
+                if(response.data[0].image === 1)
+                    refreshJournalImage();
             }else{
                 $("#significant").val('');
                 $("#condition").val('');
+                $('#image_journal').attr("src", "");
             }
         },
         error: function(response, status, error) {}
@@ -581,4 +592,46 @@ function calculateAverage(temperatureDatas, humidityDatas) {
 
     $('#averageTemp').html(averageTemp.toFixed(2));
     $('#averageHumi').html(averageHumi.toFixed(2));
+}
+
+function uploadImage(){
+    event.preventDefault();
+    var form = $('#fileUploadForm')[0];
+    var data = new FormData(form);    
+    
+     $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url:  myServerIP + ":" + sensorServerPort + "/journal/image/"+selectedSensor+"/"+selectedDate_,
+            data: data,
+            processData: false,
+            contentType: false,
+            cache: false,
+            timeout: 600000,
+            success: function (data) {
+                refreshJournalImage();
+            },
+            error: function (e) {
+
+            }
+        });
+}
+
+function refreshJournalImage() {
+    var imgRootPath = "./uploads";
+    $('#image_journal').attr("src", imgRootPath + "/"+selectedDate_+"-"+selectedSensor +".png");
+}
+
+function deleteImage(){
+     $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            url:  myServerIP + ":" + sensorServerPort + "/journal/delete/image/"+selectedSensor+"/"+selectedDate_,
+            success: function (data) {
+                $('#image_journal').attr("src", "");
+            },
+            error: function (e) {
+
+            }
+        });
 }

@@ -1,3 +1,5 @@
+process.binding('http_parser').HTTPParser = require('http-parser-js').HTTPParser;
+
 var http = require('http');
 var express = require('express');
 var moment = require('moment');
@@ -38,7 +40,7 @@ app.get('/check', function(req, res) {
     });
 });
 
-var imgRootPath = "D:/PAIS WEB/WebPage/public/img/camera";
+var imgRootPath = "C:/SSL/PAIS WEB/WebPage/public/img/camera";
 
 app.get('/saveTest', function(req, res) {
     consoleLog("all cams image save start");
@@ -51,18 +53,21 @@ app.get('/saveTest', function(req, res) {
             cam.getSnapshotUri(function(err, img) {
                 if (!err) {
                     if (img !== undefined && img != null) {
-                        var date = new Date(),
-                            folderName = imgRootPath + "/" + moment().format('YYYY-MM-DD') + "/" + this.hostname + "_" + this.port,
-                            fileName = moment().format('HH') + ".png";
-
                         var uri = img.uri;
                         var tmp = uri.split("/");
-                        tmp[2] = this.hostname + ":" + this.port;
+                        var port = tmp[2].split(":")[1];
+                        tmp[2] = this.hostname + ":" + port;
+
+                        var date = new Date(),
+                            folderName = imgRootPath + "/" + moment().format('YYYY-MM-DD') + "/" + this.hostname + "_" + port,
+                            fileName = moment().format('HH') + ".png";
 
                         var imgUri = "";
                         for (var j = 0; j < tmp.length; j++) {
                             imgUri = imgUri + tmp[j] + "/";
                         }
+                        consoleLog(imgUri);
+
                         consoleLog(this.hostname + " download start====");
                         download(this.username, this.password, imgUri, folderName, fileName, function() {
                             completeCamCount++;
@@ -113,7 +118,7 @@ app.get('/imgSave/:ip/:port', function(req, res) {
                 if (!err) {
                     if (img !== undefined && img != null) {
                         var date = new Date(),
-                            fileName = this.hostname + "." + this.port + ".png";
+                            fileName = this.hostname + "." + port + ".png";
 
                         var uri = img.uri;
                         var tmp = uri.split("/");
@@ -169,13 +174,14 @@ var j = scheduler.scheduleJob('0 * * * *', function() {
                 cam.getSnapshotUri(function(err, img) {
                     if (!err) {
                         if (img !== undefined && img != null) {
-                            var date = new Date(),
-                                folderName = imgRootPath + "/" + moment().format('YYYY-MM-DD') + "/" + this.hostname + "_" + this.port,
-                                fileName = moment().format('HH') + ".png";
-
                             var uri = img.uri;
                             var tmp = uri.split("/");
-                            tmp[2] = this.hostname + ":" + this.port;
+                            var port = tmp[2].split(":")[1]
+                            tmp[2] = this.hostname + ":" + port;
+
+                            var date = new Date(),
+                                folderName = imgRootPath + "/" + moment().format('YYYY-MM-DD') + "/" + this.hostname + "_" + port,
+                                fileName = moment().format('HH') + ".png";
 
                             var imgUri = "";
                             for (var j = 0; j < tmp.length; j++) {
@@ -209,9 +215,10 @@ var j = scheduler.scheduleJob('0 * * * *', function() {
 });
 
 //ī�޶� ���� ��ü
-function CamInfo(ip, port, userName, password) {
+function CamInfo(ip, port, onvifPort, userName, password) {
     this.ip = ip;
     this.port = port;
+    this.onvifPort = onvifPort;
     this.userName = userName;
     this.password = password;
     this.isConnect = false;
@@ -220,13 +227,15 @@ function CamInfo(ip, port, userName, password) {
 
 //ī�޶� ���� ���� ���� (��ġ�ϴ� ī�޶� ���� �Է�) [������]
 var userName = 'admin';
-var password = 'admin1113';
+var password = '0632551113';
 var camInfo_list = new Array();
 
 //TBD 카메라 리스트 가지고 와야함
-camInfo_list[0] = new CamInfo('59.2.231.81', 80, userName, password);
-camInfo_list[1] = new CamInfo('59.2.231.81', 8001, userName, password);
-camInfo_list[2] = new CamInfo('210.111.218.44', 8000, 'admin1', password);
+camInfo_list[0] = new CamInfo('210.117.128.253', 3333, 3335, userName, password);
+camInfo_list[1] = new CamInfo('210.117.128.253', 3334, 3336, userName, password);
+//camInfo_list[0] = new CamInfo('59.2.231.81', 80, userName, password);
+//camInfo_list[1] = new CamInfo('59.2.231.81', 8001, userName, password);
+//camInfo_list[2] = new CamInfo('210.111.218.44', 8000, 'admin1', password);
 //camInfo_list[1] = new CamInfo('210.117.128.201', 80, userName, password);
 
 //var cam_hashMap = new HashMap();  //키 : URL, 값 : 위에 만든 클래스
@@ -240,14 +249,14 @@ for (i = 0; i < camInfo_list.length; i++) {
         hostname: camInfo_list[i].ip,
         username: camInfo_list[i].userName,
         password: camInfo_list[i].password,
-        port: camInfo_list[i].port
+        port: camInfo_list[i].onvifPort
     }, function(err) { //ī�޶� ��ü ���� �Ϸ� �ݹ��Լ� (���� �߻� ���� Ȯ�� ����)
         if (err) {
             consoleLog(err);
             return;
         }
         for (j = 0; j < camInfo_list.length; j++) {
-            if (camInfo_list[j].ip == this.hostname && camInfo_list[j].port == this.port) {
+            if (camInfo_list[j].ip == this.hostname && camInfo_list[j].onvifPort == this.port) {
                 camInfo_list[j].cam = this;
                 camInfo_list[j].isConnect = true;
                 break;

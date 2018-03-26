@@ -1,7 +1,9 @@
 //============================================================================================
 //각종 데이터 세팅
+var roop;
 function setDatas() {
-
+    clearTimeout(roop);
+    clearTimeout(roop_graph);
     //카메라
     refreshCameraImage();
 
@@ -12,7 +14,7 @@ function setDatas() {
     setWeather();
 
     //그래프
-    setGraph(selectedSensor, today);
+    setGraph();
 
     //VPDHD 이벤트 등록
     changeRangeValue();
@@ -131,7 +133,7 @@ function setSensorValues() {
 
                 setVPDHD(dryTemp, humidity);
 
-                setTimeout("setSensorValues()", 60000);
+                roop = setTimeout("setSensorValues()", 60000);
             }
         },
         error: function(response, status, error) {
@@ -199,12 +201,28 @@ function initVPDHD() {
 }
 
 // 팝업 , 불투명 배경 띄우기
-// type : 작물카메라, 해충카메라 구분, 추가 : VPDHD 추가추가
+// type : 카메라01, 카메라02 구분, 추가 : VPDHD 추가추가
 function popupShow(type) {
-    if (type == "crop") $('#popupImg').attr("src", "../img/camera/" + cropIP + "." + cropPORT + ".png");
-    else if (type == "bug") $('#popupImg').attr("src", "../img/camera/" + bugIP + "." + bugPORT + ".png");
+    var camSrc;
+    if (type == "cam01") {
+        camSrc = $('#image_cam01').attr('src');
+        $('#camStream').attr("src", camSrc);
+        $('.ptz-pad-box').css("display", 'none');
+    }
+    else if (type == "cam02"){
+        camSrc = $('#image_cam02').attr('src');
+        $('#camStream').attr("src", camSrc);
+        $('.ptz-pad-box').css("display", 'block');
+    }
 
-    $('#popup').fadeIn();
+    if (camSrc == '../img/loading.gif') {
+        $('#ptzPopup').css("width", '40%');
+        $('.ptz-pad-box').css("display", 'none');
+    } else {
+        $('#ptzPopup').css("width", '');
+    }
+
+    $('#ptzPopup').fadeIn();
     $('#mask').fadeTo("slow", 0.8);
 }
 
@@ -212,21 +230,21 @@ function popupShow(type) {
 
 //카메라 이미지 리프레쉬
 var isFirst = true;
-var cropIP = "";
-var cropPORT = "";
-var bugIP = "";
-var bugPORT = "";
+var cam01_IP = "";
+var cam01_Port = "";
+var cam02_IP = "";
+var cam02_Port = "";
 
 function refreshCameraImage() {
     if (isFirst) {
-        $('#image_crop').attr("src", "../img/loading.gif");
-        $('#image_bug').attr("src", "../img/loading.gif");
+        $('#image_cam01').attr("src", "../img/loading.gif");
+        $('#image_cam02').attr("src", "../img/loading.gif");
         $('#popupImg').attr("src", "../img/loading.gif");
         isFirst = false;
     }
 
     $.ajax({
-        url: myServerIP + ":" + sensorServerPort + "/sensor/" + selectedSensor,
+        url: myServerIP + ":" + sensorServerPort + "camera/list/sensor/" + selectedSensor,
         type: "GET",
         dataType: "jsonp",
         success: function(response) {
@@ -235,15 +253,15 @@ function refreshCameraImage() {
 
             if (response.url != null) {
 
-                cropIP = response.url.split(":")[1].split("//")[1];
-                cropPORT = response.url.split(":")[2];
+                cam01_IP = response.data[0].url.split(":")[1].split("//")[1];
+                cam01_Port = response.data[0].url.split(":")[2];
 
                 $.ajax({
-                    url: myServerIP + ":" + myServerCamPort + "/imgSave/" + cropIP + "/" + cropPORT,
+                    url: myServerIP + ":" + myServerCamPort + "/imgSave/" + cam01_IP + "/" + cam01_Port,
                     type: "GET",
                     dataType: "jsonp",
                     success: function(response) {
-                        $('#image_crop').attr("src", imgRootPath + "/" + cropIP + "." + cropPORT + ".png");
+                        $('#image_cam01').attr("src", 'http://' + cam01_IP + ':' + cam01_Port + '/videostream.cgi?user=admin&pwd=0632551113' );
                     },
                     error: function(response, status, error) {
                         console.log("crop image loading failure : " + status + ", " + error);
@@ -253,15 +271,15 @@ function refreshCameraImage() {
 
 
             if (response.mosquito_url != null) {
-                bugIP = response.mosquito_url.split(":")[1].split("//")[1];
-                bugPORT = response.mosquito_url.split(":")[2];
+                cam02_IP = response.data[1].url.split(":")[1].split("//")[1];
+                cam02_Port = response.data[1].url.split(":")[2];
 
                 $.ajax({
-                    url: myServerIP + ":" + myServerCamPort + "/imgSave/" + bugIP + "/" + bugPORT, //[TBD] 추후 아이피 포트 수정
+                    url: myServerIP + ":" + myServerCamPort + "/imgSave/" + cam02_IP + "/" + cam02_Port, //[TBD] 추후 아이피 포트 수정
                     type: "GET",
                     dataType: "jsonp",
                     success: function(response) {
-                        $('#image_bug').attr("src", imgRootPath + "/" + bugIP + "." + bugPORT + ".png");
+                        $('#image_cam02').attr("src", 'http://' + cam02_IP + ':' + cam02_Port + '/videostream.cgi?user=admin&pwd=0632551113' );
                     },
                     error: function(response, status, error) {
                         console.log("bug image loading failure : " + status + ", " + error);

@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
     <title>온실 모니터링 - 온실현황</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
     <link rel="stylesheet" href="css/w3.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/PTZ_css.css">
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -41,10 +42,10 @@
           <div id="cameraView" style="width:100%;">
             <div class="cameraImg">
                 <!-- 스타일을 클래스로  -->
-                <img style="width:100%;height:auto;" id="image_crop" onclick="popupShow('crop')" src="" alt="" />
+                <img style="width:100%;height:auto;" id="image_cam01" onclick="popupShow('cam01')" src="" alt="" />
             </div>
             <div class="cameraImg">
-                <img style="width:100%;height:auto;" id="image_bug" onclick="popupShow('bug')" src="" alt="" />
+                <img style="width:100%;height:auto;" id="image_cam02" onclick="popupShow('cam02')" src="" alt="" />
             </div>
         </div>
     </div>
@@ -191,6 +192,17 @@
     </div>
 
     </div>
+    
+    <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
+        <span onclick="showComponentToggle('graphVpdHd', 'graphVpdHdMinus')" class="w3-hover-text-grey w3-closebtn">
+            <i id="graphVpdHdMinus" class="fa fa-minus-square-o"></i>
+        </span>
+        <h4 class="w3-text-white w3-border-bottom" id = "long_3">VPD&HD 적합성 변화 추이</h4>
+        <div id="graphVpdHd">
+            <div id="graphVpd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
+            <div id="graphHd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
+        </div>
+    </div>
 
     <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
         <span onclick="showComponentToggle('graphAll', 'graphAllMinus')" class="w3-hover-text-grey w3-closebtn">
@@ -208,16 +220,6 @@
         <div id="graphAirHumidity" class="borderRadius"></div>
     </div>
 
-    <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-        <span onclick="showComponentToggle('graphVpdHd', 'graphVpdHdMinus')" class="w3-hover-text-grey w3-closebtn">
-            <i id="graphVpdHdMinus" class="fa fa-minus-square-o"></i>
-        </span>
-        <h4 class="w3-text-white w3-border-bottom" id = "long_3">VPD&HD 적합성 변화 추이</h4>
-        <div id="graphVpdHd">
-            <div id="graphVpd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
-            <div id="graphHd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
-        </div>
-    </div>
 
     <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
         <span onclick="showComponentToggle('graph', 'graphMinus')" class="w3-hover-text-grey w3-closebtn">
@@ -235,6 +237,7 @@
     <script src="js/index.js"></script>
     <script src="js/common.js"></script>
     <script src="js/weather.js"></script>
+    <script src="js/vstarcamPTZ.js"></script>
 
     <script src="js/lib/cookie.js"></script>
     <script src="js/lib/kalmanFilter.js"></script>
@@ -254,6 +257,7 @@
                 //토큰처리
             var access_token = '<%= access_token %>';
             var refresh_token = '<%= refresh_token %>';
+            console.log(access_token);
             var cookie_token = getCookie(cookie_accessToken);
             if (access_token != "-") {
                 setCookie(cookie_accessToken, access_token, 30);
@@ -274,26 +278,25 @@
                                 //갱신된 토큰 받아서 쿠키에 갱신
                                 access_token = response.access_token;
                                 setCookie(cookie_accessToken, access_token, 2);
-                                setCookie(cookie_refreshToken, refresh_token, 30);
                                 console.log(getCookie(cookie_accessToken));
                                 console.log(getCookie(cookie_refreshToken));
                             }
-                            if (response.status !== "undefined") {
+                            if (response.status=="ok") {
                                 setCookie(cookie_usercode, response.id, 2);
                             }
                             else kakaoLogout();
-                            if(getCookie(cookie_usercode) ==="undefined") kakaoLogout();
+                            if(!getCookie(cookie_usercode)) kakaoLogout();
 
                             serialListCheck();
-                            var $section = $('#popupSection');
-                            $section.find('.panzoom').panzoom({
-                                $zoomIn: $section.find(".zoom-in"),
-                                $zoomOut: $section.find(".zoom-out"),
-                                $zoomRange: $section.find(".zoom-range"),
-                                $reset: $section.find(".reset"),
-                                maxScale: 10,
-                                minScale: 1
-                            });
+                            // var $section = $('#popupSection');
+                            // $section.find('.panzoom').panzoom({
+                            //     $zoomIn: $section.find(".zoom-in"),
+                            //     $zoomOut: $section.find(".zoom-out"),
+                            //     $zoomRange: $section.find(".zoom-range"),
+                            //     $reset: $section.find(".reset"),
+                            //     maxScale: 10,
+                            //     minScale: 1
+                            // });
                             console.log(getCookie(cookie_usercode));
                             createMap();
 

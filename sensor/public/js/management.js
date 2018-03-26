@@ -1,6 +1,7 @@
 var server_address = 'http://211.230.136.100:3000'
 var sensor_id;
 var current_sensor;
+var array_sensor = new Array();
 function setSensorList(){
 	sensor_id = new Array();
 	$.ajax({
@@ -10,7 +11,8 @@ function setSensorList(){
 		success: function(response){
 			var contents = "";
 			for(var i = 0;i<response.data.length;i++){
-				contents+="<li id = sensor_"+response.data[i].id+" onclick='clickSensor(\""+response.data[i].id+"\",\""+response.data[i].serial+"\");'>"+response.data[i].serial+"</li>"
+				array_sensor[i] = response.data[i];
+				contents+="<li id = sensor_"+response.data[i].id+" onclick='clickSensor(\""+response.data[i].id+"\",\""+response.data[i].serial+"\");'>"+response.data[i].serial+"   "+response.data[i].title+"</li>"
 				sensor_id.push(response.data[i].id);
 			}
 			$('#sensors').html(contents);
@@ -47,15 +49,9 @@ function setSensorConnectionState(){
 				MM = update_date.getMonth()+1;
 				yy = update_date.getFullYear();
 				update_date = yy+'-'+MM+'-'+dd;
-				console.log(date);
 				var update_time = response.update_time;
 				var sp = update_time.split(':');
 				var t = (sp[1]*1)+sp[0]*60;
-				console.log(t);
-				console.log(time);
-				console.log(date === update_date);
-				console.log(t>time);
-				console.log(date === update_date && t>time);
 				if(date === update_date && t>time){
 					$('#sensor_'+response.sensor_id).css("color","green");
 				}else{
@@ -64,19 +60,22 @@ function setSensorConnectionState(){
 			},
 			error: function(response, status, error){
 				console.log(error);
+				console.log(response);
 			}
 		});
 	}
 }
 
 function clickSensor(sensor_id,serial){
-	$('#medium_weight_text').text("");
-	$('#drain_weight_text').text("");
-	$('#ec_text').text("");
-	$('#ph_text').text("");
-	$('#co2_text').text("");
+	$('#medium_weight_text').text('배지저울');
+	$('#drain_weight_text').text('배액저울');
+	$('#ec_text').text("ec");
+	$('#ph_text').text("ph");
+	$('#co2_text').text("co2");
 	current_sensor = sensor_id;
 	$('#selected-sensor').text('영점 설정 : ' +serial);
+	$('#serial_delete').val(serial);
+	$('#zeropoint').show();
 	$.ajax({
 		dataType: "json",
 		url: server_address+"/zeropoint/id/"+current_sensor,
@@ -105,11 +104,16 @@ function clickReadCurrentValue(){
 				alert('해당 센서가 아직 데이터를 수신하지 못했습니다.');
 			}else{
 				var zeropoint_cuttent_value = response.data;
-				$('#medium_weight_text').text(zeropoint_cuttent_value.medium_weight);
-				$('#drain_weight_text').text(zeropoint_cuttent_value.drain_weight);
-				$('#ec_text').text(zeropoint_cuttent_value.ec);
-				$('#ph_text').text(zeropoint_cuttent_value.ph);
-				$('#co2_text').text(zeropoint_cuttent_value.co2);
+				$('#medium_weight_label').data('content', '배지저울 : '+zeropoint_cuttent_value.medium_weight);
+				$('#medium_weight_text').text('배지저울 : '+zeropoint_cuttent_value.medium_weight);
+				$('#drain_weight_text').data('content', '배액저울 : '+zeropoint_cuttent_value.drain_weight);
+				$('#drain_weight_text').text('배액저울 : '+zeropoint_cuttent_value.drain_weight);
+				$('#ec_text').data('content', 'ec : '+zeropoint_cuttent_value.ec);
+				$('#ec_text').text('ec : '+zeropoint_cuttent_value.ec);
+				$('#ph_text').data('content', 'ph : '+zeropoint_cuttent_value.ph);
+				$('#ph_text').text('ph : '+zeropoint_cuttent_value.ph);
+				$('#co2_text').data('content', 'co2 : '+zeropoint_cuttent_value.co2);
+				$('#co2_text').text('co2 : '+zeropoint_cuttent_value.co2);
 			}
 		},
 		error: function(response, status, error){
@@ -144,6 +148,44 @@ function setZeropoint(){
 	});
 }
 
+function setIP(){
+	var ip = $('#ip').val();
+	ip = 'http://'+ip;
+	$.ajax({
+		dataType: "json",
+		url: server_address+"/camera/sensor/"+current_sensor,
+		type: "POST",
+		data:{
+			"http_port":'3333',
+			"onvif_port":'3334',
+			"ip":ip
+		},
+		success: function(response){
+			console.log(response);
+		},
+		error: function(response, status, error){
+			console.log("error");
+		}
+	});
+
+	$.ajax({
+		dataType: "json",
+		url: server_address+"/camera/sensor/"+current_sensor,
+		type: "POST",
+		data:{
+			"http_port":'3335',
+			"onvif_port":'3336',
+			"ip":ip
+		},
+		success: function(response){
+			console.log(response);
+		},
+		error: function(response, status, error){
+			console.log("error");
+		}
+	});
+}
+
 function clickInsertSensor(){
 	var serial = $('#serial_input').val();
 	$.ajax({
@@ -159,7 +201,65 @@ function clickInsertSensor(){
 	});
 }
 
+function clickDeleteSensor(){
+	if(confirm("삭제하시겠습니까?")){
+	var serial = $('#serial_delete').val();
+		$.ajax({
+			dataType: "json",
+			url: server_address+"/sensor/serial/"+serial,
+			type: "DELETE",
+			success: function(response){
+				console.log(response);
+			},
+			error: function(response, status, error){
+				console.log(error);
+			}
+		});
+	}
+}
+
 function getZeropoint(sensor_id){
 
 }
 
+function findSensor(){
+	var keyword = $('#find-sensor').val();
+	var refresh_sensors = new Array();
+	var count = 0;
+	var contents="";
+	for(var i = 0;i<array_sensor.length;i++){
+		if(array_sensor[i].serial.indexOf(keyword)!=-1){
+			refresh_sensors[count] = array_sensor[i];
+			count++;
+		}
+	}
+	for(var i = 0;i<refresh_sensors.length;i++){
+		contents+="<li id = sensor_"+refresh_sensors[i].id+" onclick='clickSensor(\""+refresh_sensors[i].id+"\",\""+refresh_sensors[i].serial+"\");'>"+refresh_sensors[i].serial+"   "+refresh_sensors[i].title+"</li>"
+	}
+	$('#sensors').html(contents);
+	setSensorConnectionState();
+}
+
+function closeZeropoint(){
+	$('#zeropoint').hide();
+}
+
+function access(){
+	var token = $('#input_access_token').val();
+	$.ajax({
+		dataType: "html",
+		url: server_address+"/management",
+		type: "post",
+		data:{
+			"access_token":token
+		},
+		success: function(response){
+			if(response=='ok'){
+
+			}
+		},
+		error: function(response, status, error){
+			console.log(error);
+		}
+	});
+}

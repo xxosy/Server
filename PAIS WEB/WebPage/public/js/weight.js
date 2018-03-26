@@ -12,10 +12,11 @@ var selectedWeightPosition;
 var selectedColor = "rgba(255,255,255,0.3)";
 
 function setDatas(date) {
+    clearTimeout(roop_weight)
     $("#graphAll").html("");
     $('#changeGraph').html('');
 
-    var selectedDay = 0;
+    var selectedDay = 0;1
     var selectedYear = Number($('#date').html().split('-')[0]);
     var selectedMonth = Number($('#date').html().split('-')[1]);
 
@@ -66,7 +67,7 @@ var prev_infowindow = false;
 //현재값 갱신(1초에 한번)
 var preSerial = "";
 var setCurrentWeightFirst = true;
-
+var roop_weight;
 function setCurrentWeight() {
     if (preSerial != getCookie(cookie_recentSensor) && !setCurrentWeightFirst) {
         setCurrentWeightFirst = true;
@@ -105,7 +106,7 @@ function setCurrentWeight() {
         }
     });
 
-    setTimeout("setCurrentWeight()", 1000);
+    roop_weight = setTimeout("setCurrentWeight()", 60000);
 }
 
 //============================================================================================
@@ -281,17 +282,17 @@ function translateWindDirection(dir) {
 
         switch (c) {
             case 'E':
-                result += "동";
-                break;
+            result += "동";
+            break;
             case 'W':
-                result += "서";
-                break;
+            result += "서";
+            break;
             case 'N':
-                result += "북";
-                break;
+            result += "북";
+            break;
             case 'S':
-                result += "남";
-                break;
+            result += "남";
+            break;
         }
     }
 
@@ -448,26 +449,26 @@ function setWeightGraph(date) {
                         currWeight = medium_weight;
                         if( isWeightSensorError ) { isWeightSensorError = false; }
                         else if( isIncreasing && currWeight - preWeight < 0 ) {
-                           diffWeight = currWeight - minWeight;
-                            maxWeight = preWeight;
+                         diffWeight = currWeight - minWeight;
+                         maxWeight = preWeight;
                            if( diffWeight > 0.2 ) {   // 증가량이 200g 이상이면 급액한 것으로 간주
-                                var da = new Date(datas[supplyIndex][0]);
-                                nutrientSupplyAmount = parseInt((maxWeight - minWeight) * 1000);
-                                nutrientSupplyTime += '<td>' + convertKoraTime(da) +' ('+ nutrientSupplyAmount +'ml)'+ '</td>';
-                                count++;
-                                if(count % 3 == 0) nutrientSupplyTime += '</tr> <tr>';
-                           }
-                          isIncreasing = false;
+                            var da = new Date(datas[supplyIndex][0]);
+                            nutrientSupplyAmount = parseInt((maxWeight - minWeight) * 1000);
+                            nutrientSupplyTime += '<td>' + convertKoraTime(da) +' ('+ nutrientSupplyAmount +'ml)'+ '</td>';
+                            count++;
+                            if(count % 3 == 0) nutrientSupplyTime += '</tr> <tr>';
                         }
-                        else if( !isIncreasing && currWeight - preWeight > 0.02 ) {
-                            isIncreasing = true;
-                            minWeight = preWeight;
-                            supplyIndex = index-1;
-                        }
-
-                        if( preWeight - currWeight > 0.2) { isWeightSensorError = true; }
-                        preWeight = currWeight;
+                        isIncreasing = false;
                     }
+                    else if( !isIncreasing && currWeight - preWeight > 0.02 ) {
+                        isIncreasing = true;
+                        minWeight = preWeight;
+                        supplyIndex = index-1;
+                    }
+
+                    if( preWeight - currWeight > 0.2) { isWeightSensorError = true; }
+                    preWeight = currWeight;
+                }
 
                     //liquid 값으로 변경해야함 현재 null 이라 사용 x
                     useDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), useValue];
@@ -476,6 +477,9 @@ function setWeightGraph(date) {
                     preValue = medium_weight;
                     index++;
                 }
+                datas[index] = [Date.UTC(year, month - 1, day, 23, 59, 59), null];
+                liquidDatas[index] = [Date.UTC(year, month - 1, day, 23, 59, 59), null];
+                useDatas[index] = [Date.UTC(year, month - 1, day, 23, 59, 59), null];
                 nutrientSupplyTime  += '</tr>';
 
                 // for (i = 0; i < datas.length; i++) {
@@ -490,8 +494,8 @@ function setWeightGraph(date) {
                 //총 공급량 배액량 세팅
                 $("#supply_number").html(count + " 회");
                 $("#supply_time").html(nutrientSupplyTime);
-                $("#supply").html(supValue.toFixed(2) + "kg");
-                $("#use").html(useValue.toFixed(2) + "kg");
+                $("#supply").html(supValue.toFixed(2) + "L");
+                $("#use").html(useValue.toFixed(2) + "L");
                 $("#plantWeight").html("(구현예정)");
                 $("#eva").html("(구현예정)");
 
@@ -641,24 +645,24 @@ function drawWeightEachGraph(datas, useDatas, liquidDatas) {
         var valueSuffix = " ";
         switch (i) {
             case 0:
-                valueSuffix += "kg";
-                title = "배지 무게";
-                break;
+            valueSuffix += "kg";
+            title = "배지 무게";
+            break;
             case 1:
-                valueSuffix += "kg";
-                title = "배액량";
-                break;
+            valueSuffix += "kg";
+            title = "배액량";
+            break;
             case 2:
-                valueSuffix += "kg";
-                title = "배액 저울 변화";
-                break;
+            valueSuffix += "kg";
+            title = "배액 저울 변화";
+            break;
         }
 
 
         $('<div class="chart" style="margin-top:1em;">')
-            .appendTo('#changeGraph')
-            .highcharts({
-                chart: {
+        .appendTo('#changeGraph')
+        .highcharts({
+            chart: {
                     marginLeft: 40, // Keep all charts left aligned
                     spacingTop: 10,
                     spacingBottom: 10,
@@ -703,8 +707,8 @@ function drawWeightEachGraph(datas, useDatas, liquidDatas) {
                                 y2: 1
                             },
                             stops: [
-                                [0, Highcharts.Color(Highcharts.getOptions().colors[i + 3]).setOpacity(0.8).get('rgba')],
-                                [1, Highcharts.Color(Highcharts.getOptions().colors[i + 3]).setOpacity(0.05).get('rgba')]
+                            [0, Highcharts.Color(Highcharts.getOptions().colors[i + 3]).setOpacity(0.8).get('rgba')],
+                            [1, Highcharts.Color(Highcharts.getOptions().colors[i + 3]).setOpacity(0.05).get('rgba')]
                             ]
                         },
                         marker: {
@@ -765,13 +769,13 @@ function drawWeightEachGraph(datas, useDatas, liquidDatas) {
  * built-in events with handlers defined on the parent element.
  */
 
-function syncEventWeight() {
+ function syncEventWeight() {
     var initValue = Highcharts.charts.length - 3; //그래프의 수가 6개가 넘어가면 영농일지 날씨 그래프가 껴있음(이걸 제외)
     $('#changeGraph').bind('mousemove touchmove touchstart', function(e) {
         var chart,
-            point,
-            i,
-            event;
+        point,
+        i,
+        event;
 
         for (i = Highcharts.charts.length - 3; i < Highcharts.charts.length; i++) {
             chart = Highcharts.charts[i];
@@ -787,14 +791,14 @@ function syncEventWeight() {
     /**
      * Override the reset function, we don't need to hide the tooltips and crosshairs.
      */
-    Highcharts.Pointer.prototype.reset = function() {
+     Highcharts.Pointer.prototype.reset = function() {
         return undefined;
     };
 
     /**
      * Highlight a point by showing tooltip, setting hover state and draw crosshair
      */
-    Highcharts.Point.prototype.highlight = function(event) {
+     Highcharts.Point.prototype.highlight = function(event) {
         this.onMouseOver(); // Show the hover marker
         this.series.chart.tooltip.refresh(this); // Show the tooltip
         this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair
@@ -805,7 +809,7 @@ function syncEventWeight() {
 /**
  * Synchronize zooming through the setExtremes event handler.
  */
-function syncExtremesWeight(e) {
+ function syncExtremesWeight(e) {
     var thisChart = this.chart;
 
     if (e.trigger !== 'syncExtremes') { // Prevent feedback loop
