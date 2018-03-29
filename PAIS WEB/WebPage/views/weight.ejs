@@ -243,6 +243,11 @@
   <script>
     var selectedPosition = '35,48.6';
     $(document).ready(function() {
+        $.ajaxSetup({
+              xhrFields: {
+                withCredentials: true
+            }
+        });
         var cookie_token = getCookie(cookie_accessToken);
             if (cookie_token == "") { //기존에 로그인되어 있을경우
                 $("#loginMask").css("display", "block");

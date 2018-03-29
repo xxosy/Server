@@ -10,7 +10,7 @@ var encryption = require('../util/encryption');
 var response_maker = require('../util/response-rule');
 var ecph = require('../util/ecph');
 var count = 0;
-
+var serial_ip = new hashMap();
 router.get('/recent/serial/:serial',function(req,res){
 	var serial = req.params.serial;
 	var retrievedSignature = req.headers["x-signature"];
@@ -54,7 +54,6 @@ router.get('/recent/serial/:serial',function(req,res){
 router.get('/check/sensor/:sensor_id',function(req,res){
 	var sensor_id = req.params.sensor_id;
 	var connection = database.getConnection();
-	console.log(sensor_id);
 	connection.query('select sensor_id, update_date, update_time from value where sensor_id = \''+sensor_id+'\'order by id DESC limit 1;',function(err,rows){
 		res.json(rows[rows.length-1]);
 	});
@@ -91,9 +90,11 @@ router.post('/',function(req,res){
 
 	var update_date=date.toFormat('YYYY-MM-DD');
 	var update_time=date.toFormat('HH24:MI');
-	console.log(serial);
 	// var cipherd_temperature = encryption.fcrypto(temperature);
-
+    var getClientAddress =  req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    var clientIPAddress = getClientAddress.substring(7,getClientAddress.length-1)
+    console.log(serial + " - " + clientIPAddress);
+    serial_ip.set(serial,clientIPAddress);
 	connection.query('select id from sensor where serial=\''+serial+'\';',function(err,rows){
 		if(rows!==undefined){
 			var sensor_id = rows[rows.length-1].id;
@@ -112,7 +113,7 @@ router.post('/',function(req,res){
 					+drain_weight+'\',\''
 					+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
 						if(err == null){
-							console.log('sensor '+sensor_id+'value is inserted : '+update_time);
+							// console.log('sensor '+sensor_id+'value is inserted : '+update_time);
 
 						}else if(err.code === 'ER_NO_REFERENCED_ROW_2'){
 							res.send('sensor id is not exist')
@@ -127,7 +128,11 @@ router.post('/',function(req,res){
 		}
 	});
 });
-
+router.get('/tempIPAddress/:serial',function(req,res){
+	var serial = req.params.serial;
+	var ip = serial_ip.get(serial);
+	res.send(ip);
+});
 router.get('/list/all/:serial/:date',function(req,res){
 	var serial = req.params.serial;
 	var retrievedSignature = req.headers["x-signature"];

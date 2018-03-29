@@ -1,12 +1,21 @@
+<!DOCTYPE html>
 <div class="section">
-	<h2>센서 연결 상태 확인</h2>
+	<h2>센서 관리</h2>
 	<div style="width:250px;margin:auto;">
-	<input id = "find-sensor" class="input__field input__field--minoru" type="text"/>
-	<span class="input__label-content input__label-content--minoru">Serial</span>
+		<input id = "find-sensor" class="input__field input__field--minoru" type="text"/>
+		<span class="input__label-content input__label-content--minoru">Serial</span>
 	</div>
 
 	<div class="view">
 		<div class="scrollBlind">
+			<ul class="sensor-top">
+				<li>시리얼</li>
+				<li>명칭</li>
+				<li>url</li>
+				<li>등록여부</li>
+				<li></li>
+			</ul>
+
 			<ul id = "sensors" class="sensor-list">
 				
 			</ul>
@@ -41,5 +50,4 @@
 	<input class="button" type="button" value = "닫기" style = "margin-top:25px;margin-right:8px;float:right;" onclick="closeZeropoint()";>
 	<input class="button" type="button" value = "설정" style = "margin-top:25px;margin-right:8px;float:right;" onclick="setZeropoint()";>
 	<input class="button" type="button" value = "현재 값" style = "margin-top:25px;margin-right:8px;float:right;" onclick="clickReadCurrentValue()";>
-
 </div>

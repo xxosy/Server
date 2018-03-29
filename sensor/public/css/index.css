@@ -17,7 +17,10 @@
 	height: 300px;
 	box-shadow: 0px 0px 2px 1px grey;
 }
-
+.hello{
+	font-size:12px;
+	float:right;
+}
 h2 {
 	text-align: center;
 }
@@ -121,4 +124,58 @@ ul {
 
 *{
 	font-family: '나눔고딕',NanumGothic,'돋움',Dotum,'굴림',Gulim,Helvetica,sans-serif!important;
+}
+
+.textbox {
+	position: relative;
+} 
+.textbox label { 
+	position: absolute; /* input 요소의 border-top 설정값 만큼 */ 
+	left: 1px; /* input 요소의 border-left 설정값 만큼 */ 
+	padding: .8em .5em; /* input 요소의 padding 값 만큼 */ 
+	color: #999; cursor: text; 
+} 
+.textbox input[type="text"], 
+.textbox input[type="password"] { 
+	width: 250px; /* 원하는 너비 설정 */ 
+	height: auto; /* 높이값 초기화 */ 
+	line-height : normal; /* line-height 초기화 */ 
+	padding: .8em .5em; /* 원하는 여백 설정, 상하단 여백으로 높이를 조절 */ 
+	font-family: inherit; /* 폰트 상속 */ 
+	border: 1px solid #eee;
+	border-radius: 0; /* iSO 둥근모서리 제거 */
+	outline-style: none; /* 포커스시 발생하는 효과 제거를 원한다면 */ 
+	-webkit-appearance: none; /* 브라우저별 기본 스타일링 제거 */ 
+	-moz-appearance: none; appearance: none; 
+}
+.login input[type="submit"]{
+	overflow: hidden;
+    float: left;
+    width: 70px;
+    height: 77px;
+    font-weight: bold;
+	border: 1px solid #eee;
+    background-color: #fff;
+    background-position: -210px -130px;
+}
+
+.login_info{
+	float:left;
+}
+.logoff{
+	margin:auto;
+	background: #eee;
+	width: 350px;
+	height: 140px;
+	padding-left: 16px;
+}
+.btn_logout {
+    font-size: 12px;
+    color: #444;
+    float: right;
+    border: 1px solid #e5e8ef;
+    padding: 0 5px;
+    height: 22px;
+    line-height: 23px;
+    text-decoration: none!important;
 }

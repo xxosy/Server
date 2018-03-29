@@ -1,4 +1,4 @@
-var server_address = 'http://211.230.136.100:3000'
+var server_address = ''
 var sensor_id;
 var current_sensor;
 var array_sensor = new Array();
@@ -12,7 +12,7 @@ function setSensorList(){
 			var contents = "";
 			for(var i = 0;i<response.data.length;i++){
 				array_sensor[i] = response.data[i];
-				contents+="<li id = sensor_"+response.data[i].id+" onclick='clickSensor(\""+response.data[i].id+"\",\""+response.data[i].serial+"\");'>"+response.data[i].serial+"   "+response.data[i].title+"</li>"
+				contents+="<li id = sensor_"+response.data[i].id+" onclick='clickSensor(\""+response.data[i].id+"\",\""+response.data[i].serial+"\");'>"+"<ul class=\"sensor-top\"><li>"+response.data[i].serial+"</li><li>"+response.data[i].title+"</li><li></li><li></li><li>삭제</li></ul>";
 				sensor_id.push(response.data[i].id);
 			}
 			$('#sensors').html(contents);
@@ -91,6 +91,33 @@ function clickSensor(sensor_id,serial){
 		error: function(response, status, error){
 			console.log("error");
 		}
+	});
+
+	$.ajax({
+		dataType:"text",
+		url:server_address+"/value/tempIPAddress/"+serial,
+		type:"GET",
+		success: function(response){
+			$('#ip').val(response);
+		},
+		error: function(response, status, error){
+			console.log("error");
+		}		
+	});
+
+	$.ajax({
+		dataType:"json",
+		url:server_address+"/camera/sensor/"+current_sensor,
+		type:"GET",
+		success: function(response){
+			if(response.data[0].url)
+				$('#IP_text').text(response.data[0].url);
+			else
+				$('#IP_text').text("-");
+		},
+		error: function(response, status, error){
+			console.log("error");
+		}		
 	});
 }
 

@@ -38,6 +38,31 @@ router.get('/list/sensor/:serial',function(req,res){
 	// }
 });
 
+router.get('/sensor/:serial',function(req,res){
+	var serial = req.params.serial;
+	var retrievedSignature = req.headers["x-signature"];
+	var access = encryption.hmac(retrievedSignature,serial);
+	var connection = database.getConnection();		
+	connection.query('select url from camera '+
+		'where sensor_id = '+serial+';',function(err,rows){
+			if(rows===undefined || rows === null){
+				var result = response_maker.getResponse(405, null);
+				res.json(result);
+				res.end();
+			}else{
+				if(!rows.length){
+					var result = response_maker.getResponse(404, "sensor");
+					res.json(result);
+					res.end();
+				}else{
+					var result = response_maker.getResponse(200, rows);
+					res.json(result);
+					res.end();
+				}
+			}
+		});
+});
+
 router.post('/sensor/:serial',function(req,res){
 	var serial = req.params.serial;
 	var ip = req.body.ip;

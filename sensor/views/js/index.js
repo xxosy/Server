@@ -11,9 +11,7 @@ router.get('/management', function(req,res,next) {
 
 
 router.get('/management/:id', function(req,res,next) {
-	if(access_code == '-'){
 
-	}
     res.render('management1', {
         title: 'Express',
         id:req.params.id

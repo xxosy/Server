@@ -64,7 +64,6 @@ router.get('/:serial',function(req,res){
 
 router.get('/list/all',function(req,res){
 	var connection = database.getConnection();
-	console.log('asda');
 	connection.query('select * from sensor;',
 		function(err,rows){
 			if(rows=== null || rows.length==0 || rows === undefined){
@@ -81,7 +80,6 @@ router.get('/list/all',function(req,res){
 
 router.post('/:serial',function(req,res){
 	var serial = req.params.serial;
-	console.log(serial);
 	var connection = database.getConnection();
 	connection.query('select * from sensor where serial = \''+serial+'\';',
 		function(err,rows){

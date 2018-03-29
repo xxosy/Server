@@ -253,6 +253,11 @@
     <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
     <script>
         $(document).ready(function() {
+            $.ajaxSetup({
+              xhrFields: {
+                withCredentials: true
+              }
+            });
                 /////////////////////////////////////////////
                 //토큰처리
             var access_token = '<%= access_token %>';
