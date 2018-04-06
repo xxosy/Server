@@ -78,6 +78,22 @@ router.get('/list/all',function(req,res){
 		});
 });
 
+router.get('/camera/list/all',function(req,res){
+	var connection = database.getConnection();
+	connection.query('select distinct sensor.id, sensor.serial, sensor.title, camera.url from camera right join sensor on camera.sensor_id = sensor.id order by sensor.id;',
+		function(err,rows){
+			if(rows=== null || rows.length==0 || rows === undefined){
+				var result = response_maker.getResponse(404, null);
+				res.jsonp(result);
+				res.end();
+			}else{
+				var result = response_maker.getResponse(200,rows);
+				res.jsonp(result);
+				res.end();
+			}
+		});
+});
+
 router.post('/:serial',function(req,res){
 	var serial = req.params.serial;
 	var connection = database.getConnection();
@@ -114,6 +130,13 @@ router.delete('/serial/:serial',function(req,res){
 				console.log(serial+" is deleted");
 			}
 		});
+});
+
+router.delete('/id/:id',function(req,res){
+	var id = req.params.id;
+	var connection = database.getConnection();
+	connection.query('delete from sensor where id = \''+id+'\';');
+	res.end();
 });
 
 module.exports = router;

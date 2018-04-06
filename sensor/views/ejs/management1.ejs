@@ -10,6 +10,14 @@
 			<span class="header-title">시스템 관리</span>
 		</div> -->
 	</header>
+	<div class="userInfo">
+		<img src="../img/manager.png" style="width:186px;height:75px;float:left;">
+		<div style="display:inline-block;float:left;margin-left:32px;margin-top:24px"><label class="hello">관리자</label></div>	
+		<div class="user_logout">
+			<a href="/auth/logout" class = "btn_logout">로그아웃</a>
+		</div>
+	</div>
+	<div style="clear:both;"></div>
 	<ul class="menu-top">
 		<li class="menu-top-li"><a href = '/management/1' class="menu-top-item">센서 등록</a></li>
 		<li class="menu-top-li"><a href = '/management/2' class="menu-top-item">센서 상태 확인</a></li>
@@ -18,6 +26,7 @@
 		<li class="menu-selector-li" id="menu1"></li>
 		<li class="menu-selector-li" id="menu2"></li>
 	</ul>
+	<div id="inc" style="height:2px;background:#191f2d"></div>
 	<div style="clear:both;"></div>
 	<% if(id==1){%>
 	<%include ./addsensor.ejs%><%}%>
@@ -44,8 +53,32 @@
 			 }else if(id ==2){
 			 	$('#menu1').attr('class','menu-selector-li');
 			 	$('#menu2').attr('class','menu-selector-li-selected');
-			 }
-			 
+			 }		
+		});
+		$(window).load(function(){
+	        var placeholderTarget = $('.textbox input[type="text"], .textbox input[type="password"]');
+            placeholderTarget.on('focus', function(){ 
+                $(this).siblings('label').fadeOut('fast'); 
+            });
+            placeholderTarget.on('focusout', function(){ 
+                if($(this).val() == ''){ 
+                    $(this).siblings('label').fadeIn('fast'); 
+                }
+                if($(this).val() != ''){ 
+                    $(this).siblings('label').fadeOut('fast');
+                } 
+            });
+            placeholderTarget.each(function(){ if($(this).val() != ''){ $(this).siblings('label').css('display','none'); } });
+            placeholderTarget.on('textchange', function(){ $(this).siblings('label').fadeOut('fast'); });
+
+            $("#sensor_check_all" ).click(function(){
+            	console.log($("#sensor_check_all").prop("checked"));
+            	if($("#sensor_check_all").prop("checked")){
+            		$("input[name=sensor_chk]").prop('checked', true);
+            	}else{
+            		$("input[name=sensor_chk]").prop('checked', false);
+            	}
+            });
 		});
 	</script>
 </body>

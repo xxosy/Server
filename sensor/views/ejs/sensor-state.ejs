@@ -1,53 +1,38 @@
 <!DOCTYPE html>
 <div class="section">
-	<h2>센서 관리</h2>
-	<div style="width:250px;margin:auto;">
-		<input id = "find-sensor" class="input__field input__field--minoru" type="text"/>
-		<span class="input__label-content input__label-content--minoru">Serial</span>
+	<div style="width:250px;margin:auto;margin-left:35%;margin-top:16px">
+		<div class="textbox">
+			<img src="../img/finder.png">
+			<label for="id">시리얼</label>
+			<input type="text" id = "find-sensor">
+		</div>		
 	</div>
 
 	<div class="view">
-		<div class="scrollBlind">
-			<ul class="sensor-top">
+		<div style="width:100%">
+			<ul class="sensor-top-card-box">
+				<li style="width:5%"></li>
+				<li style="width:3%"><input type="checkbox" id="sensor_check_all" value="0"></li>
+				
 				<li>시리얼</li>
-				<li>명칭</li>
-				<li>url</li>
-				<li>등록여부</li>
-				<li></li>
+				<li>이름</li>
+				<li>센서 URL</li>
+				<li>카메라 URL</li>
+				<li>마지막 업데이트</li>
+				<li style="width:5%"></li>
 			</ul>
-
+		</div>
+		<div class="scrollBlind">
 			<ul id = "sensors" class="sensor-list">
 				
 			</ul>
 		</div>
 	</div>
-</div>
-
-<div class="section-zeropoint" id = "zeropoint" style="display:none">
-	<h2 id ="selected-sensor">영점 설정</h2>
-	<div style="text-align: center;margin-bottom:10px;">
+	<input type="button" value="선택 삭제" onclick="deleteSensors()" style="float:left">
+	<div style="margin-top:16px;margin-left:8%;font-size:12px;float:left">
+		<div style="width:12px;height:12px;background:#FEAF20;float:left;margin-left:10px"></div><label style="float:left;font-size:12px;margin-left:2px">데이터 없음</label>
+		<div style="width:12px;height:12px;background:#d73814;float:left;margin-left:10px"></div><label style="float:left;font-size:12px;margin-left:2px">연결 끊김</label>
+		<div style="width:12px;height:12px;background:#80D651;float:left;margin-left:10px"></div><label style="float:left;font-size:12px;margin-left:2px">연결 중</label>
 	</div>
-	<div style="width:250px;margin:auto;">
-		<span id = "drain_weight_text" style="font-size: 12px;">배액저울</span>
-		<input id = "drain_weight_input" class="input__field input__field--minoru" type="text"/>
-	</div>
-	<div style="width:250px;margin:auto;">
-		<span  id = "medium_weight_text" style="font-size: 12px;">배지저울</span>
-		<input id = "medium_weight_input" class="input__field input__field--minoru" type="text"/>
-	</div>
-	<div style="width:250px;margin:auto;">
-		<span id = "ec_text" style="font-size: 12px;">ec</span>
-		<input id = "ec_input" class="input__field input__field--minoru" type="text" />
-	</div>
-	<div style="width:250px;margin:auto;">	
-		<span id = "ph_text" style="font-size: 12px;">ph</span>
-		<input id = "ph_input" class="input__field input__field--minoru" type="text"/>
-	</div>
-	<div style="width:250px;margin:auto;">	
-		<span id = "co2_text" style="font-size: 12px;">co2</span>
-		<input id = "co2_input" class="input__field input__field--minoru" type="text"/>
-	</div>
-	<input class="button" type="button" value = "닫기" style = "margin-top:25px;margin-right:8px;float:right;" onclick="closeZeropoint()";>
-	<input class="button" type="button" value = "설정" style = "margin-top:25px;margin-right:8px;float:right;" onclick="setZeropoint()";>
-	<input class="button" type="button" value = "현재 값" style = "margin-top:25px;margin-right:8px;float:right;" onclick="clickReadCurrentValue()";>
+	<div style="clear:both"></div>
 </div>

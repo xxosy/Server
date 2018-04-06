@@ -66,13 +66,12 @@ router.get('/sensor/:serial',function(req,res){
 router.post('/sensor/:serial',function(req,res){
 	var serial = req.params.serial;
 	var ip = req.body.ip;
-	var http_port = req.body.http_port;
-	var onvif_port = req.body.onvif_port;
 	var retrievedSignature = req.headers["x-signature"];
 	var connection = database.getConnection();
 
 	var id = serial;
-	connection.query('insert into camera(`url`,`sensor_id`,`http_port`,`onvif_port`) values(\''+ip+'\',\''+id+'\',\''+http_port+'\',\''+onvif_port+'\');',function(err){
+	
+	connection.query('update camera set `url` = \''+ip+'\' where sensor_id = \''+id+'\';',function(err){
 		if(err){
 			var result = response_maker.getResponse(500,err);
 			res.json(result);
