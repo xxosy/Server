@@ -361,7 +361,12 @@
 
   <script>
     $(document).ready(function() {
-                $("#downloadStartDate, #downloadEndDate").datepicker({
+        $.ajaxSetup({
+              xhrFields: {
+                withCredentials: true
+            }
+        });
+      $("#downloadStartDate, #downloadEndDate").datepicker({
           dateFormat: 'yy-mm-dd',
           prevText: '이전 달',
           nextText: '다음 달',

@@ -332,22 +332,11 @@ function setWeightGraph(date) {
     var lightDatas = new Array();
     var supDatas = new Array();
     var useDatas = new Array(); //하루동안 증가하는 것만 보여줌
-    var liquidDatas = new Array(); //배액통 실제 무게
+    var drainDatas = new Array(); //배액통 실제 무게
 
     var year = Number(date.split('-')[0]);
     var month = Number(date.split('-')[1]);
     var day = Number(date.split('-')[2]);
-
-    var preValue = 0;
-    var supValue = 0; //최종적으로 총 공급량
-    var useValue = 0; //최종적으로 총 배액양
-    var preliquid = 0;
-
-    var checkErrorIncValue = 0.10;
-    var checkErrorDecValue = 0.10;
-
-    var current = -1;
-    var prev = -1;
 
     $.ajax({
         dataType: "json",
@@ -356,28 +345,31 @@ function setWeightGraph(date) {
         headers:{"X-Signature":signature},
         success: function(response) {
             if(response.status !== "fail"){
-                var currentSensorIndex = 0;
-                var index = 0;
                 var items = response.data;
 
-                var test = false;
+                //배액 관련 변수
+                var isDraining = false;
+                var preDrainWeight = 0;
+                var prepreDrainWeight = 0;
+                var supplyCount = 0;
+                var abmormalDrainIndexs = new Array();
 
-                var isRapidDecrease = false;
-                var isRapidIncrease = false;
-                var maxliquid = 0;
-
-                var isIncreasing = false;
-                var minWeight = 0;
+                //급액 관련 변수
                 var currWeight = 0;
                 var preWeight = 0;
-                var diffWeight = 0;
-                var count = 0;
-                var supplyIndex = 0;
-                var nutrientSupplyTime = '<tr>';
+                var prepreWeight = 0;
+                var isSupplying = false;
+                var supStartTime = 0;
+                var supValue = 0;
+                var totalSupValue = 0;
+                var supplyLogs = '<tr>';
 
-                var maxWeight = 0;
-                var nutrientSupplyAmount = 0;
-                var isWeightSensorError = false;
+                // 수확량 관련 변수
+                var useValue = 0;
+                var preUseValue = 0;
+                var amountOfHarvest = 0;
+                var harvestCount=0;
+                var harvestTime = '<tr>';
 
                 function convertKoraTime(date) {
                     var hours = date.getHours();
@@ -400,103 +392,102 @@ function setWeightGraph(date) {
                     var hour = Number(item.update_time.split(':')[0]);
                     var min = Number(item.update_time.split(':')[1]);
                     // var sec = Number(item.update_time.split(':')[2]);
-                    var value = item;
-                    
-                    var medium_weight = Number(value.medium_weight) / 1000;
-                    var drain_weight = Number(value.drain_weight) / 1000;
-                    var light = Number(value.light)*2.7;
 
-                    datas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), medium_weight];
-                    liquidDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), drain_weight];
-                    lightDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), light];
+                    var medium_weight = Number(item.medium_weight) / 1000;
+                    var drainWeight = Number(item.drain_weight) / 1000;
+                    var light = Number(item.light)*2.7;
 
-                    if (index == 0) {
-                        maxliquid = drain_weight;
+                    datas[i] = [Date.UTC(year, month - 1, day, hour, min, 0), medium_weight];
+                    drainDatas[i] = [Date.UTC(year, month - 1, day, hour, min, 0), drainWeight];
+                    lightDatas[i] = [Date.UTC(year, month - 1, day, hour, min, 0), light];
+
+                    if (i == 0) {
+                        supplyCount = 0;
+                        preDrainWeight = drainWeight;
                         preWeight = medium_weight;
+                        prepreWeight = preWeight;
                     }
-                    if (index != 0) {
-                        //급액량
-                        if (preValue < medium_weight) supValue += medium_weight - preValue;
 
-                        //배액량
-                        if(isRapidDecrease) {
-                            if(isRapidIncrease) {
-                                isRapidDecrease = false;
-                                isRapidIncrease = false;
-                            }
-                            if(!isRapidIncrease) {
-                                maxliquid = drain_weight;
-                                isRapidDecrease = false;
+                    if (i != 0) {
+                        // 배액량 계산
+                        if(drainWeight > preDrainWeight) {
+                            if(preDrainWeight-prepreDrainWeight < -0.2 && drainWeight-preDrainWeight > 0.2) {}
+                            else if(!isDraining && drainWeight-preDrainWeight < 0.01) {} //미세하게 진동하는 값 고려해야 함
+                            else {
+                                isDraining = true
+                                useValue += drainWeight-preDrainWeight
                             }
                         }
-
-                        if(preliquid - drain_weight > 0.5)   isRapidDecrease = true;
-                        if(drain_weight - preliquid > 0.5)   isRapidIncrease = true;
-
-                        if (preliquid - drain_weight > 0.16) {
-                            isRapidDecrease = true;
-                        } else if (isRapidDecrease && drain_weight - preliquid < 0.16) {  //급감 후 유지 : 비움
-                            maxliquid = drain_weight;
-                            isRapidDecrease = false;
-                        } else isRapidDecrease = false;    // 급감후 급상승 : 무시
-
-                        if (maxliquid < drain_weight ) {
-                            useValue += drain_weight - maxliquid;
-                            maxliquid = drain_weight;
+                        // else if (drainWeight-preDrainWeight < -0.5 && preDrainWeight-prepreDrainWeight > 0.5) {
+                        //     useValue += drainWeight-preDrainWeight
+                        // }
+                        else if (isDraining) {
+                            if(drainWeight > prepreDrainWeight) {
+                                useValue += drainWeight-preDrainWeight
+                                preUseValue -= (drainWeight-preDrainWeight) / 2
+                                abmormalDrainIndexs.push(i - 1)
+                            }
+                            else {
+                                isDraining = false
+                                console.log(useValue)
+                            }
                         }
 
                         // 급액 횟수&시간 구하기
                         currWeight = medium_weight;
-                        if( isWeightSensorError ) { isWeightSensorError = false; }
-                        else if( isIncreasing && currWeight - preWeight < 0 ) {
-                         diffWeight = currWeight - minWeight;
-                         maxWeight = preWeight;
-                           if( diffWeight > 0.2 ) {   // 증가량이 200g 이상이면 급액한 것으로 간주
-                            var da = new Date(datas[supplyIndex][0]);
-                            nutrientSupplyAmount = parseInt((maxWeight - minWeight) * 1000);
-                            nutrientSupplyTime += '<td>' + convertKoraTime(da) +' ('+ nutrientSupplyAmount +'ml)'+ '</td>';
-                            count++;
-                            if(count % 3 == 0) nutrientSupplyTime += '</tr> <tr>';
+                        if(currWeight > preWeight) {
+                            if(preWeight-prepreWeight < -0.5 && currWeight-preWeight > 0.5) {}
+                            else if(!isSupplying && currWeight-preWeight < 0.01) {} //미세하게 진동하는 값 무시
+                            else {
+                                if(!isSupplying) {
+                                    supValue = 0
+                                    supStartTime = new Date(datas[i-1][0])
+                                }
+                                isSupplying = true
+                                isFinishSupplying = false
+                                supValue += currWeight-preWeight
+                                if(isDraining) supValue += drainWeight-preDrainWeight
+                            }
+                        } else if (currWeight-preWeight < -0.2 && preWeight-prepreWeight > 0.2) {
+                            supValue += currWeight-preWeight
+                        } else if(isSupplying) {
+                            isSupplying = false
+                            if(supValue > 0.05) {
+                                supplyCount++
+                                totalSupValue += supValue
+                                supplyLogs += '<td>' + convertKoraTime(supStartTime) +' ('+ parseInt(supValue*1000) +'ml)'+ '</td>'
+                                if(supplyCount % 3 == 0) supplyLogs += '</tr> <tr>';
+                            }
                         }
-                        isIncreasing = false;
+
+                        preUseValue = useValue;
+
+                        prepreDrainWeight = preDrainWeight;
+                        preDrainWeight = drainWeight;
+
+                        prepreWeight = preWeight;
+                        preWeight = currWeight;
                     }
-                    else if( !isIncreasing && currWeight - preWeight > 0.02 ) {
-                        isIncreasing = true;
-                        minWeight = preWeight;
-                        supplyIndex = index-1;
+
+                    useDatas[i] = [Date.UTC(year, month - 1, day, hour, min, 0), useValue];
+
+                    while(abmormalDrainIndexs.length != 0) {
+                        var pos = abmormalDrainIndexs.pop();
+                        if(pos != 1 && pos != useDatas.length-1)
+                        useDatas[pos][1] = (useDatas[pos-1][1] + useDatas[pos+1][1]) / 2
                     }
-
-                    if( preWeight - currWeight > 0.2) { isWeightSensorError = true; }
-                    preWeight = currWeight;
                 }
-
-                    //liquid 값으로 변경해야함 현재 null 이라 사용 x
-                    useDatas[index] = [Date.UTC(year, month - 1, day, hour, min, 0), useValue];
-
-                    preliquid = drain_weight;
-                    preValue = medium_weight;
-                    index++;
-                }
-                datas[index] = [Date.UTC(year, month - 1, day, 23, 59, 59), null];
-                liquidDatas[index] = [Date.UTC(year, month - 1, day, 23, 59, 59), null];
-                useDatas[index] = [Date.UTC(year, month - 1, day, 23, 59, 59), null];
-                nutrientSupplyTime  += '</tr>';
-
-                // for (i = 0; i < datas.length; i++) {
-                //     if (current == -1) {
-                //         current = datas[i][1];
-                //         prev = datas[i][1];
-                //     }
-                // }
-
-
+                datas[i] = [Date.UTC(year, month - 1, day, 23, 59, 59), null];
+                drainDatas[i] = [Date.UTC(year, month - 1, day, 23, 59, 59), null];
+                useDatas[i] = [Date.UTC(year, month - 1, day, 23, 59, 59), null];
+                supplyLogs  += '</tr>';
 
                 //총 공급량 배액량 세팅
-                $("#supply_number").html(count + " 회");
-                $("#supply_time").html(nutrientSupplyTime);
-                $("#supply").html(supValue.toFixed(2) + "L");
-                $("#use").html(useValue.toFixed(2) + "L");
-                $("#plantWeight").html("(구현예정)");
+                $("#supply_number").html(supplyCount + "회");
+                $("#supply_time").html(supplyLogs);
+                $("#harvest_time").html(harvestTime);
+                $("#supply").html(totalSupValue.toFixed(2) + "kg");
+                $("#use").html(useValue.toFixed(2) + "kg");
                 $("#eva").html("(구현예정)");
 
 
@@ -504,10 +495,10 @@ function setWeightGraph(date) {
                 console.log(datas);
                 console.log(useDatas);
                 console.log(lightDatas);
-                console.log(liquidDatas);
+                console.log(drainDatas);
                 drawWeightGraph(datas, useDatas, kalman(lightDatas));
 
-                drawWeightEachGraph(datas, useDatas, liquidDatas);
+                drawWeightEachGraph(datas, useDatas, drainDatas);
             }
 
         },

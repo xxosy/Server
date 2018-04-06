@@ -12,7 +12,7 @@ function setSensorList(){
 			var contents = "";
 			for(var i = 0;i<response.data.length;i++){
 				array_sensor[i] = response.data[i];
-				contents+="<li id = sensor_"+response.data[i].id+" onclick='clickSensor(\""+response.data[i].id+"\",\""+response.data[i].serial+"\");'>"+"<ul class=\"sensor-top\"><li>"+response.data[i].serial+"</li><li>"+response.data[i].title+"</li><li></li><li></li><li>삭제</li></ul>";
+				contents+="<li id = sensor_"+response.data[i].id+" onclick='clickSensor(\""+response.data[i].id+"\",\""+response.data[i].serial+"\");'>"+response.data[i].serial+"   "+response.data[i].title+"</li>"
 				sensor_id.push(response.data[i].id);
 			}
 			$('#sensors').html(contents);
@@ -184,7 +184,7 @@ function setIP(){
 		type: "POST",
 		data:{
 			"http_port":'3333',
-			"onvif_port":'3334',
+			"onvif_port":'3335',
 			"ip":ip
 		},
 		success: function(response){
@@ -200,7 +200,7 @@ function setIP(){
 		url: server_address+"/camera/sensor/"+current_sensor,
 		type: "POST",
 		data:{
-			"http_port":'3335',
+			"http_port":'3334',
 			"onvif_port":'3336',
 			"ip":ip
 		},

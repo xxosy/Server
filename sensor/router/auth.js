@@ -8,7 +8,7 @@ const users = [
         user_pwd: '123456'
     },
     {
-        user_id: 'sslinc',
+        user_id: 'ssladmin',
         user_nickname: '관리자',
         user_pwd: '0632551113'
     }
@@ -38,7 +38,7 @@ router.post('/login', (req, res) => {
     if( findUser( body.user_id, body.user_pwd ) ) {
     // 해당유저가 존재한다면
         req.session.user_uid = findUserIndex( body.user_id, body.user_pwd ); //유니크한 값 유저 색인 값 저장
-        res.redirect('/auth');
+        res.redirect('/management');
     } else {
         res.send('유효하지 않습니다.');
     }
@@ -48,7 +48,7 @@ router.get('/user', (req, res) => {
 });
 router.get('/logout', (req, res) => {
     delete req.session.user_uid;
-    res.redirect('/auth');
+    res.redirect('/management');
 });
 
 

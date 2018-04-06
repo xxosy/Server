@@ -68,7 +68,7 @@ app.use('/scale', r_scale);
 app.use('/usersensor', r_usersensor);
 app.use('/camera', r_camera);
 app.use('/zeropoint', r_zeropoint);
-app.use('/auth', r_auth);
+app.use('/management', r_auth);
 app.use('/',index);
 
 var connection = database;
