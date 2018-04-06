@@ -62,6 +62,26 @@ ul {
 	font-weight: bold;
 }
 
+.login input[type="submit"]{
+	overflow: hidden;
+    float: left;
+    width: 70px;
+    height: 77px;
+    font-weight: bold;
+	border: 1px solid #eee;
+    background-color: #fff;
+    background-position: -210px -130px;
+}
+.login_info{
+	float:left;
+}
+.logoff{
+	margin:auto;
+	background: #eee;
+	width: 350px;
+	height: 140px;
+	padding-left: 16px;
+}
 .btn_logout {
     font-size: 12px;
     color: #fff;

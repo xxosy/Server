@@ -23,10 +23,12 @@ const findUserIndex = (user_id, user_pwd) => {
     return users.findIndex( v => (v.user_id === user_id && v.user_pwd === user_pwd) );
 }
 
-router.get('/', (req, res) => {
+router.get('/id/:id', (req, res) => {
     const sess = req.session; // 세션 객체에 접근
+    var id = req.params.id;
     res.render('index', {
-        nickname: sess.user_uid+1 ? users[sess.user_uid]['user_nickname'] : ''
+        nickname: sess.user_uid+1 ? users[sess.user_uid]['user_nickname'] : '',
+        "id":id
     });
 });
 

@@ -13,13 +13,12 @@ function setSensorList(){
 		type: "GET",
 		success: function(response){
 			drawList(response.data);
-			var contents = "";
+			setSensorConnectionState();
 			for(var i = 0;i<response.data.length;i++){
 				array_sensor[i] = response.data[i];
 				sensor_id.push(response.data[i].id);
 				serials.push(response.data[i].serial);
 			}
-			setSensorConnectionState();
 		},
 		error: function(response, status, error){
 			console.log(error);
@@ -68,18 +67,18 @@ function setSensorConnectionState(){
 			}
 		});
 
-		// $.ajax({
-		// 	dataType:"text",
-		// 	url:server_address+"/value/tempIPAddress/"+serials[i],
-		// 	async:false,
-		// 	type:"GET",
-		// 	success: function(response){
-		// 		$('#camera_url_'+sensor_id[i]).html(response);
-		// 	},
-		// 	error: function(response, status, error){
-		// 		console.log("error");
-		// 	}		
-		// });
+		$.ajax({
+			dataType:"text",
+			url:server_address+"/value/tempIPAddress/"+serials[i],
+			async:false,
+			type:"GET",
+			success: function(response){
+				$('#camera_url_'+sensor_id[i]).html(response);
+			},
+			error: function(response, status, error){
+				console.log("error");
+			}		
+		});
 
 		// $.ajax({
 		// 	dataType:"json",
@@ -141,7 +140,7 @@ function clickSensor(sensor_id,serial){
 			type:"GET",
 			success: function(response){
 				if(response.data[0].url)
-					$('#camera_ip_'+current_sensor).val(response.data[0].url);
+					$('#camera_ip_'+current_sensor).text(response.data[0].url);
 				else
 					$('#camara_ip_'+current_sensor).text("");
 			},
@@ -187,11 +186,11 @@ function clickReadCurrentValue(){
 }
 
 function setZeropoint(){
-	var medium_weight = $('#medium_weight_input').val();
-	var drain_weight = $('#drain_weight_input').val();
-	var ec = $('#ec_input').val();
-	var ph = $('#ph_input').val();
-	var co2 = $('#co2_input').val();
+	var medium_weight = $('#medium_weight_input_'+current_sensor).val();
+	var drain_weight = $('#drain_weight_input_'+current_sensor).val();
+	var ec = $('#ec_input_'+current_sensor).val();
+	var ph = $('#ph_input_'+current_sensor).val();
+	var co2 = $('#co2_input_'+current_sensor).val();
 	$.ajax({
 		dataType: "json",
 		url: server_address+"/zeropoint/update/id/"+current_sensor,
@@ -214,7 +213,7 @@ function setZeropoint(){
 }
 
 function setIP(){
-	var ip = $('#sensor_ip').val();
+	var ip = $('#sensor_ip_'+current_sensor).val();
 	ip = 'http://'+ip;
 	$.ajax({
 		dataType: "json",
@@ -283,7 +282,7 @@ function drawList(data){
 		+"<label class=\"label_small_name_zeropoint\">IP</label>"
 		+"</br></br><ul class=\"sensor-top\">"
 		+"<li><div class=\"textbox\"><label for=sensor_ip_"+data[i].id+">센서IP</label>	<input type=\"text\" id = sensor_ip_"+data[i].id+" style=\"width:95%;\"></div></li>"
-		+"<li><div class=\"textbox\"><label for=camera_ip_"+data[i].id+">카메라 IP</label><input type=\"text\" id = camera_ip_"+data[i].id+" style=\"width:95%;\"></div></li>"
+		+"<li><div><label for=camera_ip_"+data[i].id+">카메라 IP  - </label><label id = camera_ip_"+data[i].id+" style=\"width:95%;\"></div></li>"
 		+"<li><input class=\"button\" type=\"button\" value = \"설정\" onclick=\"setZeropoint()\";></li></ul></div></li>";
 	}
 	$('#sensors').html(contents);
@@ -296,7 +295,7 @@ function clickInsertSensor(){
 		url: server_address+"/sensor/"+serial,
 		type: "POST",
 		success: function(response){
-			console.log(response);
+			alert("등록하였습니다.")
 		},
 		error: function(response, status, error){
 			console.log(error);

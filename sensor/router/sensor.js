@@ -97,6 +97,7 @@ router.get('/camera/list/all',function(req,res){
 router.post('/:serial',function(req,res){
 	var serial = req.params.serial;
 	var connection = database.getConnection();
+	console.log(serial);
 	connection.query('select * from sensor where serial = \''+serial+'\';',
 		function(err,rows){
 			if(rows.length == 0){
