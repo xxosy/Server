@@ -1,9 +1,19 @@
-	<div class="section">
-		<h2>센서 등록</h2>
-		<ul class ="register-serial">
-			<li><b>신규 등록 시리얼</b></li>
-			<li><input id="serial_input" type="text" style="text-align:center;"></li>
-			<li><label style="font-size:8px">등록할 시리얼을 입력하여 주세요.</label></li>
-			<li><input type="button" style="margin-top:16px" value="등록" onclick="clickInsertSensor()"></li>
-		</ul>
-	</div>
+<!DOCTYPE html>
+<div class="section">
+	<ul class ="register-serial">
+		<li><b>시리얼 추가</b></li>
+		<li>
+			<div class="textbox">
+				<label for="serial_input">시리얼</label>
+				<input type="text" id = "find-serial_input">
+			</div>		
+		</li>
+		<li><label style="font-size:12px">- 추가할 시리얼을 입력하여 주세요.</label></li>
+		<li><label style="font-size:12px">- 시리얼은 임의의 숫자, 알파벳으로 구성합니다.</label></li>
+		<li><label style="font-size:12px">- 사용할 수 있는 시리얼을 추가합니다.</label></li>
+		<li><label style="font-size:12px">- 추가한 시리얼로 센서모듈에서 서버로 데이터를 보내야 서버에 기록할 수 있습니다.</label></li>
+		<li><label style="font-size:12px">- 시리얼은 위치 정보가 없는 상태로 추가됩니다.</label></li>
+		<li><label style="font-size:12px">- 위치 정보는 사용자 웹페이지에서 처음 등록할때 기록할 수 있으며 차후에 위치 및 이름을 수정 할 수 있도록 합니다.</label></li>
+		<li><input type="button" style="margin-top:16px" value="등록" onclick="clickInsertSensor()"></li>
+	</ul>
+</div>
