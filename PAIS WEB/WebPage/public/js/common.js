@@ -1149,6 +1149,9 @@ function createMap() {
                                     "명　칭 : <b>" + title + "</b><br/>" +
                                     "시리얼 : <b>" + serial + "</b></div>" +
                                     "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
+                                    "<a style='margin-right:5px;' onclick='selectPosition(\"" + serial + "\")'>수정</a>" +
+                                    "</div>"+
+                                    "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
                                     "<a style='margin-right:5px;' onclick='deleteDevice(\"" + serial + "\");'>삭제</a>" +
                                     "</div>",
                                 maxWidth: 300
@@ -1201,6 +1204,9 @@ function markerListener(map, marker, title, serial) {
             content: "<div style='font-size:1.3em;color:#000;'>" +
                 "명　칭 : <b>" + title + "</b><br/>" +
                 "시리얼 : <b>" + serial + "</b></div>" +
+                "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
+                "<a style='margin-right:5px;' onclick='selectPosition(\"" + serial + "\")'>수정</a>" +
+                "</div>"+
                 "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
                 "<a style='margin-right:5px;' onclick='deleteDevice(\"" + serial + "\")'>삭제</a>" +
                 "</div>",

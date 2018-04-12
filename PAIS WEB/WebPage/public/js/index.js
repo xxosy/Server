@@ -244,52 +244,74 @@ function refreshCameraImage() {
     }
 
     $.ajax({
-        url: myServerIP + ":" + sensorServerPort + "camera/list/sensor/" + selectedSensor,
+        url: myServerIP + ":" + sensorServerPort + "/camera/list/sensor/" + selectedSensor,
         type: "GET",
-        dataType: "jsonp",
+        dataType: "json",
         success: function(response) {
 
             var imgRootPath = "../img/camera";
 
-            if (response.url != null) {
+            if (response.status == 'success') {
+                var res_datas = response.data;
 
-                cam01_IP = response.data[0].url.split(":")[1].split("//")[1];
-                cam01_Port = response.data[0].url.split(":")[2];
+                if (response.data[(res_datas.length - 1)].ip != '-') {
+                    cam01_IP = response.data[(res_datas.length - 2)].ip.split(":")[1].split("//")[1];
+                    cam01_Port =  response.data[(res_datas.length - 2)].http_port;
+                    $('#image_cam01').attr("src", 'http://' + cam01_IP + ':' + cam01_Port + '/videostream.cgi?user=admin&pwd=0632551113' );
+                    
+                    cam02_Port = response.data[(res_datas.length - 1)].http_port;
+                    cam02_IP = response.data[(res_datas.length - 1)].ip.split(":")[1].split("//")[1];
+                    $('#image_cam02').attr("src", 'http://' + cam02_IP + ':' + cam02_Port + '/videostream.cgi?user=admin&pwd=0632551113' );
+                } else {
+                    $('#image_cam01').attr("src", "../img/noImage.png");
+                    $('#image_cam02').attr("src", "../img/noImage.png");
+                }
+                
+            } else {
+                $('#image_cam01').attr("src", "../img/noImage.png");
+                $('#image_cam02').attr("src", "../img/noImage.png");
+            }
 
-                $.ajax({
-                    url: myServerIP + ":" + myServerCamPort + "/imgSave/" + cam01_IP + "/" + cam01_Port,
-                    type: "GET",
-                    dataType: "jsonp",
-                    success: function(response) {
-                        $('#image_cam01').attr("src", 'http://' + cam01_IP + ':' + cam01_Port + '/videostream.cgi?user=admin&pwd=0632551113' );
-                    },
-                    error: function(response, status, error) {
-                        console.log("crop image loading failure : " + status + ", " + error);
-                    }
-                });
-            } else $('#image_crop').attr("src", "../img/noImage.png");
+            // ===================== 수정 전 코드 =====================
+            // if (response.url != null) {
+
+            //     cam01_IP = response.data[0].url.split(":")[1].split("//")[1];
+            //     cam01_Port = response.data[0].url.split(":")[2];
+
+            //     $.ajax({
+            //         url: myServerIP + ":" + myServerCamPort + "/imgSave/" + cam01_IP + "/" + cam01_Port,
+            //         type: "GET",
+            //         dataType: "jsonp",
+            //         success: function(response) {
+            //             $('#image_cam01').attr("src", 'http://' + cam01_IP + ':' + cam01_Port + '/videostream.cgi?user=admin&pwd=0632551113' );
+            //         },
+            //         error: function(response, status, error) {
+            //             console.log("crop image loading failure : " + status + ", " + error);
+            //         }
+            //     });
+            // } else $('#image_crop').attr("src", "../img/noImage.png");
 
 
-            if (response.mosquito_url != null) {
-                cam02_IP = response.data[1].url.split(":")[1].split("//")[1];
-                cam02_Port = response.data[1].url.split(":")[2];
+            // if (response.mosquito_url != null) {
+            //     cam02_IP = response.data[1].url.split(":")[1].split("//")[1];
+            //     cam02_Port = response.data[1].url.split(":")[2];
 
-                $.ajax({
-                    url: myServerIP + ":" + myServerCamPort + "/imgSave/" + cam02_IP + "/" + cam02_Port, //[TBD] 추후 아이피 포트 수정
-                    type: "GET",
-                    dataType: "jsonp",
-                    success: function(response) {
-                        $('#image_cam02').attr("src", 'http://' + cam02_IP + ':' + cam02_Port + '/videostream.cgi?user=admin&pwd=0632551113' );
-                    },
-                    error: function(response, status, error) {
-                        console.log("bug image loading failure : " + status + ", " + error);
-                    }
-                });
-            } else $('#image_bug').attr("src", "../img/noImage.png");
+            //     $.ajax({
+            //         url: myServerIP + ":" + myServerCamPort + "/imgSave/" + cam02_IP + "/" + cam02_Port, //[TBD] 추후 아이피 포트 수정
+            //         type: "GET",
+            //         dataType: "jsonp",
+            //         success: function(response) {
+            //             $('#image_cam02').attr("src", 'http://' + cam02_IP + ':' + cam02_Port + '/videostream.cgi?user=admin&pwd=0632551113' );
+            //         },
+            //         error: function(response, status, error) {
+            //             console.log("bug image loading failure : " + status + ", " + error);
+            //         }
+            //     });
+            // } else $('#image_bug').attr("src", "../img/noImage.png");
 
         },
         error: function(response, status, error) {
-
+            console.log(response);
         }
     });
 }

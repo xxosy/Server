@@ -42,10 +42,10 @@
           <div id="cameraView" style="width:100%;">
             <div class="cameraImg">
                 <!-- 스타일을 클래스로  -->
-                <img style="width:100%;height:auto;" id="image_cam01" onclick="popupShow('cam01')" src="" alt="" />
+                <img style="width:100%;height:auto;" id="image_cam01" onerror="this.src='img/noImage.png'" onclick="popupShow('cam01')" src="" alt="" />
             </div>
             <div class="cameraImg">
-                <img style="width:100%;height:auto;" id="image_cam02" onclick="popupShow('cam02')" src="" alt="" />
+                <img style="width:100%;height:auto;" id="image_cam02" onerror="this.src='img/noImage.png'" onclick="popupShow('cam02')" src="" alt="" />
             </div>
         </div>
     </div>
