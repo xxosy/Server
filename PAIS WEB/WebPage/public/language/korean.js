@@ -1,4 +1,124 @@
+$.lang['ko'] = {
+    temperature: '온도',
+    humidity: '습도',
+    light: '광량',
+    co2: 'CO₂',
+    ph: 'PH',
+    ec: 'EC',
+    ds: '지온',
 
+    wetTemp: '습구온도',
+    dew: '이슬점',
+    HD: 'HD',
+    VPD: 'VPD',
+
+    tb_installationLocation: '설치 위치 정보',
+    tb_weather: '외부 날씨 및 예보',
+    tb_VPDSuitability: '일일 VPD&HD 적합성',
+    tb_calendar: '달력',
+    realTimeCamera: '실시간 작물 이미지',
+    realTimeData: '실시간 미기후 정보',
+    controlFoundationInfo: '온·습도 제어 기초정보',
+    humidityControlGuide: '습도 제어 도우미',
+        vpdStatusLabel: 'VPD기반 온실 습도 상태',
+        currentValueButton: '현재값으로',
+        hdIdealGuide: '(적정 3~8 g/m³)',
+        vpdIdealGuide: '(적정 0.5~1.2 kPa)',
+        humidityIdeal: '적정',
+        humidityDry: '건조',
+        humidityHumid: '과습',
+        controlSolution1: "현재 온도에서 </br> <h3 style='display:inline; color:#33ccff'>가습</h3>이 필요합니다.",
+        controlSolution2: "작물이 생장하는데 최적의 환경입니다.",
+        controlSolution3: "현재 온도에서 </br> <h3 style='display:inline; color:#ff9933'>제습</h3>이 필요합니다.",
+    dailyVariationTotalGraph: '미기후 통합 정보',
+    dailyVariationClimateGraph: '온실 대기 변화 추이',
+    dailyVariationVPDGraph: 'VPD&HD 적합성 변화 추이',
+    dailyVariationGraph: '미기후 항목별 변화 추이',
+
+    // 공통 레이블
+    map_markerTitle: '명 칭',
+    map_markerSerial: '시리얼',
+    map_markerEdit: '수정',
+    map_markerDelete: '삭제',
+    map_msgUnacivateSensor: '제품을 삭제하시겠습니까?',
+    map_msgActivationSensor: '제품 등록이 완료되었습니다.',
+
+    // 배지 정보 모니터링 레이블
+    tb_realTimeWeight: '실시간 배지 무게 및 배액',
+    weight_channel: '배지 무게',
+    weight_drainage: '배액량',
+    weight_scale: '배액 저울 변화',
+    tb_calculatedWeightInfo: '실시간 배지 정보',
+        supply_number: '급액 횟수',
+        supply_time: '급액 시간',
+        supply_amount: '총급액량',
+        drainage_amount: '총배액량',
+        predict_freshWeight: '생체중량(예측)',
+        predict_evaporation: '증발산량(예측)',
+    tb_combinedWeightChart: '배지 통합 정보',
+    tb_individualWeightChart: '배지정보 항목별 변화 추이',
+
+    menu_climate: '미기후 정보',
+    menu_weight: '배지 정보',
+    menu_journal: '영농 일지',
+    menu_addSensor: '제품 등록',
+    menu_logout: '로그아웃',
+
+    zoomIn: '확대',
+    zoomOut: '축소',
+    reset: '초기화',
+    close: '닫기',
+
+    tb_record: '기록',
+        dailyTemperature: '일 평균 온실 온도',
+        dailyHumidity: '일 평균 온실 습도',
+        dailyHumidity: '일 평균 온실 습도',
+        cultivationSituation: '재배현황',
+        relevantFacts: '특이사항',
+    td_weather: '날씨',
+    td_cropGrowthImages: '작물 생육 이미지',
+        cropGrowthImages1: '작물 생육 이미지 Ⅰ',
+        cropGrowthImages2: '작물 생육 이미지 Ⅱ',
+
+    pleaseSetDate: '기간을 선택하여 주세요.',
+        startDate: '시작날짜',
+        endDate: '종료날짜',
+
+    enterProductKey: '제품에 표시된 제품키를 입력하세요.',
+
+    times: '회',
+    monday_long: '월요일',
+    tuesday_long: '화요일',
+    wednesday_long: '수용일',
+    thursday_long: '목요일',
+    friday_long: '금요일',
+    saturday_long: '토요일',
+    sunday_long: '일요일',
+    monday_short: '월',
+    tuesday_short: '화',
+    wednesday_short: '수',
+    thursday_short: '목',
+    friday_short: '금',
+    saturday_short: '토',
+    sunday_short: '일',
+
+    // 달 표기
+    january: '1월',
+    february: '2월',
+    march: '3월',
+    april: '4월',
+    may: '5월',
+    june: '6월',
+    july: '7월',
+    august: '8월',
+    september: '9월',
+    october: '10월',
+    november: '11월',
+    december: '12월',
+
+    // 구현 예정
+    unimplement: '구현 예정',
+}
 
 function KoreanLanguage() {}
 
@@ -6,24 +126,8 @@ KoreanLanguage.prototype.shortMonths = ["1월", "2월", "3월", "4월", "5월", 
 KoreanLanguage.prototype.weekdays = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
 KoreanLanguage.prototype.week = ['일', '월', '화', '수', '목', '금', '토'];
 
-KoreanLanguage.prototype.temperature = '온도';
-KoreanLanguage.prototype.humidity = '습도';
-KoreanLanguage.prototype.illumination = '광량';
-KoreanLanguage.prototype.carbonDioxide = 'CO₂';
-KoreanLanguage.prototype.ph = 'PH';
-KoreanLanguage.prototype.ec = 'EC';
-KoreanLanguage.prototype.soilTemperature = '지온';
-KoreanLanguage.prototype.dewPoint = '이슬점';
-KoreanLanguage.prototype.humidityDeficit = 'HD';
-KoreanLanguage.prototype.vapourPressureDeficit = 'VPD';
-
 //제품 등록 창
 KoreanLanguage.prototype.newSensorActivation = '새 제품 등록';
-KoreanLanguage.prototype.microClimateSensor = '환경센서';
-KoreanLanguage.prototype.soilMoistureSensor = '배지센서';
-KoreanLanguage.prototype.latitude = '위도';
-KoreanLanguage.prototype.longitude = '경도';
-KoreanLanguage.prototype.submit = '등록';
 
 KoreanLanguage.prototype.msg_nullTitleError = '명칭을 기입해주세요.';
 KoreanLanguage.prototype.msg_nullSensorSerialError = '환경센서(미기후), 배지센서 중 하나의 시리얼번호는 입력되어야 합니다.';

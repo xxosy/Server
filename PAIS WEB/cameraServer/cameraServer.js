@@ -231,12 +231,33 @@ var password = '0632551113';
 var camInfo_list = new Array();
 
 //TBD 카메라 리스트 가지고 와야함
-camInfo_list[0] = new CamInfo('210.117.128.253', 3333, 3335, userName, password);
-camInfo_list[1] = new CamInfo('210.117.128.253', 3334, 3336, userName, password);
+// camInfo_list[0] = new CamInfo('210.117.128.253', 3333, 3335, userName, password);
+// camInfo_list[1] = new CamInfo('210.117.128.253', 3334, 3336, userName, password);
 //camInfo_list[0] = new CamInfo('59.2.231.81', 80, userName, password);
 //camInfo_list[1] = new CamInfo('59.2.231.81', 8001, userName, password);
 //camInfo_list[2] = new CamInfo('210.111.218.44', 8000, 'admin1', password);
 //camInfo_list[1] = new CamInfo('210.117.128.201', 80, userName, password);
+
+request('http://211.230.136.100:3000/sensor/camera/list/all', function(error, response, body) {
+    var camInfo_all = JSON.parse(body).data;
+    if (camInfo_all.length != 0) {
+        var userName = 'admin';
+        var password = '0632551113';
+
+        var index = 0;
+        for (i = 0; i < camInfo_all.length; i++) {
+            var camInfo = camInfo_all[i];
+            if(camInfo.url != '-') {
+                var ip = camInfo.url.split(":")[1].split("//")[1];
+                camInfo_list[index++] = new CamInfo(ip, 3333, 3335, userName, password);
+                camInfo_list[index++] = new CamInfo(ip, 3334, 3336, userName, password);
+            }
+        }
+        onvifConnect();
+    } else {
+        return;
+    }
+});
 
 //var cam_hashMap = new HashMap();  //키 : URL, 값 : 위에 만든 클래스
 
@@ -244,29 +265,31 @@ var Cam = require('./lib/onvif').Cam,
     fs = require('fs');
 
 //onvif ī�޶� ���� �κ�(������ ������ ī�޶� ���� ���Ͽ� �ش��ϴ� ī�޶� ��ü ����)
-for (i = 0; i < camInfo_list.length; i++) {
-    var cam = new Cam({
-        hostname: camInfo_list[i].ip,
-        username: camInfo_list[i].userName,
-        password: camInfo_list[i].password,
-        port: camInfo_list[i].onvifPort
-    }, function(err) { //ī�޶� ��ü ���� �Ϸ� �ݹ��Լ� (���� �߻� ���� Ȯ�� ����)
-        if (err) {
-            consoleLog(err);
-            return;
-        }
-        for (j = 0; j < camInfo_list.length; j++) {
-            if (camInfo_list[j].ip == this.hostname && camInfo_list[j].onvifPort == this.port) {
-                camInfo_list[j].cam = this;
-                camInfo_list[j].isConnect = true;
-                break;
+function onvifConnect() {
+    for (i = 0; i < camInfo_list.length; i++) {
+        var cam = new Cam({
+            hostname: camInfo_list[i].ip,
+            username: camInfo_list[i].userName,
+            password: camInfo_list[i].password,
+            port: camInfo_list[i].onvifPort
+        }, function(err) { //ī�޶� ��ü ���� �Ϸ� �ݹ��Լ� (���� �߻� ���� Ȯ�� ����)
+            if (err) {
+                consoleLog(err);
+                return;
             }
-        }
-        consoleLog('connected, ' + this.hostname + ':' + this.port);
-    });
+            for (j = 0; j < camInfo_list.length; j++) {
+                if (camInfo_list[j].ip == this.hostname && camInfo_list[j].onvifPort == this.port) {
+                    camInfo_list[j].cam = this;
+                    camInfo_list[j].isConnect = true;
+                    break;
+                }
+            }
+            consoleLog('connected, ' + this.hostname + ':' + this.port);
+        });
 
-    //var key =
-    //cam_hashMap.set();
+        //var key =
+        //cam_hashMap.set();
+    }
 }
 
 function reConnect(camInfo) {

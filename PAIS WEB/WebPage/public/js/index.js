@@ -20,6 +20,7 @@ function setDatas() {
     changeRangeValue();
 
     //setTimeout("refreshLoop()", 5000);
+    setLanguage(getCookie("language"));
 }
 
 function refreshLoop() {
@@ -62,7 +63,7 @@ function setSensorValues() {
                 var yy = update_date.getFullYear();
                 update_date = yy+'-'+MM+'-'+dd;
 
-                $("#currentInfo_label").html("실시간 미기후 정보 (" + update_date + " " + update_time.split(".")[0] + ")");
+                $("#currentInfo_label").html($.lang[getCookie("language")]['realTimeData'] + "(" + update_date + " " + update_time.split(".")[0] + ")");
                 $("#temperature").html(Number(temperature).toFixed(2) + " ℃");
                 $("#humidity").html(Number(humidity).toFixed(2) + " %");
                 $("#co2").html(Number(co2).toFixed(2) + " ppm");
@@ -97,8 +98,8 @@ function setSensorValues() {
                 $("#HD_condition_icon").html(status_good);
                 $("#VPD_condition_icon").html(status_good);
 
-                $('#VPDHD_temp').html("온도 : " + dryTemp.toFixed(0) + " ℃");
-                $('#VPDHD_humi').html("습도 : " + humidity.toFixed(0) + " %");
+                $('#VPDHD_temp').html($.lang[getCookie("language")]['temperature'] + " : " + dryTemp.toFixed(0) + " ℃");
+                $('#VPDHD_humi').html($.lang[getCookie("language")]['humidity'] + " : " + humidity.toFixed(0) + " %");
 
                 $('#VPDHD_rangeTemp').val(dryTemp.toFixed(0));
                 $('#VPDHD_rangeHumi').val(humidity.toFixed(0));
@@ -147,14 +148,14 @@ function setSensorValues() {
 //type : temp, humi
 function changeRangeValue() {
     $(document).on('input', '#VPDHD_rangeTemp', function() {
-        $('#VPDHD_temp').html("온도 : " + $(this).val() + " ℃");
+        $('#VPDHD_temp').html($.lang[getCookie("language")]['temperature'] + " : " + $(this).val() + " ℃");
 
         var dryTemp = Number($(this).val());
         var humidity = Number($('#VPDHD_humi').html().split(' ')[2]);
         setVPDHD(dryTemp, humidity);
     });
     $(document).on('input', '#VPDHD_rangeHumi', function() {
-        $('#VPDHD_humi').html("습도 : " + $(this).val() + " %");
+        $('#VPDHD_humi').html($.lang[getCookie("language")]['humidity'] + " : " + $(this).val() + " %");
 
         var dryTemp = Number($('#VPDHD_temp').html().split(' ')[2]);
         var humidity = Number($(this).val());
@@ -174,14 +175,14 @@ function setVPDHD(dryTemp, humidity) {
 
     var condition, solution;
     if(vpd>1.2) {
-        condition = "<h1 style='color:#ff6600'>건조</h1>";
-        solution = "현재 온도에서 </br> <h3 style='display:inline; color:#33ccff'>가습</h3>이 필요합니다."
+        condition = "<h1 style='color:#ff6600'>" + $.lang[getCookie("language")]['humidityDry'] + "</h1>";
+        solution = $.lang[getCookie("language")]['controlSolution1'];
     } else if(vpd>0.5) {
-        condition = "<h1 style='color:#33cc33'>적정</h1>"
-        solution = "작물이 생장하는데 최적의 환경입니다."
+        condition = "<h1 style='color:#33cc33'>" + $.lang[getCookie("language")]['humidityIdeal'] + "</h1>"
+        solution = $.lang[getCookie("language")]['controlSolution2'];
     } else {
-        condition = "<h1 style='color:#0099ff'>과습</h1>";
-        solution = "현재 온도에서 </br> <h3 style='display:inline; color:#ff9933'>제습</h3>이 필요합니다."
+        condition = "<h1 style='color:#0099ff'>" + $.lang[getCookie("language")]['humidityHumid'] + "</h1>";
+        solution = $.lang[getCookie("language")]['controlSolution3'];
     }
 
     $('#greenhouseCondition').html(condition);
@@ -191,8 +192,8 @@ function setVPDHD(dryTemp, humidity) {
 function initVPDHD() {
     var dryTemp = Number($('#temperature').html().split(' ')[0]);
     var humidity = Number($('#humidity').html().split(' ')[0]);
-    $('#VPDHD_temp').html("온도 : " + dryTemp.toFixed(0) + " ℃");
-    $('#VPDHD_humi').html("습도 : " + humidity.toFixed(0) + " %");
+    $('#VPDHD_temp').html($.lang[getCookie("language")]['temperature'] + " : " + dryTemp.toFixed(0) + " ℃");
+    $('#VPDHD_humi').html($.lang[getCookie("language")]['humidity'] +" : " + humidity.toFixed(0) + " %");
 
     $('#VPDHD_rangeTemp').val(dryTemp.toFixed(0));
     $('#VPDHD_rangeHumi').val(humidity.toFixed(0));

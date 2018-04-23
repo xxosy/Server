@@ -57,6 +57,9 @@ function setDatas(date) {
 
     //데이터 다운로드 링크 연결
     $("#weightDataDown").attr("href", "http://221.159.48.9:3232/export/excel/weight/" + selectedSensor + "/" + currentDate);
+
+    // 언어 설정
+    setLanguage(getCookie("language"));
 }
 //============================================================================================
 //배지 센서(저울) 지도 생성 (마커랑 common 거랑 비슷하게 해서 다해줘야함)
@@ -411,16 +414,21 @@ function setWeightGraph(date) {
                     if (i != 0) {
                         // 배액량 계산
                         if(drainWeight > preDrainWeight) {
-                            if(preDrainWeight-prepreDrainWeight < -0.2 && drainWeight-preDrainWeight > 0.2) {}
-                            else if(!isDraining && drainWeight-preDrainWeight < 0.01) {} //미세하게 진동하는 값 고려해야 함
+                            if(preDrainWeight-prepreDrainWeight < -0.2 && drainWeight-preDrainWeight > 0.2) {
+                                drainDatas[i-1][1] = (drainWeight + prepreDrainWeight) / 2  // 에러데이터 그래프에서 제거
+                            }
+                            else if(!isDraining && drainWeight-preDrainWeight < 0.01) {} //미세하게 진동하는 값 무시
                             else {
                                 isDraining = true
                                 useValue += drainWeight-preDrainWeight
                             }
                         }
-                        // else if (drainWeight-preDrainWeight < -0.5 && preDrainWeight-prepreDrainWeight > 0.5) {
-                        //     useValue += drainWeight-preDrainWeight
-                        // }
+                        else if (drainWeight-preDrainWeight < -0.5 && preDrainWeight-prepreDrainWeight > 0.5) { // 에러 데이터 그래프에서 제거
+                            let errorAmount = preDrainWeight-drainWeight
+                            useValue -= errorAmount
+                            drainDatas[i-1][1] -= errorAmount
+                            useDatas[i-1][1] -= errorAmount
+                        }
                         else if (isDraining) {
                             if(drainWeight > prepreDrainWeight) {
                                 useValue += drainWeight-preDrainWeight
@@ -436,7 +444,9 @@ function setWeightGraph(date) {
                         // 급액 횟수&시간 구하기
                         currWeight = medium_weight;
                         if(currWeight > preWeight) {
-                            if(preWeight-prepreWeight < -0.5 && currWeight-preWeight > 0.5) {}
+                            if(preWeight-prepreWeight < -0.5 && currWeight-preWeight > 0.5) { // 에러 데이터 그래프에서 제거
+                                datas[i-1][1] = (currWeight + prepreWeight) / 2
+                            }
                             else if(!isSupplying && currWeight-preWeight < 0.01) {} //미세하게 진동하는 값 무시
                             else {
                                 if(!isSupplying) {
@@ -448,16 +458,33 @@ function setWeightGraph(date) {
                                 supValue += currWeight-preWeight
                                 if(isDraining) supValue += drainWeight-preDrainWeight
                             }
-                        } else if (currWeight-preWeight < -0.2 && preWeight-prepreWeight > 0.2) {
-                            supValue += currWeight-preWeight
+                        } else if (currWeight-preWeight < -0.2 && preWeight-prepreWeight > 0.2) { // 에러 데이터 그래프에서 제거
+                            let errorAmount = preWeight-currWeight
+                            supValue -= errorAmount
+                            datas[i-1][1] -= errorAmount
                         } else if(isSupplying) {
                             isSupplying = false
-                            if(supValue > 0.05) {
+                            if(supValue > 0.15) {
                                 supplyCount++
                                 totalSupValue += supValue
                                 supplyLogs += '<td>' + convertKoraTime(supStartTime) +' ('+ parseInt(supValue*1000) +'ml)'+ '</td>'
                                 if(supplyCount % 3 == 0) supplyLogs += '</tr> <tr>';
                             }
+                        }
+
+                        // 수확량 확인
+                        var diffSoilWeight = preWeight-currWeight;  // 급액량 차이
+                        var diffUseValue = useValue-preUseValue;    // 배액량 차이
+                        if( (currWeight-preWeight > 0) && (preWeight-prepreWeight > 0) ) {   // 급액 도중 수확
+                            if( currWeight-preWeight <= preWeight-prepreWeight-0.005) {    // 단위 급액량은 종료될 때까지 유지되거나 커짐
+                            }
+                        }
+                        else if(diffSoilWeight-diffUseValue > 0.05 && diffSoilWeight < 0.2) {
+                            var d = new Date(datas[i][0]);
+                            amountOfHarvest += diffSoilWeight-diffUseValue;
+                            harvestTime += '<td>' + convertKoraTime(d) +' ('+ ((diffSoilWeight-diffUseValue)*1000).toFixed(0) +'g)'+ '</td>';
+                            harvestCount++;
+                            if(harvestCount % 3 == 0) harvestTime += '</tr> <tr>';
                         }
 
                         preUseValue = useValue;
@@ -483,12 +510,13 @@ function setWeightGraph(date) {
                 supplyLogs  += '</tr>';
 
                 //총 공급량 배액량 세팅
-                $("#supply_number").html(supplyCount + "회");
+                $("#supply_number").html(supplyCount + " " + $.lang[getCookie("language")]['times']);
                 $("#supply_time").html(supplyLogs);
                 $("#harvest_time").html(harvestTime);
                 $("#supply").html(totalSupValue.toFixed(2) + "kg");
                 $("#use").html(useValue.toFixed(2) + "kg");
-                $("#eva").html("(구현예정)");
+                $("#eva").html("(" + $.lang[getCookie('language')]['unimplement'] + ")");
+                $("#plantWeight").html("(" + $.lang[getCookie('language')]['unimplement'] + ")");
 
 
                 //연결되어 있는 센서 시리얼 획득 후(success 안) 광센서 값 가져오기
@@ -498,7 +526,7 @@ function setWeightGraph(date) {
                 console.log(drainDatas);
                 drawWeightGraph(datas, useDatas, kalman(lightDatas));
 
-                drawWeightEachGraph(datas, useDatas, drainDatas);
+                drawWeightEachGraph(datas, useDatas, drainDatas, kalman(lightDatas));
             }
 
         },
@@ -540,7 +568,7 @@ function drawWeightGraph(data, useDatas, lightDatas) {
         }],
         yAxis: [{
             title: {
-                text: '광량',
+                text: $.lang[getCookie("language")]['light'],
                 style: {
                     color: Highcharts.getOptions().colors[2]
                 }
@@ -555,7 +583,7 @@ function drawWeightGraph(data, useDatas, lightDatas) {
 
         }, {
             title: {
-                text: '배지 무게',
+                text: $.lang[getCookie("language")]['weight_channel'],
                 style: {
                     color: Highcharts.getOptions().colors[0]
                 }
@@ -569,7 +597,7 @@ function drawWeightGraph(data, useDatas, lightDatas) {
 
         }, {
             title: {
-                text: '배액량',
+                text: $.lang[getCookie("language")]['weight_drainage'],
                 style: {
                     color: Highcharts.getOptions().colors[3]
                 }
@@ -586,7 +614,7 @@ function drawWeightGraph(data, useDatas, lightDatas) {
             shared: true
         },
         series: [{
-            name: '광량',
+            name: $.lang[getCookie("language")]['light'],
             type: 'area',
             color: Highcharts.getOptions().colors[2],
             fillOpacity: 0,
@@ -597,7 +625,7 @@ function drawWeightGraph(data, useDatas, lightDatas) {
             }
 
         }, {
-            name: '배지 무게',
+            name: $.lang[getCookie("language")]['weight_channel'],
             type: 'area',
             color: Highcharts.getOptions().colors[0],
             fillOpacity: 0,
@@ -608,7 +636,7 @@ function drawWeightGraph(data, useDatas, lightDatas) {
             }
 
         }, {
-            name: '배액량',
+            name: $.lang[getCookie("language")]['weight_drainage'],
             type: 'area',
             color: Highcharts.getOptions().colors[3],
             fillOpacity: 0,
@@ -623,29 +651,124 @@ function drawWeightGraph(data, useDatas, lightDatas) {
 
 var isFirstDraw = true;
 
-function drawWeightEachGraph(datas, useDatas, liquidDatas) {
+function drawWeightEachGraph(datas, useDatas, liquidDatas, litghtDatas) {
 
     var datasList = new Array();
     datasList[0] = datas;
     datasList[1] = useDatas;
     datasList[2] = liquidDatas;
+    datasList[3] = litghtDatas;
 
-    for (i = 0; i < 3; i++) {
+    Highcharts.chart('changeGraph', {
+        chart: {
+            zoomType: 'x',
+            backgroundColor: 'rgba(0,0,0,0)'
+        },
+        title: {
+            text: ''
+        },
+        legend: {
+            // enabled: false
+            itemStyle: {
+                color: '#FFF',
+                fontWeight: 'bold'
+            },
+            itemHiddenStyle: {
+                color: '#888'
+            }
+        },
+        exporting: {
+            enabled: false
+        },
+        credits: {
+            enabled: false
+        },
+        xAxis: [{
+            type: 'datetime',
+            crosshair: true
+        }],
+        yAxis: [{
+            title: {
+                text: '광량',
+                style: {
+                    color: Highcharts.getOptions().colors[2]
+                }
+            },
+            labels: {
+                format: '{value} ㏓',
+                style: {
+                    color: Highcharts.getOptions().colors[2]
+                }
+            },
+            opposite: true,
+            showFirstLabel: false
+        }, {
+            title: {
+                text: '배지 무게',
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+            labels: {
+                format: '{value} kg',
+                x: 3,
+                y: 13,
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                }
+            },
+            opposite: true,
+            showFirstLabel: false
+        }],
+        plotOptions: {
+            area: {
+                threshold: null
+            }
+        },
+        tooltip: {
+            valueDecimals: 2,
+            shared: true
+        },
+        series: [{
+            name: '광량',
+            type: 'area',
+            color: Highcharts.getOptions().colors[2],
+            fillOpacity: 0,
+            yAxis: 0,
+            data: datasList[3],
+            tooltip: {
+                valueSuffix: ' ㏓'
+            }
+
+        }, {
+            name: '배지 무게',
+            type: 'area',
+            color: Highcharts.getOptions().colors[0],
+            fillOpacity: 0.3,
+            yAxis: 1,
+            data: datasList[0],
+            tooltip: {
+                valueSuffix: ' kg'
+            },
+        }]
+    });
+
+    for (i = 1; i < 3; i++) {
 
         var title;
         var valueSuffix = " ";
         switch (i) {
             case 0:
             valueSuffix += "kg";
-            title = "배지 무게";
+            title = $.lang[getCookie("language")]['weight_channel'];
             break;
             case 1:
             valueSuffix += "kg";
-            title = "배액량";
+            title = $.lang[getCookie("language")]['weight_drainage'];
             break;
             case 2:
             valueSuffix += "kg";
-            title = "배액 저울 변화";
+            title = $.lang[getCookie("language")]['weight_scale'];
             break;
         }
 

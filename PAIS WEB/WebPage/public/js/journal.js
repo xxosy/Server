@@ -58,6 +58,7 @@ function setDatas(selectedDate) {
     //http://221.159.48.9:3000/export/excel/all/P5224/2017-06-11
     //$("#allDataDown").attr("href", "http://221.159.48.9:3000/export/excel/all/" + selectedSensor + "/" + currentDate);
     refreshJournal();
+    setLanguage(getCookie("language"));
 }
 
 

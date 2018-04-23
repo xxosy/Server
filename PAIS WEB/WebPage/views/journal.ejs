@@ -21,11 +21,11 @@
         현재 반투명 흰색으로 처리 해뒀으니 추후 체크-->
         <section id="popupSection">
             <div style="padding-bottom: 3px">
-                <button class="zoom-in grayButton">확대</button>
-                <button class="zoom-out grayButton">축소</button>
+                <button class="zoom-in grayButton" data-langLabel='zoomIn'>확대</button>
+                <button class="zoom-out grayButton" data-langLabel='zoomOut'>축소</button>
                 <input type="range" class="zoom-range">
-                <button class="reset grayButton">초기화</button>
-                <button class="grayButton" onclick="popupClose()">닫기</button>
+                <button class="reset grayButton" data-langLabel='reset'>초기화</button>
+                <button class="grayButton" onclick="popupClose()" data-langLabel='close'>닫기</button>
             </div>
             <div style="background-color:rgba(255,255,255,0.2);">
                 <div class="panzoom">
@@ -123,16 +123,17 @@
         <!-- 좌측 라인 -->
         <div class="w3-col w3-half" style="margin-top:38px">
             <div class="w3-container w3-alpha-black w3-margin">
-                <h4 class="w3-text-white w3-border-bottom">달력</h4>
+                <h4 class="w3-text-white w3-border-bottom" data-langLabel='tb_calendar'>달력</h4>
                 <div style="width:100%;">
                     <div id="calendar"> </div>
                 </div>
             </div>
 
-            <div class="w3-container w3-alpha-black w3-margin">
+            <%include layout/sensor-location.ejs %>
+            <!-- <div class="w3-container w3-alpha-black w3-margin">
                 <h4 class="w3-text-white w3-border-bottom">설치 위치 정보</h4>
                 <div id="googleMap" style="height:30em;padding-bottom:2em;"></div>
-            </div>
+            </div> -->
 
         </div>
 
@@ -140,24 +141,24 @@
         <div class="w3-col w3-half" style="margin-top:38px">
             <div class="w3-container w3-alpha-black w3-margin">
                 <div class="w3-border-bottom" style="margin-top:10px;padding-bottom:10px">
-                    <h7 class="w3-text-white" style="font-size:20px;width:100px">기록</h7>
+                    <h7 class="w3-text-white" style="font-size:20px;width:100px" data-langLabel='tb_record'>기록</h7>
 
                     <input type="button" value="저 장" style="float:right;color: #6496c8;background: rgba(0,0,0,0);border: solid 2px #6496c8;" onclick="saveJournal()">
                      <input type="button" value="이미지 삭제" style="float:right;color: #6496c8;background: rgba(0,0,0,0);border: solid 2px #6496c8;margin-right:5px;" onclick="deleteImage()">
 
                 </div>
                 <div style="font-size:1.2em">
-                    <span id="DailyTemperatureLabel">일 평균 온실 온도</span> : <em id='averageTemp'></em> ℃
+                    <span id="DailyTemperatureLabel" data-langLabel='dailyTemperature'>일 평균 온실 온도</span> : <em id='averageTemp'></em> ℃
                     <br/>
-                    <span id="DailyHumidityLabel">일 평균 온실 습도</span> : <em id='averageHumi'></em> %
+                    <span id="DailyHumidityLabel" data-langLabel='dailyHumidity'>일 평균 온실 습도</span> : <em id='averageHumi'></em> %
                 </div>
                 <div>
                     <div class="w3-half w3-padding-small" style="text-align:center;">
-                        <h5 class="w3-text-white" style="font-size:1.1em;">재배현황</h5>
+                        <h5 class="w3-text-white" style="font-size:1.1em;" data-langLabel='cultivationSituation'>재배현황</h5>
                         <textarea id="condition" class="textArea"></textarea>
                     </div>
                     <div class="w3-half w3-padding-small" style="text-align:center;">
-                        <h5 class="w3-text-white" style="font-size:1.1em;">특이사항</h5>
+                        <h5 class="w3-text-white" style="font-size:1.1em;" data-langLabel='relevantFacts'>특이사항</h5>
                         <textarea id="significant" class="textArea"></textarea>
                     </div>
                 </div>
@@ -168,27 +169,27 @@
 
             </div>
 
-            <div class="w3-container w3-alpha-black w3-margin">
+            <!-- <div class="w3-container w3-alpha-black w3-margin">
                 <h4 class="w3-text-white w3-border-bottom">날씨</h4>
                 <div id="weatherGraph" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-            </div>
+            </div> -->
 
             <%include layout/daily-vpd-hd.ejs%>
 
         </div>
 	
 	<div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-            <h4 class="w3-text-white w3-border-bottom">VPD&HD 적합성 변화 추이</h4>
+            <h4 class="w3-text-white w3-border-bottom" data-langLabel='dailyVariationVPDGraph'>VPD&HD 적합성 변화 추이</h4>
             <div id="graphVpd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
             <div id="graphHd" class="borderRadius" style="width:50%; height:auto; float:left"></div>
         </div>
 
         <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-            <h4 class="w3-text-white w3-border-bottom">작물 생육 이미지</h4>
+            <h4 class="w3-text-white w3-border-bottom" data-langLabel='td_cropGrowthImages'>작물 생육 이미지</h4>
 
             <div style="width:100%;">
                 <!-- 카메라 부분 이미지 html div로 수정 -->
-                <h5>작물 생육 이미지 Ⅰ</h5>
+                <h5 data-langLabel='cropGrowthImages1'>작물 생육 이미지 Ⅰ</h5>
                 <div class="cameraImageHistoryDiv">
                     <div>00:00</div>
                     <div id="cam01_0"></div>
@@ -239,7 +240,7 @@
                 </div>
             </div>
 
-            <h5>작물 생육 이미지 Ⅱ</h5>
+            <h5 data-langLabel='cropGrowthImages2'>작물 생육 이미지 Ⅱ</h5>
             <div style="width:100%;">
                 <div class="cameraImageHistoryDiv">
                     <div>00:00</div>
@@ -293,7 +294,7 @@
         </div>
 
         <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-            <h4 class="w3-text-white w3-border-bottom">
+            <h4 class="w3-text-white w3-border-bottom" data-langLabel='dailyVariationTotalGraph'>
                 미기후 통합 정보
                 <!-- <span id="download" class="downloadLink" onclick="downloadCalPopupShow()">[데이터 다운로드]</span>
                 <div id="downloadMask">
@@ -321,12 +322,12 @@
         </div>
 
         <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-            <h4 class="w3-text-white w3-border-bottom">온실 대기 변화 추이</h4>
+            <h4 class="w3-text-white w3-border-bottom"  data-langLabel='dailyVariationClimateGraph'>온실 대기 변화 추이</h4>
             <div id="graphAirHumidity" class="borderRadius"></div>
         </div>
 
         <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-            <h4 class="w3-text-white w3-border-bottom">미기후 항목별 변화 추이</h4>
+            <h4 class="w3-text-white w3-border-bottom" data-langLabel='dailyVariationGraph'>미기후 항목별 변화 추이</h4>
             <div id="graph" class="borderRadius"></div>
         </div>
 
@@ -350,6 +351,10 @@
   <script src="js/lib/jquery.min.js"></script>
   <script src="js/lib/jquery.panzoom.min.js"></script>
 
+  <script src="language/settingLanguage.js"></script>
+  <script src="language/korean.js"></script>
+  <script src="language/english.js"></script>
+
   <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
@@ -357,7 +362,6 @@
   <script src="https://code.highcharts.com/highcharts-more.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
-
 
   <script>
     $(document).ready(function() {
@@ -396,6 +400,8 @@
                 var today = '';
 
                 $('#titleDate').html(getFormatingDate(new Date()));
+                $('#titleText').html($.lang[getCookie("language")]['menu_journal']);
+
                 drawCalendar();
                 createMap();
                 setHighchartsOption();

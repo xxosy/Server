@@ -76,6 +76,9 @@ function kakaoLogin() {
 
 function kakaoLogout() {
     //카카오 로그아웃 처리
+    // Kakao.Auth.logout(function(data){
+    //         alert(data)
+    //     });
     $.ajax({
         dataType: "json",
         url: myServerIP + "/kakaoLogout/" + getCookie(cookie_accessToken),
@@ -222,31 +225,31 @@ function drawGraph(datas) {
         switch (i) {
             case 0:
                 valueSuffix += "℃";
-                title = "온도";
+                title = $.lang[getCookie("language")]['temperature'];
                 break;
             case 1:
                 valueSuffix += "%";
-                title = "습도";
+                title = $.lang[getCookie("language")]['humidity'];
                 break;
             case 2:
                 valueSuffix += "㏓";
-                title = "광량";
+                title = $.lang[getCookie("language")]['light'];
                 break;
             case 3:
                 valueSuffix += "ppm";
-                title = "CO₂";
+                title = $.lang[getCookie("language")]['co2'];
                 break;
             case 4:
                 valueSuffix += "ph";
-                title = "PH";
+                title = $.lang[getCookie("language")]['ph'];
                 break;
             case 5:
                 valueSuffix += "ms/cm";
-                title = "EC";
+                title = $.lang[getCookie("language")]['ec'];
                 break;
             case 6:
                 valueSuffix += "℃";
-                title = "지온";
+                title = $.lang[getCookie("language")]['ds'];
                 break;
         }
 
@@ -392,7 +395,7 @@ function drawGraphAll(datas) {
                 }
             },
             title: {
-                text: '온도',
+                text:$.lang[getCookie("language")]['temperature'],
                 style: {
                     color: Highcharts.getOptions().colors[2]
                 }
@@ -401,7 +404,7 @@ function drawGraphAll(datas) {
 
         }, {
             title: {
-                text: '습도',
+                text:$.lang[getCookie("language")]['humidity'],
                 style: {
                     color: Highcharts.getOptions().colors[0]
                 }
@@ -415,7 +418,7 @@ function drawGraphAll(datas) {
 
         }, {
             title: {
-                text: '광량',
+                text: $.lang[getCookie("language")]['light'],
                 style: {
                     color: Highcharts.getOptions().colors[3]
                 }
@@ -434,7 +437,7 @@ function drawGraphAll(datas) {
                 }
             },
             title: {
-                text: 'CO₂',
+                text: $.lang[getCookie("language")]['co2'],
                 style: {
                     color: Highcharts.getOptions().colors[4]
                 }
@@ -443,7 +446,7 @@ function drawGraphAll(datas) {
 
         }, {
             title: {
-                text: 'PH',
+                text: $.lang[getCookie("language")]['ph'],
                 style: {
                     color: Highcharts.getOptions().colors[5]
                 }
@@ -457,7 +460,7 @@ function drawGraphAll(datas) {
 
         }, {
             title: {
-                text: 'EC',
+                text: $.lang[getCookie("language")]['ec'],
                 style: {
                     color: Highcharts.getOptions().colors[6]
                 }
@@ -470,7 +473,7 @@ function drawGraphAll(datas) {
             }
         }, {
             title: {
-                text: '지온',
+                text: $.lang[getCookie("language")]['ds'],
                 style: {
                     color: Highcharts.getOptions().colors[7]
                 }
@@ -487,7 +490,7 @@ function drawGraphAll(datas) {
             shared: true
         },
         series: [{
-            name: '온도',
+            name: $.lang[getCookie("language")]['temperature'],
             type: 'area',
             color: Highcharts.getOptions().colors[2],
             fillOpacity: 0,
@@ -498,7 +501,7 @@ function drawGraphAll(datas) {
             }
 
         }, {
-            name: '습도',
+            name: $.lang[getCookie("language")]['humidity'],
             type: 'area',
             color: Highcharts.getOptions().colors[0],
             fillOpacity: 0,
@@ -509,7 +512,7 @@ function drawGraphAll(datas) {
             }
 
         }, {
-            name: '광량',
+            name: $.lang[getCookie("language")]['light'],
             type: 'area',
             color: Highcharts.getOptions().colors[3],
             fillOpacity: 0,
@@ -519,7 +522,7 @@ function drawGraphAll(datas) {
                 valueSuffix: ' ㏓'
             }
         }, {
-            name: 'CO₂',
+            name: $.lang[getCookie("language")]['co2'],
             type: 'area',
             color: Highcharts.getOptions().colors[4],
             fillOpacity: 0,
@@ -530,7 +533,7 @@ function drawGraphAll(datas) {
             }
 
         }, {
-            name: 'PH',
+            name: $.lang[getCookie("language")]['ph'],
             type: 'area',
             color: Highcharts.getOptions().colors[5],
             fillOpacity: 0,
@@ -541,7 +544,7 @@ function drawGraphAll(datas) {
             }
 
         }, {
-            name: 'EC',
+            name: $.lang[getCookie("language")]['ec'],
             type: 'area',
             color: Highcharts.getOptions().colors[6],
             fillOpacity: 0,
@@ -551,7 +554,7 @@ function drawGraphAll(datas) {
                 valueSuffix: ' ms/cm'
             }
         }, {
-            name: '지온',
+            name: $.lang[getCookie("language")]['ds'],
             type: 'area',
             color: Highcharts.getOptions().colors[6],
             fillOpacity: 0,
@@ -601,7 +604,7 @@ function drawGraphAirHumidity(datas) {
                 }
             },
             title: {
-                text: '온도',
+                text: $.lang[getCookie("language")]['temperature'],
                 style: {
                     color: Highcharts.getOptions().colors[2]
                 }
@@ -610,7 +613,7 @@ function drawGraphAirHumidity(datas) {
 
         }, {
             title: {
-                text: '습도',
+                text: $.lang[getCookie("language")]['humidity'],
                 style: {
                     color: Highcharts.getOptions().colors[0]
                 }
@@ -624,7 +627,7 @@ function drawGraphAirHumidity(datas) {
 
         }, {
             title: {
-                text: '이슬점',
+                text: $.lang[getCookie("language")]['dew'],
                 style: {
                     color: Highcharts.getOptions().colors[3]
                 }
@@ -643,7 +646,7 @@ function drawGraphAirHumidity(datas) {
                 }
             },
             title: {
-                text: 'HD',
+                text: $.lang[getCookie("language")]['HD'],
                 style: {
                     color: Highcharts.getOptions().colors[4]
                 }
@@ -657,7 +660,7 @@ function drawGraphAirHumidity(datas) {
                 }
             },
             title: {
-                text: 'VPD',
+                text: $.lang[getCookie("language")]['VPD'],
                 style: {
                     color: Highcharts.getOptions().colors[5]
                 }
@@ -669,7 +672,7 @@ function drawGraphAirHumidity(datas) {
             shared: true
         },
         series: [{
-            name: '온도',
+            name: $.lang[getCookie("language")]['temperature'],
             type: 'area',
             color: Highcharts.getOptions().colors[2],
             fillOpacity: 0,
@@ -680,7 +683,7 @@ function drawGraphAirHumidity(datas) {
             }
 
         }, {
-            name: '습도',
+            name: $.lang[getCookie("language")]['humidity'],
             type: 'area',
             color: Highcharts.getOptions().colors[0],
             fillOpacity: 0,
@@ -691,7 +694,7 @@ function drawGraphAirHumidity(datas) {
             }
 
         }, {
-            name: '이슬점',
+            name: $.lang[getCookie("language")]['dew'],
             type: 'area',
             color: Highcharts.getOptions().colors[3],
             fillOpacity: 0,
@@ -701,7 +704,7 @@ function drawGraphAirHumidity(datas) {
                 valueSuffix: ' °C'
             }
         }, {
-            name: 'HD',
+            name: $.lang[getCookie("language")]['HD'],
             type: 'area',
             color: Highcharts.getOptions().colors[4],
             fillOpacity: 0,
@@ -711,7 +714,7 @@ function drawGraphAirHumidity(datas) {
                 valueSuffix: ' g/m³'
             }
         }, {
-            name: 'VPD',
+            name: $.lang[getCookie("language")]['VPD'],
             type: 'area',
             color: Highcharts.getOptions().colors[5],
             fillOpacity: 0,
@@ -791,12 +794,12 @@ function drawVPDHD(vpdDatas, hdDatas) {
 
         series: [
           {
-            name: 'VPD',
+            name: $.lang[getCookie("language")]['VPD'],
             data: vpdDatas,
             color: Highcharts.getOptions().colors[5],
             zIndex: 1
           }, {
-              name: '최적 VPD',
+              name: $.lang[getCookie("language")]['humidityIdeal'] + ' ' + $.lang[getCookie("language")]['VPD'],
               data: guideVpdData,
               type: 'arearange',
               lineWidth: 1.2,
@@ -860,12 +863,12 @@ function drawVPDHD(vpdDatas, hdDatas) {
         },
 
         series: [{
-            name: 'HD',
+            name: $.lang[getCookie("language")]['HD'],
             data: hdDatas,
             color: Highcharts.getOptions().colors[4],
             zIndex: 1
         }, {
-            name: '최적 HD',
+            name: $.lang[getCookie("language")]['humidityIdeal'] + ' ' + $.lang[getCookie("language")]['HD'],
             data: guideHdData,
             type: 'arearange',
             lineWidth: 1.2,
@@ -1089,7 +1092,7 @@ function createMap() {
 
     var url = myServerIP + ":" + sensorServerPort + "/usersensor/sensors/";
     var usercode = getCookie(cookie_usercode);
-    console.log(getCookie(cookie_usercode));
+    // console.log(getCookie(cookie_usercode));
     var query = usercode;
     var signature = createhmac(query);
     $.ajax({
@@ -1146,13 +1149,13 @@ function createMap() {
 
                             var infowindow = new google.maps.InfoWindow({
                                 content: "<div style='font-size:1.3em;color:#000;'>" +
-                                    "명　칭 : <b>" + title + "</b><br/>" +
-                                    "시리얼 : <b>" + serial + "</b></div>" +
+                                    $.lang[getCookie("language")]['map_markerTitle'] + " : <b>" + title + "</b><br/>" +
+                                    $.lang[getCookie("language")]['map_markerSerial'] + " : <b>" + serial + "</b></div>" +
                                     "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
-                                    "<a style='margin-right:5px;' onclick='selectPosition(\"" + serial + "\")'>수정</a>" +
+                                    "<a style='margin-right:5px;' onclick='selectPosition(\"" + serial + "\")'>"+ $.lang[getCookie("language")]['map_markerEdit'] + "</a>" +
                                     "</div>"+
                                     "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
-                                    "<a style='margin-right:5px;' onclick='deleteDevice(\"" + serial + "\");'>삭제</a>" +
+                                    "<a style='margin-right:5px;' onclick='deleteDevice(\"" + serial + "\");'>" + $.lang[getCookie("language")]['map_markerDelete'] + "</a>" +
                                     "</div>",
                                 maxWidth: 300
                             });
@@ -1221,7 +1224,9 @@ function markerListener(map, marker, title, serial) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //date 의 yyyy-mm-dd(요일) 형태 반환
 function getFormatingDate(date) {
-    var week = new Array('일', '월', '화', '수', '목', '금', '토');
+    var week = new Array($.lang[getCookie("language")]['sunday_short'], $.lang[getCookie("language")]['monday_short'], $.lang[getCookie("language")]['tuesday_short'],
+                        $.lang[getCookie("language")]['wednesday_short'], $.lang[getCookie("language")]['thursday_short'], $.lang[getCookie("language")]['friday_short'],
+                        $.lang[getCookie("language")]['saturday_short']);
 
     var yyyy = date.getFullYear();
     var mm = date.getMonth() + 1;
@@ -1311,8 +1316,13 @@ function syncExtremes(e) {
 function setHighchartsOption() {
     Highcharts.setOptions({
         lang: {
-            shortMonths: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-            weekdays: ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"]
+            shortMonths: [$.lang[getCookie("language")]['january'], $.lang[getCookie("language")]['february'],$.lang[getCookie("language")]['march'],
+                        $.lang[getCookie("language")]['april'], $.lang[getCookie("language")]['may'], $.lang[getCookie("language")]['june'],
+                        $.lang[getCookie("language")]['july'], $.lang[getCookie("language")]['august'], $.lang[getCookie("language")]['september'],
+                        $.lang[getCookie("language")]['october'], $.lang[getCookie("language")]['november'], $.lang[getCookie("language")]['december'],],
+            weekdays: [$.lang[getCookie("language")]['sunday_long'], $.lang[getCookie("language")]['monday_long'], $.lang[getCookie("language")]['tuesday_long'],
+                        $.lang[getCookie("language")]['wednesday_long'], $.lang[getCookie("language")]['thursday_long'], $.lang[getCookie("language")]['friday_long'],
+                        $.lang[getCookie("language")]['saturday_long']]
         }
     });
 }
@@ -1337,7 +1347,7 @@ function showComponentToggle(componentId, iconId) {
 //제품 삭제
 function deleteDevice(serial) {
     //서버로 제품 삭제 요청
-    if (confirm(serial + ' 제품을 삭제하시겠습니까?')) {
+    if (confirm(serial + ' ' + $.lang[getCookie("language")]['map_msgUnacivateSensor'])) {
         var usercode = getCookie(cookie_usercode);
         var query = usercode;
         var signature = createhmac(query);
@@ -1500,12 +1510,12 @@ function addDevice(serial){
         },
         dataType: "json",
         success: function(response){
-            console.log(response);
+            // console.log(response);
         },
         error: function(response,status,error){}
     });
     setTimeout(function() {
-        alert("[" + serial + "] 제품 등록이 완료되었습니다.");
+        alert("[" + serial + "] " + $.lang[getCookie("language")]['map_msgActivationSensor']);
         popupClose();
         if (document.location.href.indexOf("weight") != -1) createMapWeight();
         else createMap();

@@ -13,8 +13,8 @@
         <div style ="width:100%;height:100%;position: fixed;z-index: 10003" onclick="popupClose()"></div>
         <div style="margin-left:37%;margin-top:10%;width:26%;background-color:rgb(255,255,255);position:fixed;z-index:10004">
             <div style = "border:2px solid grey;padding-left:64px">
-                <h3 style="font-size:24px;" class="w3-text-black" style="">제품키 등록</h3>
-                <h3 style="font-size:12px;">제품에 표시된 제품키를 입력하세요.</h3>
+                <h3 style="font-size:24px;" class="w3-text-black" style="" data-langLabel='menu_addSensor'>제품키 등록</h3>
+                <h3 style="font-size:12px;" data-langLabel='enterProductKey'>제품에 표시된 제품키를 입력하세요.</h3>
                 <div style="padding-right:64px;"><input style = "width:100%;" id = "serial2insert" type="text" placeholder="Serial*"></div>
                 <div style="margin-top:20px;text-align:right;padding-right:64px;"><input type="button" value="등 록" style="color: #6496c8;background: rgba(0,0,0,0);border: solid 2px #6496c8;"onclick="clickInsert()"></div>
                 <div style="height:10px"></div>
@@ -23,7 +23,7 @@
     </div>
 
     <div class="popup borderRadius" style="width: 50%; height: 40%;" id="popup">
-        <img id="popupImg" src="<!--img/farm_.jpg-->" alt="" style="width:100%;hegith:auto;">
+        <img id="popupImg" src="img/farm_.jpg" alt="" style="width:100%;hegith:auto;">
     </div>
 
     <!-- Video Stream Popup -->
@@ -40,6 +40,6 @@
         </div>
     </div>
 
-    <div style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background:gray; background-image: url('<!--../img/farm.jpg-->'); background-size: cover; z-index: -2;"></div>
+    <div style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background:gray; background-image: url('../img/farm.jpg'); background-size: cover; z-index: -2;"></div>
     <!-- 배경 어둡거나 색감 변경 하고 싶을때 -->
     <!-- <div style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background-color: rgba(0,0,0,0.6); background-size: cover; z-index: -1;"></div> -->

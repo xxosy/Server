@@ -1,38 +1,27 @@
-var language;
-
-function languageInit() {
-    if(getCookie("language") == false) {
+$.lang = {};
+function setLanguage(currentLanguage) {
+    if(getCookie("language") == 'undefined' || getCookie("language") == "") {
         setCookie("language", "ko", 30);
-        language = new KoreanLanguage();
+        currentLanguage = "ko";
     }
-    else {
-        switch(getCookie("language")) {
-            case "ko" :
-                language = new KoreanLanguage();
-                $('#language_ko').addClass("w3-white");
-                $('#language_en').removeClass("w3-white"); break;
-            case "en" :
-                language = new EnglishLanguage();
-                $('#language_ko').removeClass("w3-white");
-                $('#language_en').addClass("w3-white"); break;
-        }
+
+    if (currentLanguage == 'en') {
+        $('#language_en').addClass("w3-white");
+        $('#language_ko').removeClass("w3-white");
+    } else if (currentLanguage == 'ko') {
+        $('#language_ko').addClass("w3-white");
+        $('#language_en').removeClass("w3-white");
     }
+
+    $('[data-langLabel]').each(function() {
+        var $this = $(this);
+        $this.html($.lang[currentLanguage][$this.data('langlabel')]);
+    });
 }
 
-function setEnglishLanguage() {
-    language = new EnglishLanguage();
-    $('#language_en').addClass("w3-white");
-    $('#language_ko').removeClass("w3-white");
-    setCookie("language", "en", 30);
+$('a.setLang').click(function() {
+    var lang = $(this).data('lang');
+    setCookie('language', lang, 30);
+    setLanguage(lang);
     location.reload();
-    //setDatas();
-}
-
-function setKoreanLanguage() {
-    language = new KoreanLanguage();
-    $('#language_ko').addClass("w3-white");
-    $('#language_en').removeClass("w3-white");
-    setCookie("language", "ko", 30);
-    location.reload();
-    //setDatas();
-}
+})

@@ -28,7 +28,7 @@
         <div class="w3-col w3-half">
 
             <div class="w3-container w3-alpha-black w3-margin">
-                <h4 class="w3-text-white w3-border-bottom">달력</h4>
+                <h4 class="w3-text-white w3-border-bottom" data-langLabel='tb_calendar'>달력</h4>
                 <div style="width:100%;">
                     <div id="calendar"> </div>
                 </div>
@@ -41,7 +41,7 @@
         <div class="w3-col w3-half">
 
             <div class="w3-container w3-alpha-black w3-margin">
-                <h4 class="w3-text-white w3-border-bottom">실시간 배지 무게 및 배액 무게</h4>
+                <h4 class="w3-text-white w3-border-bottom" data-langLabel='tb_realTimeWeight'>실시간 배지 무게 및 배액 무게</h4>
                 <div>
                     <div style="width:50%;text-align:center;float:left;">
                         <div style="text-align:center;vertical-align:middle;width:100%;height:13em;background:url('img/dial.png') no-repeat center;background-size:contain;">
@@ -49,7 +49,7 @@
                                 <h1 id="currentWeight"></h1>
                             </div>
                         </div>
-                        <h5 class="w3-text-white">배지 무게</h4>
+                        <h5 class="w3-text-white" data-langLabel='weight_channel'>배지 무게</h4>
                         </div>
                         <div style="width:50%;text-align:center;float:left;">
                             <div style="text-align:center;vertical-align:middle;width:100%;height:13em;background:url('img/dial.png') no-repeat center;background-size:contain;">
@@ -57,16 +57,16 @@
                                     <h1 id="currentLiquid"></h1>
                                 </div>
                             </div>
-                            <h5 class="w3-text-white">배액 무게</h4>
+                            <h5 class="w3-text-white" data-langLabel='weight_drainage'>배액 무게</h4>
                             </div>
                         </div>
                     </div>
 
-                    <div class="w3-container w3-alpha-black w3-margin">
+                    <%include layout/weather.ejs %>
+                    <!-- <div class="w3-container w3-alpha-black w3-margin">
                         <h4 class="w3-text-white w3-border-bottom">외부 날씨 및 예보</h4>
 
                         <div id="weather" style="text-align:center;">
-                            <!-- 현재 날씨 -->
                             <div class="forecast_current">
                                 <div style="width:100%; margin-bottom:0.5em;">
                                     <div>
@@ -80,7 +80,6 @@
                                 </div>
                             </div>
 
-                            <!-- 향후 날씨 -->
                             <div style="width:50%; float:left;">
                                 <div class="w3-border-left-dotted w3-border-bottom-dotted forecast_wrapper">
                                     <div id="forecastDate_1" class="forecast_date"></div>
@@ -112,7 +111,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="w3-container w3-alpha-black w3-margin">
 
@@ -120,20 +119,20 @@
                           <i id="currentValuesTableMinus" class="fa fa-minus-square-o"></i>
                       </span>
 
-                      <h4 id="currentInfo_label" class="w3-text-white w3-border-bottom" style="margin-bottom: 0px">실시간 배지 정보</h4>
+                      <h4 id="currentInfo_label" class="w3-text-white w3-border-bottom" style="margin-bottom: 0px" data-langLabel='tb_calculatedWeightInfo'>실시간 배지 정보</h4>
 
                       <div class="w3-responsive" id="currentValuesTable">
                         <table class="w3-fixed-table-weight">
                             <tr class="w3-border-bottom-dotted">
                                 <td class="w3-right-align"><i class="fa fa-tint fa-fw w3-margin-right w3-xlarge" aria-hidden="true"></i></td>
-                                <td class="w3-left-align">총급액횟수</td>
+                                <td class="w3-left-align" data-langLabel='supply_number'>총급액횟수</td>
                                 <td id="supply_number"></td>
                             <!-- <td class="w3-right-align"></td>
                             <td class="w3-left-align"></td> -->
                         </tr>
                         <tr class="w3-border-bottom-dotted">
                             <td class="w3-right-align"><i class="fa fa-clock-o fa-fw w3-margin-right w3-xlarge" aria-hidden="true"></i></td>
-                            <td class="w3-left-align">급액시간</td>
+                            <td class="w3-left-align" data-langLabel='supply_time'>급액시간</td>
                             <td>
                                 <table id="supply_time" style="width:100%"></table>
                             </td>
@@ -142,28 +141,28 @@
                         </tr>
                         <tr class="w3-border-bottom-dotted">
                             <td class="w3-right-align"><i class="fa fa-tint fa-fw w3-margin-right w3-xlarge" aria-hidden="true"></i></td>
-                            <td class="w3-left-align">총급액량</td>
+                            <td class="w3-left-align" data-langLabel='supply_amount'>총급액량</td>
                             <td id="supply"></td>
                             <!-- <td id="supply_condition_icon" class="w3-right-align"></td>
                             <td id="supply_condition_value" class="w3-left-align"></td> -->
                         </tr>
                         <tr class="w3-border-bottom-dotted">
                             <td class="w3-right-align"><i class="fa fa-tint fa-fw w3-margin-right w3-xlarge" aria-hidden="true"></i></td>
-                            <td class="w3-left-align">총배액량</td>
+                            <td class="w3-left-align" data-langLabel='drainage_amount'>총배액량</td>
                             <td id="use"></td>
                             <!-- <td id="use_condition_icon" class="w3-right-align"></td>
                             <td id="use_condition_value" class="w3-left-align"></td> -->
                         </tr>
                         <tr class="w3-border-bottom-dotted">
                             <td class="w3-right-align"><i class="fa fa-sun-o fa-fw w3-margin-right w3-xlarge" aria-hidden="true"></i></td>
-                            <td class="w3-left-align">생체중량(예측)</td>
+                            <td class="w3-left-align" data-langLabel='predict_freshWeight'>생체중량(예측)</td>
                             <td id="plantWeight"></td>
                             <!-- <td id="plantWeight_condition_icon" class="w3-right-align"></td>
                             <td id="plantWeight_condition_value" class="w3-left-align"></td> -->
                         </tr>
                         <tr class="w3-border-bottom-dotted">
                             <td class="w3-right-align"><i class="fa fa-tint fa-fw w3-margin-right w3-xlarge" aria-hidden="true"></i></td>
-                            <td class="w3-left-align">증발산량(예측)</td>
+                            <td class="w3-left-align" data-langLabel='predict_evaporation'>증발산량(예측)</td>
                             <td id="eva"></td>
                             <!-- <td id="eva_condition_icon" class="w3-right-align"></td>
                             <td id="eva_condition_value" class="w3-left-align"></td> -->
@@ -176,7 +175,7 @@
         </div>
 
         <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-            <h4 class="w3-text-white w3-border-bottom">
+            <h4 class="w3-text-white w3-border-bottom" data-langLabel='tb_combinedWeightChart'>
                 배지 통합 정보
                 <!-- <a id="weightDataDown" class="downloadLink" href="#">[데이터 다운로드]</a> -->
 <!--                 <span id="download" class="downloadLink" onclick="downloadCalPopupShow()">[데이터 다운로드]</span>
@@ -205,7 +204,7 @@
         </div>
 
         <div class="w3-col w3-container w3-alpha-black w3-margin" style="width:98%;">
-            <h4 class="w3-text-white w3-border-bottom">배지정보 항목별 변화 추이</h4>
+            <h4 class="w3-text-white w3-border-bottom" data-langLabel='tb_individualWeightChart'>배지정보 항목별 변화 추이</h4>
             <div id="changeGraph"></div>
         </div>
 
@@ -237,6 +236,11 @@
   <script src="js/lib/kalmanFilter.js"></script>
   <script src="js/lib/jquery.min.js"></script>
   <script src="js/lib/jquery.simpleWeather.js"></script>
+
+  <script src="language/settingLanguage.js"></script>
+  <script src="language/korean.js"></script>
+  <script src="language/english.js"></script>
+
   <!-- <script src="js/lib/jquery.panzoom.min.js"></script> -->
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
@@ -259,6 +263,7 @@
                 createMap();
                 drawCalendar();
                 $('#titleDate').html(getFormatingDate(new Date()));
+                $('#titleText').html($.lang[getCookie("language")]['menu_weight']);
                 //$('#title').html("센서 현황 [" + today + "]");
 
                 //데이터 다운로드 창 밖에 클릭시 사라지게
