@@ -92,7 +92,7 @@ router.post('/',function(req,res){
 	var update_time=date.toFormat('HH24:MI');
 	// var cipherd_temperature = encryption.fcrypto(temperature);
     var getClientAddress =  req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    var clientIPAddress = getClientAddress.substring(7,getClientAddress.length-1)
+    var clientIPAddress = getClientAddress.substring(7,getClientAddress.length)
     console.log(serial + " - " + clientIPAddress);
     serial_ip.set(serial,clientIPAddress);
 	connection.query('select id from sensor where serial=\''+serial+'\';',function(err,rows){

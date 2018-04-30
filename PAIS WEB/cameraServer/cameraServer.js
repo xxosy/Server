@@ -239,23 +239,25 @@ var camInfo_list = new Array();
 //camInfo_list[1] = new CamInfo('210.117.128.201', 80, userName, password);
 
 request('http://211.230.136.100:3000/sensor/camera/list/all', function(error, response, body) {
-    var camInfo_all = JSON.parse(body).data;
-    if (camInfo_all.length != 0) {
-        var userName = 'admin';
-        var password = '0632551113';
+    if(body!=undefined){
+        var camInfo_all = JSON.parse(body).data;
+        if (camInfo_all.length != 0) {
+            var userName = 'admin';
+            var password = '0632551113';
 
-        var index = 0;
-        for (i = 0; i < camInfo_all.length; i++) {
-            var camInfo = camInfo_all[i];
-            if(camInfo.url != '-') {
-                var ip = camInfo.url.split(":")[1].split("//")[1];
-                camInfo_list[index++] = new CamInfo(ip, 3333, 3335, userName, password);
-                camInfo_list[index++] = new CamInfo(ip, 3334, 3336, userName, password);
+            var index = 0;
+            for (i = 0; i < camInfo_all.length; i++) {
+                var camInfo = camInfo_all[i];
+                if(camInfo.url != '-') {
+                    var ip = camInfo.url.split(":")[1].split("//")[1];
+                    camInfo_list[index++] = new CamInfo(ip, 3333, 3335, userName, password);
+                    camInfo_list[index++] = new CamInfo(ip, 3334, 3336, userName, password);
+                }
             }
+            onvifConnect();
+        } else {
+            return;
         }
-        onvifConnect();
-    } else {
-        return;
     }
 });
 

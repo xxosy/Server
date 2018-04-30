@@ -233,6 +233,20 @@
     <!-- END MAIN -->
     </div>
 
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <!-- <script src="js/lib/jquery.min.js"></script> -->
+    <script src="js/lib/jquery.simpleWeather.js"></script>
+    <script src="js/lib/jquery.panzoom.min.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
+
+    <script src="language/settingLanguage.js"></script>
+    <script src="language/korean.js"></script>
+    <script src="language/english.js"></script>
+
     <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
     <script src="js/index.js"></script>
     <script src="js/common.js"></script>
@@ -243,19 +257,6 @@
     <script src="js/lib/kalmanFilter.js"></script>
     <script src="js/lib/mollier.js"></script>
 
-    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <!-- <script src="js/lib/jquery.min.js"></script> -->
-    <script src="js/lib/jquery.simpleWeather.js"></script>
-    <script src="js/lib/jquery.panzoom.min.js"></script>
-
-    <script src="language/settingLanguage.js"></script>
-    <script src="language/korean.js"></script>
-    <script src="language/english.js"></script>
-
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/highcharts-more.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
     <script>
         $(document).ready(function() {
             $.ajaxSetup({
@@ -311,8 +312,9 @@
                             // console.log(getCookie(cookie_usercode));
                             createMap();
 
-                            $('#titleDate').html(getFormatingDate(new Date()));
                             $('#titleText').html($.lang[getCookie("language")]['menu_climate']);
+                            $('#titleDate').html(getFormatingDate(new Date()));
+                            
                             //$('#title').html("센서 현황 [" + today + "]");
 
                             setHighchartsOption();
