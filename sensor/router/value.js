@@ -26,12 +26,12 @@ router.get('/recent/serial/:serial',function(req,res){
 				var id = rows[rows.length-1].id;
 				connection.query('select value.id,value.sensor_id,'+
 					'value.temperature,value.temperature_ds,value.humidity,'+
-					'value.co2-zeropoint.co2 as co2,value.light,value.ec-zeropoint.ec as ec,'+
-					'value.ph-zeropoint.ph as ph ,value.medium_weight-zeropoint.medium_weight as medium_weight,'+
-					'value.drain_weight-zeropoint.drain_weight as drain_weight,update_date,update_time '+
-					'from value,zeropoint '+
-					'where value.sensor_id = \''+id+'\' and '+
-					'value.sensor_id = zeropoint.sensor_id order by id DESC limit 1;',function(err,rows){
+					'value.co2,value.light,value.ec,'+
+					'value.ph,value.medium_weight,'+
+					'value.drain_weight,update_date,update_time '+
+					'from value '+
+					'where value.sensor_id = \''+id+'\' '+
+					'order by id DESC limit 1;',function(err,rows){
 					if(rows=== null || rows.length==0 || rows === undefined){
 						var result = response_maker.getResponse(404, null);
 						res.json(result);
@@ -95,9 +95,32 @@ router.post('/',function(req,res){
     var clientIPAddress = getClientAddress.substring(7,getClientAddress.length)
     console.log(serial + " - " + clientIPAddress);
     serial_ip.set(serial,clientIPAddress);
-	connection.query('select id from sensor where serial=\''+serial+'\';',function(err,rows){
+	connection.query('select s.id, z.medium_weight, z.drain_weight, z.ec, z.ph, z.co2 from sensor s, zeropoint z where z.sensor_id = s.id and s.serial =\''+serial+'\';',function(err,rows){
 		if(rows!==undefined){
 			var sensor_id = rows[rows.length-1].id;
+			var zeropoint_medium_weight = Number(rows[rows.length-1].medium_weight);
+			var zeropoint_drain_weight = Number(rows[rows.length-1].drain_weight);
+			var zeropoint_ec = Number(rows[rows.length-1].ec);
+			var zeropoint_ph = Number(rows[rows.length-1].ph);
+			var zeropoint_co2 = Number(rows[rows.length-1].co2);
+
+			var num_medium_weight = Number(medium_weight);
+			var num_drain_weight = Number(drain_weight);
+			var num_ec = Number(ec);
+			var num_ph = Number(ph);
+			var num_co2 = Number(co2);
+
+			medium_weight = num_medium_weight - zeropoint_medium_weight;
+			medium_weight +="";
+			drain_weight = num_drain_weight - zeropoint_drain_weight;
+			drain_weight +="";
+			ec = num_ec - zeropoint_ec;
+			ec +="";
+			ph = num_ph - zeropoint_ph;
+			ph +="";
+			co2 = num_co2 - zeropoint_co2;
+			co2 +="";
+
 			if(!rows.length){
 				res.status(404).send('NOT find list for serial :'+serial);
 			}else{
