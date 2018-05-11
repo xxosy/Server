@@ -111,14 +111,19 @@ router.post('/',function(req,res){
 			var num_co2 = Number(co2);
 
 			medium_weight = num_medium_weight - zeropoint_medium_weight;
+			medium_weight = medium_weight.toFixed(3);
 			medium_weight +="";
 			drain_weight = num_drain_weight - zeropoint_drain_weight;
+			drain_weight = drain_weight.toFixed(3);
 			drain_weight +="";
 			ec = num_ec - zeropoint_ec;
+			ec = ec.toFixed(3);
 			ec +="";
 			ph = num_ph - zeropoint_ph;
+			ph = ph.toFixed(3);
 			ph +="";
 			co2 = num_co2 - zeropoint_co2;
+			co2 = co2.toFixed(3);
 			co2 +="";
 
 			if(!rows.length){

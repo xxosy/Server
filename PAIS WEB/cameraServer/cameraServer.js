@@ -121,6 +121,7 @@ app.get('/imgSave/:ip/:port', function(req, res) {
                             fileName = this.hostname + "." + port + ".png";
 
                         var uri = img.uri;
+                        console.log(uri);
                         var tmp = uri.split("/");
                         tmp[2] = ip + ":" + port;
 
@@ -150,8 +151,6 @@ app.get('/imgSave/:ip/:port', function(req, res) {
         }
     }
 });
-
-
 
 //�����췯�� �̿��� �ð����� �������� �� ����
 //2�ð����� ���� ī�޶� ���� ����
@@ -238,7 +237,7 @@ var camInfo_list = new Array();
 //camInfo_list[2] = new CamInfo('210.111.218.44', 8000, 'admin1', password);
 //camInfo_list[1] = new CamInfo('210.117.128.201', 80, userName, password);
 
-request('http://211.230.136.100:3000/sensor/camera/list/all', function(error, response, body) {
+request('http://www.ezsmartfarm.com:3000/sensor/camera/list/all', function(error, response, body) {
     if(body!=undefined){
         var camInfo_all = JSON.parse(body).data;
         if (camInfo_all.length != 0) {
@@ -262,6 +261,7 @@ request('http://211.230.136.100:3000/sensor/camera/list/all', function(error, re
 });
 
 //var cam_hashMap = new HashMap();  //키 : URL, 값 : 위에 만든 클래스
+
 
 var Cam = require('./lib/onvif').Cam,
     fs = require('fs');
@@ -287,6 +287,8 @@ function onvifConnect() {
                 }
             }
             consoleLog('connected, ' + this.hostname + ':' + this.port);
+
+            
         });
 
         //var key =

@@ -366,10 +366,13 @@ function setWeightGraph(date) {
                 var supValue = 0;
                 var totalSupValue = 0;
                 var supplyLogs = '<tr>';
+                var drainStartIndex=0;
 
                 // 수확량 관련 변수
+                var tempUseValue = 0;
                 var useValue = 0;
                 var preUseValue = 0;
+                var drainStartValue = 0;
                 var amountOfHarvest = 0;
                 var harvestCount=0;
                 var harvestTime = '<tr>';
@@ -417,8 +420,15 @@ function setWeightGraph(date) {
                             if(preDrainWeight-prepreDrainWeight < -0.2 && drainWeight-preDrainWeight > 0.2) {
                                 drainDatas[i-1][1] = (drainWeight + prepreDrainWeight) / 2  // 에러데이터 그래프에서 제거
                             }
-                            else if(!isDraining && drainWeight-preDrainWeight < 0.01) {} //미세하게 진동하는 값 무시
+                            // else if(!isDraining && drainWeight-preDrainWeight < 0.01) {} //미세하게 진동하는 값 무시
                             else {
+                                if(isDraining == false) {
+                                    drainStartIndex = i;
+                                    tempUseValue = drainWeight-preDrainWeight
+                                    drainStartValue = useValue;
+                                } else {
+                                    tempUseValue += drainWeight-preDrainWeight
+                                }
                                 isDraining = true
                                 useValue += drainWeight-preDrainWeight
                             }
@@ -434,8 +444,13 @@ function setWeightGraph(date) {
                                 useValue += drainWeight-preDrainWeight
                                 preUseValue -= (drainWeight-preDrainWeight) / 2
                                 abmormalDrainIndexs.push(i - 1)
-                            }
-                            else {
+                            } else if(drainWeight <= preDrainWeight) {
+                                if(tempUseValue < 0.01) {
+                                    for(k = drainStartIndex; k<i; k++) {
+                                        useDatas[k][1] = drainStartValue
+                                    }
+                                    useValue = drainStartValue
+                                }
                                 isDraining = false
                                 console.log(useValue)
                             }
@@ -658,8 +673,10 @@ function drawWeightEachGraph(datas, useDatas, liquidDatas, litghtDatas) {
     datasList[1] = useDatas;
     datasList[2] = liquidDatas;
     datasList[3] = litghtDatas;
-
-    Highcharts.chart('changeGraph', {
+        $('<div class="chart" style="margin-top:1em;">')
+        .appendTo('#changeGraph')
+        .highcharts({
+    
         chart: {
             zoomType: 'x',
             backgroundColor: 'rgba(0,0,0,0)'

@@ -1,7 +1,7 @@
 $.lang['ko'] = {
     temperature: '온도',
     humidity: '습도',
-    light: '광량',
+    light: '조도',
     co2: 'CO₂',
     ph: 'PH',
     ec: 'EC',

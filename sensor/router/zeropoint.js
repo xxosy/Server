@@ -48,8 +48,10 @@ router.get('/id/:id',function(req,res){
 router.get('/recent/id/:id',function(req,res){
 	var id = req.params.id;
 	var connection = database.getConnection();
-	connection.query('select id,medium_weight,drain_weight,ec,ph,co2,sensor_id from value'+
-	' where sensor_id=\''+id+'\' order by id DESC limit 1;',function(err,rows){
+	connection.query('select v.id as id, v.medium_weight+z.medium_weight as medium_weight,v.drain_weight+z.drain_weight as drain_weight,v.ec+z.ec as ec,v.ph+z.ph as ph,v.co2+z.co2 as co2,v.sensor_id as sensor_id '+
+		'from value v '+
+		'inner join zeropoint z on v.sensor_id = z.sensor_id '+
+		'where v.sensor_id=\''+id+'\' order by v.id DESC limit 1;',function(err,rows){
 		if(rows=== null || rows.length === 0 ||rows === undefined){
 			var result = response_maker.getResponse(404, null);
 			res.json(result);

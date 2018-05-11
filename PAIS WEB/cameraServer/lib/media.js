@@ -701,8 +701,8 @@ Cam.prototype.getSnapshotUri = function(options, callback) {
 		this._envelopeFooter()
 	}, function(err, data, xml) {
 		if (callback) {
-			console.log(data[0].getSnapshotUriResponse.MediaUriUri);
-			console.log(xml);
+			// console.log(data[0].getSnapshotUriResponse.MediaUriUri);
+			// console.log(xml);
 			callback.call(this, err, err ? null : linerase(data).getSnapshotUriResponse.mediaUri, xml);
 		}
 	}.bind(this));

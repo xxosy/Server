@@ -164,16 +164,16 @@ function clickReadCurrentValue(){
 				alert('해당 센서가 아직 데이터를 수신하지 못했습니다.');
 			}else{
 				var zeropoint_cuttent_value = response.data;
-				$('#medium_weight_label_'+current_sensor).data('content',zeropoint_cuttent_value.medium_weight);
-				$('#medium_weight_text_'+current_sensor).text(zeropoint_cuttent_value.medium_weight);
-				$('#drain_weight_text_'+current_sensor).data('content',zeropoint_cuttent_value.drain_weight);
-				$('#drain_weight_text_'+current_sensor).text(zeropoint_cuttent_value.drain_weight);
-				$('#ec_text_'+current_sensor).data('content',zeropoint_cuttent_value.ec);
-				$('#ec_text_'+current_sensor).text(zeropoint_cuttent_value.ec);
-				$('#ph_text_'+current_sensor).data('content',zeropoint_cuttent_value.ph);
-				$('#ph_text_'+current_sensor).text(zeropoint_cuttent_value.ph);
-				$('#co2_text_'+current_sensor).data('content',zeropoint_cuttent_value.co2);
-				$('#co2_text_'+current_sensor).text(zeropoint_cuttent_value.co2);
+				$('#medium_weight_label_'+current_sensor).data('content',zeropoint_cuttent_value.medium_weight.toFixed(2));
+				$('#medium_weight_text_'+current_sensor).text(zeropoint_cuttent_value.medium_weight.toFixed(2));
+				$('#drain_weight_text_'+current_sensor).data('content',zeropoint_cuttent_value.drain_weight.toFixed(2));
+				$('#drain_weight_text_'+current_sensor).text(zeropoint_cuttent_value.drain_weight.toFixed(2));
+				$('#ec_text_'+current_sensor).data('content',zeropoint_cuttent_value.ec.toFixed(2));
+				$('#ec_text_'+current_sensor).text(zeropoint_cuttent_value.ec.toFixed(2));
+				$('#ph_text_'+current_sensor).data('content',zeropoint_cuttent_value.ph.toFixed(2));
+				$('#ph_text_'+current_sensor).text(zeropoint_cuttent_value.ph.toFixed(2));
+				$('#co2_text_'+current_sensor).data('content',zeropoint_cuttent_value.co2.toFixed(2));
+				$('#co2_text_'+current_sensor).text(zeropoint_cuttent_value.co2.toFixed(2));
 				var placeholderTarget = $('.textbox input[type="text"], .textbox input[type="password"]');
 				placeholderTarget.each(function(){ if($(this).val() != ''){ $(this).siblings('label').css('display','none'); } });
 
