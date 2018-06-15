@@ -469,17 +469,13 @@ function downloadData() {
 
         downloadUrl(downLinkUrl + downQuery);
     } else if (downFlag == 2){
-        var start = convertDate(startDate);
-        var end = convertDate(endDate);
+        // var start = convertDate(startDate);
+        // var end = convertDate(endDate);
 
-        var gap = ((end.getTime() - start.getTime()) / (24 * 60 * 60)) / 1000;
-        for (i = 0 ; i <= gap ; i++) {
-            var downDate = new Date();
-            downDate.setTime(start.getTime() + ((24 * 60 * 60 ) * i * 1000));
-            downQuery = selectedSensor + "/" + downDate.getUTCFullYear() + "-" + ("0" + (downDate.getUTCMonth())).slice(-2) + "-" + ("0" + (downDate.getUTCDate()+1)).slice(-2);
-
-            downloadUrl(downLinkUrl + downQuery);
-        }
+        // var gap = ((end.getTime() - start.getTime()) / (24 * 60 * 60)) / 1000;      
+        downQuery = selectedSensor + "/start/" +startDate+ "/end/" +endDate;
+        downloadUrl(downLinkUrl + downQuery);
+        
     } else {
         alert("잘못된 날짜 입니다.");
         return;
