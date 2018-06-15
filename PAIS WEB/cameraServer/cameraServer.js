@@ -247,7 +247,7 @@ request('http://www.ezsmartfarm.com:3000/sensor/camera/list/all', function(error
             var index = 0;
             for (i = 0; i < camInfo_all.length; i++) {
                 var camInfo = camInfo_all[i];
-                if(camInfo.url != '-') {
+                if(camInfo.url != '-' &&camInfo.url != undefined &&camInfo.url != null) {
                     var ip = camInfo.url.split(":")[1].split("//")[1];
                     camInfo_list[index++] = new CamInfo(ip, 3333, 3335, userName, password);
                     camInfo_list[index++] = new CamInfo(ip, 3334, 3336, userName, password);
