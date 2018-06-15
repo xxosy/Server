@@ -1150,7 +1150,7 @@ function createMap() {
                             var infowindow = new google.maps.InfoWindow({
                                 content: "<div style='font-size:1.3em;color:#000;'>" +
                                     $.lang[getCookie("language")]['map_markerTitle'] + " : <b>" + title + "</b><br/>" +
-                                    $.lang[getCookie("language")]['map_markerSerial'] + " : <b>" + serial + "</b></div>" +
+                                    // $.lang[getCookie("language")]['map_markerSerial'] + " : <b>" + serial + "</b></div>" +
                                     "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
                                     "<a style='margin-right:5px;' onclick='selectPosition(\"" + serial + "\")'>"+ $.lang[getCookie("language")]['map_markerEdit'] + "</a>" +
                                     "</div>"+
@@ -1206,7 +1206,7 @@ function markerListener(map, marker, title, serial) {
         var infowindow = new google.maps.InfoWindow({
             content: "<div style='font-size:1.3em;color:#000;'>" +
                 "명　칭 : <b>" + title + "</b><br/>" +
-                "시리얼 : <b>" + serial + "</b></div>" +
+                // "시리얼 : <b>" + serial + "</b></div>" +
                 "<div style='text-align:center;color:#000;margin-top:0.5em;'>" +
                 "<a style='margin-right:5px;' onclick='selectPosition(\"" + serial + "\")'>수정</a>" +
                 "</div>"+

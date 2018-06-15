@@ -181,9 +181,9 @@ router.get('/list/all/:serial/:date',function(req,res){
 					res.end();
 				}else{
 					var sensor_id = rows[rows.length-1].id;
-					connection.query('select v.id, v.temperature,v.temperature_ds,v.humidity,v.co2-z.co2 as co2,light,v.ec-z.ec as ec,v.ph-z.ph as ph,v.medium_weight-z.medium_weight as medium_weight,v.drain_weight-z.drain_weight as drain_weight, update_time,v.sensor_id from value v, zeropoint z where v.sensor_id=\''
+					connection.query('select v.id, v.temperature,v.temperature_ds,v.humidity,v.co2 as co2,light,v.ec as ec,v.ph as ph,v.medium_weight as medium_weight,v.drain_weight as drain_weight, update_date,update_time,v.sensor_id from value v where v.sensor_id=\''
 						+sensor_id+'\' and update_date = \''
-						+update_date+'\' and z.sensor_id = \''+sensor_id+'\';',function(err,rows){
+						+update_date+'\';',function(err,rows){
 							if(rows=== null || rows.length === 0 || rows === undefined){
 								var result = response_maker.getResponse(404, null);
 								res.json(result);

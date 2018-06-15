@@ -12,6 +12,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="shortcut icon" href="img/logo.png" />
 <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
 <body>
     <%include layout/popup.ejs %>
     <%include layout/nav.ejs %>
@@ -19,11 +21,11 @@
     <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
 
     <!-- Main content: shift it to the right by 250 pixels when the sidenav is visible -->
-    <div class="w3-main" style="margin-left: 220px;margin-top:38px;">
+    <div class="w3-main" style="margin-left: 220px;">
 
 
         <!-- 좌측 라인 -->
-        <div class="w3-col w3-half">
+        <div class="w3-col w3-half" style="margin-top:38px;">
 
             <div class="w3-container w3-alpha-black w3-margin">
                 <h4 class="w3-text-white w3-border-bottom" data-langLabel='tb_calendar'>달력</h4>
@@ -36,7 +38,7 @@
 
 
         <!-- 우측 라인 -->
-        <div class="w3-col w3-half">
+        <div class="w3-col w3-half" style="margin-top:38px;">
 
             <div class="w3-container w3-alpha-black w3-margin">
                 <h4 class="w3-text-white w3-border-bottom" data-langLabel='tb_realTimeWeight'>실시간 배지 무게 및 배액 무게</h4>
@@ -225,6 +227,7 @@
       });
   </script>
 
+
   <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
   <script src="js/weight.js"></script>
   <script src="js/common.js"></script>
@@ -239,8 +242,10 @@
   <script src="language/korean.js"></script>
   <script src="language/english.js"></script>
 
-  <script src="js/lib/jquery-ui.js"></script>
-  <script src="js/lib/sjcl.js"></script>
+
+
+  <!-- <script src="js/lib/jquery-ui.js"></script> -->
+  <!-- <script src="js/lib/sjcl.js"></script> -->
 
   <!-- <script src="js/lib/jquery.panzoom.min.js"></script> -->
   <script src="https://code.highcharts.com/highcharts.js"></script>
