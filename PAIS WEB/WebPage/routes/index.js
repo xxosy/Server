@@ -77,6 +77,20 @@ router.get('/actuator', function(req, res, next) {
         id: '-'
     });
 });
+router.get('/compare', function(req, res, next) {
+    res.render('compare', {
+        access_token: '-',
+        refresh_token: '-',
+        id: '-'
+    });
+});
+router.get('/imgViewer', function(req, res, next) {
+    res.render('imgViewer', {
+        access_token: '-',
+        refresh_token: '-',
+        id: '-'
+    });
+});
 router.get('/test', function(req, res, next) {
     res.render('test', {
         title: 'Express',

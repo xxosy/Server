@@ -40,7 +40,7 @@ app.get('/check', function(req, res) {
     });
 });
 
-var imgRootPath = "C:/SSL/PAIS WEB/WebPage/public/img/camera";
+var imgRootPath = "C:/SSL/Server/PAIS WEB/WebPage/public/img/camera";
 
 app.get('/saveTest', function(req, res) {
     consoleLog("all cams image save start");

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>온실 모니터링</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+        <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+        <link rel="stylesheet" href="css/w3.css">
+        <link rel="stylesheet" href="css/style.css">
+
+        <link rel="stylesheet" href="css/imgviewer.css">
+
+        <link rel="shortcut icon" href="img/logo.png" />
+    </head>
+
+    <body>
+        <%include layout/popup.ejs %>
+        <%include layout/nav.ejs %>
+        <%include layout/nav-top.ejs %>
+
+        <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
+
+        <div class="w3-main" style="margin-left: 200px;">
+            <div class="w3-col img-video-player" style="margin-bottom: 32px;">
+                <div style="margin-top: 60px !important; margin:auto; width:75%;">
+                    <div id="playerWrapper" class="w3-col w3-alpha-black">
+                        <div id="videoContainer" class="w3-margin img-video-container">
+                            <section id="imageControl">
+                                <div class="img-container">
+                                    <img id="imgDetail" class="panzoom" src="img/farm_.jpg" onerror="this.src='img/noImage.png'" alt="" style="height:100%;">
+                                </div>
+                            </section>
+
+                            <section id="video-control" class="w3-container img-video-cotrol" style="text-align:center; padding-bottom:0; background-color:black";>
+                                <div class="img-video-centerControl" style="float:left">
+                                    <button title="이전 이미지" aria-label="prev" onclick="clickPreCamImg()" style="width:46px; background-color:transparent; border-width:initial; border-style:none; border-color:initial; border-image:initial; padding:0px">
+                                        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
+                                            <path class="ytp-svg-fill" d="M 22,24 13.5,18 22,12 V 24 z M 10,12 v 12 h 2 V 12 h -2 z" style="fill: white; fill-rule:evenodd; stroke:white; stroke-width:1;"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-play" title="재생" aria-label="play" onclick="changePlayBtn()" style="width:46px; background-color:transparent; border-width:initial; border-style:none; border-color:initial; border-image:initial; padding:0px">
+                                        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
+                                            <path class="ytp-svg-fill" d="M 12,26 18.5,22 18.5,14 12,10 z M 18.5,22 25,18 25,18 18.5,14 z" style="fill: rgb(255,255,255)"></path>
+                                        </svg>
+                                    </button>
+                                    <button title="다음 이미지" aria-label="next" onclick="clickNextCamImg()" style="width:46px; background-color:transparent; border-width:initial; border-style:none; border-color:initial; border-image:initial; padding:0px">
+                                        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
+                                            <path class="ytp-svg-fill" d="M 12,24 20.5,18 12,12 V 24 z M 22,12 v 12 h 2 V 12 h -2 z" style="fill: white; fill-rule:evenodd; stroke:white; stroke-width:1;"></path>
+                                        </svg>
+                                    </button>
+                              </div>
+                              <div class="img-video-rightControl" style="text-align:right">
+                                  <button class="player-control-btn zoom-in" title="확대">
+                                      <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
+                                          <path class="ytp-svg-fill" d="M280.5,127.5h-51v102h-102v51h102v102h51v-102h102v-51h-102V127.5z M255,0C114.75,0,0,114.75,0,255s114.75,255,255,255    s255-114.75,255-255S395.25,0,255,0z M255,459c-112.2,0-204-91.8-204-204S142.8,51,255,51s204,91.8,204,204S367.2,459,255,459z" transform="matrix(0.04313725,0,0,0.04313725, 7, 6.5)" style="fill: white; fill-rule:evenodd; stroke:white; stroke-width:1;"></path>
+                                      </svg>
+                                  </button>
+                                  <button class="player-control-btn zoom-out" title="축소">
+                                      <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
+                                          <path class="ytp-svg-fill" d="m 127.5,229.5 v 51 c 84.84408,0 177.11736,0 255,0 v -51 c -91.37341,0 -170.20534,0 -255,0 z M 255,0 C 114.75,0 0,114.75 0,255 0,395.25 114.75,510 255,510 395.25,510 510,395.25 510,255 510,114.75 395.25,0 255,0 Z m 0,459 C 142.8,459 51,367.2 51,255 51,142.8 142.8,51 255,51 c 112.2,0 204,91.8 204,204 0,112.2 -91.8,204 -204,204 z" transform="matrix(0.04313725,0,0,0.04313725, 7, 6.5)" style="fill: rgb(255,255,255)"></path>
+                                      </svg>
+                                  </button>
+                                  <button class="player-control-btn reset" title="초기화">
+                                      <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
+                                          <g transform="matrix(0.02250952, 0, 0, 0.02250952, 5.1892132, 5.6687502)" style="fill:white">
+                                              <path d="M 500,10 V 402 L 696,206 Z" />
+                                              <path  d="M 500,990 C 271.3,990 85.1,803.8 85.1,575.1 85.1,346.4 271.3,160.2 500,160.2 v 91.5 c -176.4,0 -323.4,143.7 -323.4,323.4 0,179.7 143.7,323.4 323.4,323.4 179.7,0 323.4,-143.7 323.4,-323.4 h 91.5 C 914.9,803.8 728.7,990 500,990 Z"/>
+                                          </g>
+                                      </svg>
+                                  </button>
+                                  <button id="fullscreen" class="player-control-btn fullscreen-btn" title="Full Screen">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 36 36"><path  d="m 30.219081,14.951943 h -2 V 9.9519439 h -7 V 7.9519435 h 9 z m -9,13 v -2 h 7 v -5 h 2 v 7 z m -14.9999997,-7 h 2 v 5 h 6.9999997 v 2 H 6.2190813 Z M 15.219081,7.9519435 V 9.9519439 H 8.2190813 v 4.9999991 h -2 V 7.9519435 Z" style="fill:white;" /></svg>
+                                  </button>
+                              </div>
+                          </section>
+                        </div>
+                    </div>
+
+                    <div class="w3-col w3-alpha-black" style="color:black;">
+                        <div class="w3-container w3-margin" style="padding-bottom:0; width:30%; float:left;">
+                            <select id="serialSelect" class="form-control" name="sensor_list" onchange="serialSelect()"></select>
+                        </div>
+                        <div class="w3-container w3-margin" style="margin-bottom:0px !important; padding-bottom:0; width:30%; float:right;">
+                            <div class='col-md-3 datepicker'>
+                                <div class="form-group">
+                                    <input id="start-date-form" type='text' placeholder="시작 날짜 입력" class="form-control" data-provide="datepicker" style="padding-left:30px"/>
+                                    <span class="glyphicon glyphicon-calendar" style="position:absolute; top: 10px; left:10px; color: #ccc;"></span>
+                                </div>
+                            </div>
+                            <div class='col-md-3 datepicker'>
+                                <div class="form-group">
+                                    <input id="end-date-form" type='text' placeholder="종료 날짜 입력" class="form-control" data-provide="datepicker" style="padding-left:30px"/>
+                                    <span class="glyphicon glyphicon-calendar" style="position:absolute; top: 10px; left:10px; color: #ccc;"></span>
+                                </div>
+                            </div>
+                            <div class='col-md-3' style="padding-right:0; width:10%">
+                                <button type="button" class="btn btn-default" onclick="search()" style="background-color:rgb(67,72,87); border-color:rgb(67,72,87); color:rgb(255,255,255);">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w3-col w3-alpha-black">
+                        <div class="w3-container w3-margin image-render" style="margin-top:0px !important; margin-bottom:0px !important;">
+                            <div id="all-select-date-image">
+                                <div style="border-bottom:1px solid white; margin-bottom: 10px; font-size:1.5em; color:white; width:100%; vertical-align:middle;">
+                                    <span id="img-title">전체 사진</span>
+                                    <div style="float:right">
+                                      <a onclick="allImageListOn()" style=" color:white; height: 25px;  padding: 3px 14px;  border: 1px solid #bcbcbd;  font-size: 12px; line-height: 21px;">전체 사진</a>
+                                      <a onclick="dateListOn()" style="color:white; height: 25px;  padding: 3px 14px;  border: 1px solid #bcbcbd;  font-size: 12px; line-height: 21px; margin-left: 7px">날짜 목록</a>
+                                    </div>
+                                </div>
+                                <div id="img-items" class="scroll-box" style="margin-bottom: 16px;"></div>
+                                <div id="img-date-list" class="scroll-box" style="display:none; margin-bottom: 16px;"></div>
+                                <div id="certain-select-items" class="scroll-box" style="display:none; margin-bottom: 16px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
+        <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
+
+        <script src="js/lib/cookie.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="js/lib/jquery.panzoom.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/momentjs/2.13.0/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/bootstrap.datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
+        <script src="language/settingLanguage.js"></script>
+        <script src="language/korean.js"></script>
+        <script src="language/english.js"></script>
+
+        <script src="js/common.js"></script>
+        <script src="js/imgViewer.js"></script>
+
+        <script>
+            $(document).ready(function() {
+                var cookie_token = getCookie(cookie_accessToken);
+                if (cookie_token == "") { //기존에 로그인되어 있을경우
+                    $("#loginMask").css("display", "block");
+                } else {
+                    // 로그인 되어 있을때
+                    // 저장되어 있는 토큰 유효성 검사 후 화면 출력
+                    $('#titleDate').html(getFormatingDate(new Date()));
+
+                    setDatas(true);
+                    var $section = $('#imageControl');
+                    var $controlSection = $('.img-video-cotrol');
+                    $section.find('.panzoom').panzoom({
+                        $zoomIn: $controlSection.find(".zoom-in"),
+                        $zoomOut: $controlSection.find(".zoom-out"),
+                        $zoomRange: $controlSection.find(".zoom-range"),
+                        $reset: $controlSection.find(".reset"),
+                        maxScale: 10,
+                        minScale: 1
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

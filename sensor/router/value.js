@@ -96,7 +96,9 @@ router.post('/',function(req,res){
     console.log(serial + " - " + clientIPAddress);
     serial_ip.set(serial,clientIPAddress);
 	connection.query('select s.id, z.medium_weight, z.drain_weight, z.ec, z.ph, z.co2 from sensor s, zeropoint z where z.sensor_id = s.id and s.serial =\''+serial+'\';',function(err,rows){
-		if(rows!==undefined){
+		console.log(rows.length);
+
+		if(rows.length || rows!==null ||rows!=undefined){
 			var sensor_id = rows[rows.length-1].id;
 			var zeropoint_medium_weight = Number(rows[rows.length-1].medium_weight);
 			var zeropoint_drain_weight = Number(rows[rows.length-1].drain_weight);
@@ -126,21 +128,19 @@ router.post('/',function(req,res){
 			co2 = co2.toFixed(3);
 			co2 +="";
 
-			if(!rows.length){
-				res.status(404).send('NOT find list for serial :'+serial);
-			}else{
-				connection.query('insert into value(`temperature`,`temperature_ds`,`humidity`,`co2`,`light`,`ec`,`ph`,`medium_weight`,`drain_weight`,`update_time`,`update_date`,`sensor_id`) '+
-					'values(\''+temperature+'\',\''
-					+temperature_ds+'\',\''
-					+humidity+'\',\''
-					+co2+'\',\''
-					+light+'\',\''
-					+ec+'\',\''
-					+ph+'\',\''
-					+medium_weight+'\',\''
-					+drain_weight+'\',\''
-					+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
-						if(err == null){
+
+			connection.query('insert into value(`temperature`,`temperature_ds`,`humidity`,`co2`,`light`,`ec`,`ph`,`medium_weight`,`drain_weight`,`update_time`,`update_date`,`sensor_id`) '+
+				'values(\''+temperature+'\',\''
+				+temperature_ds+'\',\''
+				+humidity+'\',\''
+				+co2+'\',\''
+				+light+'\',\''
+				+ec+'\',\''
+				+ph+'\',\''
+				+medium_weight+'\',\''
+				+drain_weight+'\',\''
+				+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
+					if(err == null){
 							// console.log('sensor '+sensor_id+'value is inserted : '+update_time);
 
 						}else if(err.code === 'ER_NO_REFERENCED_ROW_2'){
@@ -150,7 +150,7 @@ router.post('/',function(req,res){
 							console.log(err);
 						}
 					});
-			}
+			
 		}else{
 			res.status(404).send('NOT find list for serial :'+serial);
 		}
@@ -181,9 +181,9 @@ router.get('/list/all/:serial/:date',function(req,res){
 					res.end();
 				}else{
 					var sensor_id = rows[rows.length-1].id;
-					connection.query('select v.id, v.temperature,v.temperature_ds,v.humidity,v.co2-z.co2 as co2,light,v.ec-z.ec as ec,v.ph-z.ph as ph,v.medium_weight-z.medium_weight as medium_weight,v.drain_weight-z.drain_weight as drain_weight, update_time,v.sensor_id from value v, zeropoint z where v.sensor_id=\''
+					connection.query('select v.id, v.temperature,v.temperature_ds,v.humidity,v.co2 as co2,light,v.ec as ec,v.ph as ph,v.medium_weight as medium_weight,v.drain_weight as drain_weight, update_date,update_time,v.sensor_id from value v where v.sensor_id=\''
 						+sensor_id+'\' and update_date = \''
-						+update_date+'\' and z.sensor_id = \''+sensor_id+'\';',function(err,rows){
+						+update_date+'\';',function(err,rows){
 							if(rows=== null || rows.length === 0 || rows === undefined){
 								var result = response_maker.getResponse(404, null);
 								res.json(result);

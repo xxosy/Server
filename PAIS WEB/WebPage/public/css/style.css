@@ -63,6 +63,15 @@ h6 {
     display: none;
 }
 
+.border-white-bottom {
+    border-style:solid;
+    border-color: #fff !important;
+    border-top-width:0;
+    border-right-width:0;
+    border-bottom-width:1px;
+    border-left-width:0;
+}
+
 #mySidenav {
     z-index: 3000;
     width: 200px;
@@ -73,6 +82,19 @@ h6 {
     color: #FFF;
     min-height: 506px;
     height: 70%;
+}
+
+.sideNav_ul {
+  margin-top: 15px !important;
+
+  margin-bottom: 15px !important;
+
+
+  padding-left: 10px;
+
+
+  list-style: none;
+
 }
 
 #calendarTable {
@@ -451,4 +473,138 @@ p.popupCamImgText {
 
 .w3-border-bottom-dotted {
     border-bottom: 0.1px dotted #666666 !important
+}
+
+.form-control {
+
+    display: block;
+
+
+    width: 100%;
+
+    padding: 0.375rem 0.75rem;
+
+
+    -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+
+    color: #fff;
+
+    border: 1px solid #434857;
+
+    border-radius: 0.25rem;
+
+    background-color: #434857;
+
+    background-clip: padding-box;
+
+
+    font-size: 0.9rem;
+
+    line-height: 1.5;
+
+}
+
+
+
+.form-control:focus {
+    color: black;
+
+
+    background-color: white;
+
+}
+
+
+
+.datepicker-input {
+    width:45%;
+
+    min-width:155px;
+
+
+    padding-left: 0;
+
+}
+
+
+
+@media (max-width: 1280px) {
+
+    .datepicker-input.col-md-3 {
+
+        width: 50%;
+
+    }
+
+
+
+    .search-btn, .search-btn .btn {
+
+        width: 100%;
+
+    }
+
+}
+
+
+
+@media (max-width: 1100px) {
+
+    .datepicker-input.col-md-3 {
+
+        width: 100%;
+
+        padding-right: 0 !important;
+
+    }
+
+}
+
+
+
+/* width */
+
+.scroll-box::-webkit-scrollbar, .w3-sidenav::-webkit-scrollbar{
+
+    width: 10px;
+
+}
+
+
+
+/* Track */
+
+.scroll-box::-webkit-scrollbar-track,  .w3-sidenav::-webkit-scrollbar-track{
+
+    background: #f1f1f1;
+
+}
+
+.w3-sidenav::-webkit-scrollbar-track{
+
+    background: #20232b;
+
+}
+
+
+
+/* Handle */
+
+.scroll-box::-webkit-scrollbar-thumb, .w3-sidenav::-webkit-scrollbar-thumb {
+
+    background: #919191;
+
+}
+
+
+
+/* Handle on hover */
+
+.scroll-box::-webkit-scrollbar-thumb:hover {
+
+    background: #555;
+
 }

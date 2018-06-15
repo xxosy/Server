@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>정밀 배지무게 모니터링 시스템</title>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="css/w3.css">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet" href="css/sideNav.css">
+
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <link rel="shortcut icon" href="img/logo.png" />
+
+</head>
+
+<body>
+
+
+
+  <%include layout/popup.ejs %>
+
+  <%include layout/nav.ejs %>
+
+  <%include layout/nav-top.ejs %>
+
+
+
+    <!-- Overlay effect when opening sidenav on small screens -->
+
+    <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
+
+
+
+    <!-- Main content: shift it to the right by 250 pixels when the sidenav is visible -->
+
+    <div class="w3-main" style="margin-left: 220px;">
+
+        <!-- 좌측 라인 -->
+
+        <div class="w3-col w3-half" style="margin-top:38px">
+
+            <%include layout/sensor-location.ejs %>
+
+        </div>
+
+
+
+
+
+        <!-- 우측 라인 -->
+
+        <div class="w3-col w3-half" style="margin-top:38px">
+
+
+
+            <!-- 달력 -->
+
+            <div class="w3-container w3-alpha-black w3-margin">
+
+
+
+                <h4 class="w3-text-white w3-border-bottom">달력</h4>
+
+                <div id="weeksDiv" class="w3-col w3-text-white" style="overflow-y:scroll; margin-top:33px; width:25%; height:300px">
+
+                    <div id="weeksList" style="width:100%"></div>
+
+                </div>
+
+
+
+                <div class="w3-col w3-text-white" style="width:75%" id="calendar1">
+
+                    <div id="header" class="w3-border-bottom" style="text-align:center;margin-bottom:1em;">
+
+                        <span style="text-align:right;margin-top:0.2em;font-size:1.5em;">
+
+                            <a href="#" onclick="redrawCalendar('lastYear', -1)"> << </a>
+
+                            <a href="#" onclick="redrawCalendar('lastMonth', -1)"> < </a>
+
+                        </span>
+
+                        <span id="date" style="font-size:1.5em;"></span>
+
+                        <span style="text-align:left;margin-top:0.2em;font-size:1.5em;">
+
+                            <a href="#" onclick="redrawCalendar('nextMonth', 1)"> > </a>
+
+                            <a href="#" onclick="redrawCalendar('nextYear', 1)"> >> </a>
+
+                        </span>
+
+                    </div>
+
+
+
+                    <table class="alt" style="width:100%">
+
+                        <thead>
+
+                            <tr>
+
+                                <th class="day sun" scope="row">일</th>
+
+                                <th class="day mon" scope="row">월</th>
+
+                                <th class="day tue" scope="row">화</th>
+
+                                <th class="day wed" scope="row">수</th>
+
+                                <th class="day thu" scope="row">목</th>
+
+                                <th class="day fri" scope="row">금</th>
+
+                                <th class="day sat" scope="row">토</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id=calendarTable> </tbody>
+
+                    </table>
+
+                </div>
+
+                <div id="calendar1date" style="display:none;"></div>
+
+
+
+                <div class="w3-col w3-border-top w3-border-bottom w3-text-white" style="width:100%">
+
+                    <div class="w3-col" style="width:15%; margin:0.5em">선택 날짜 : </div>
+
+                    <div id="selectionDateDiv" class="w3-col" style="width:75%; margin:0.5em"></div>
+
+                </div>
+
+            </div>
+
+
+
+            <div id="loadingDiv" class="w3-alpha-black w3-margin">
+
+                <h4 style="margin-top:em; width:100%; float:center"></h4>
+
+            </div>
+
+
+
+        </div>
+
+
+
+        <div class="w3-col">
+
+            <div class="w3-container w3-alpha-black w3-margin">
+
+                <span onclick="showComponentToggle('currentValuesTable', 'currentValuesTableMinus')" class="w3-hover-text-grey w3-closebtn w3-text-white">
+
+                    <i id="currentValuesTableMinus" class="fa fa-minus-square-o"></i>
+
+                </span>
+
+
+
+                <h4 id="currentInfo_label" class="w3-text-white w3-border-bottom" style="margin-bottom: 0px">측정 데이터 주단위 평균</h4>
+
+
+
+                <div class="w3-responsive" id="currentValuesTable">
+
+                    <!-- <table class="w3-fixed-table"> -->
+
+                    <table id="data_avg_table" style="width:100%; margin-top:10px">
+
+                        <colgroup>
+
+                            <col style="width:12.5%">
+
+                            <col style="width:12.5%">
+
+                            <col style="width:12.5%">
+
+                            <col style="width:12.5%">
+
+                            <col style="width:12.5%">
+
+                            <col style="width:12.5%">
+
+                            <col style="width:12.5%">
+
+                            <col style="width:12.5%">
+
+                        </colgroup>
+
+                        <tr class="w3-border-bottom-dotted w3-text-white">
+
+                            <th>선택 기간</th>
+
+                            <th>온도</th>
+
+                            <th>습도</th>
+
+                            <th>조도</th>
+
+                            <th>CO2</th>
+
+                            <th>지온</th>
+
+                            <th>급액량</th>
+
+                            <th>배액량</th>
+
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="w3-container w3-alpha-black w3-margin">
+
+                <h4 class="w3-text-white w3-border-bottom">VPD&HD 적합성 변화 추이</h4>
+
+                <div id="graphVpdHd"></div>
+
+            </div>
+
+
+
+            <div class="w3-container w3-alpha-black w3-margin">
+
+                <h4 class="w3-text-white w3-border-bottom">미기후 정보</h4>
+
+                <div id="graphCompare"></div>
+
+            </div>
+
+
+
+            <div class="w3-container w3-alpha-black w3-margin">
+
+                <h4 class="w3-text-white w3-border-bottom">배지 정보</h4>
+
+                <div id="graphChannel"></div>
+
+            </div>
+
+        </div>
+
+        <!-- END MAIN -->
+
+    </div>
+
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?language=ko&key=AIzaSyBSkR33JkUiPWn2cHRtt4yJb5nGme0_j2I"></script>
+
+    <!-- <script src="js/weight.js"></script> -->
+
+    <script src="js/common.js"></script>
+
+    <script src="js/compare.js"></script>
+
+    <script src="js/lib/cookie.js"></script>
+
+    <script src="js/lib/kalmanFilter.js"></script>
+
+    <script src="js/lib/jquery.min.js"></script>
+
+    <script src="js/lib/jquery.simpleWeather.js"></script>
+
+    <script src="js/lib/mollier.js"></script>
+
+    <!-- <script src="js/lib/jquery.panzoom.min.js"></script> -->
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+    <script src="http://crypto.stanford.edu/sjcl/sjcl.js"></script>
+
+
+
+    <script src="language/settingLanguage.js"></script>
+
+    <script src="language/korean.js"></script>
+
+    <script src="language/english.js"></script>
+
+
+
+    <script>
+
+        var selectedPosition = '35,48.6';
+
+        $(document).ready(function() {
+
+            var cookie_token = getCookie(cookie_accessToken);
+
+            if (cookie_token == "") { //기존에 로그인되어 있을경우
+
+                $("#loginMask").css("display", "block");
+
+            } else { //로그인 되어 있을때
+
+                //저장되어 있는 토큰 유효성 검사 후 화면 출력
+
+                serialListCheck();
+
+                createMap();
+
+                init();
+
+                drawCalendar("calendar1")
+
+                $('#titleDate').html(getFormatingDate(new Date()));
+
+                //$('#title').html("센서 현황 [" + today + "]");
+
+
+
+                setHighchartsOption();
+
+            }
+
+
+
+            $('#tab-climate').html("미기후 정보");
+
+            $('#tab-weight').html("배지 정보");
+
+            $('#tab-journal').html("영농 일지 ");
+
+            $('#tab-actuator').html("온실제어");
+
+        });
+
+    </script>
+
+
+
+</body>
+
+
+
+</html>
+
