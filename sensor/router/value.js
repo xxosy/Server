@@ -96,7 +96,9 @@ router.post('/',function(req,res){
     console.log(serial + " - " + clientIPAddress);
     serial_ip.set(serial,clientIPAddress);
 	connection.query('select s.id, z.medium_weight, z.drain_weight, z.ec, z.ph, z.co2 from sensor s, zeropoint z where z.sensor_id = s.id and s.serial =\''+serial+'\';',function(err,rows){
-		if(rows!==undefined){
+		console.log(rows.length);
+
+		if(rows.length || rows!==null ||rows!=undefined){
 			var sensor_id = rows[rows.length-1].id;
 			var zeropoint_medium_weight = Number(rows[rows.length-1].medium_weight);
 			var zeropoint_drain_weight = Number(rows[rows.length-1].drain_weight);
@@ -126,21 +128,19 @@ router.post('/',function(req,res){
 			co2 = co2.toFixed(3);
 			co2 +="";
 
-			if(!rows.length){
-				res.status(404).send('NOT find list for serial :'+serial);
-			}else{
-				connection.query('insert into value(`temperature`,`temperature_ds`,`humidity`,`co2`,`light`,`ec`,`ph`,`medium_weight`,`drain_weight`,`update_time`,`update_date`,`sensor_id`) '+
-					'values(\''+temperature+'\',\''
-					+temperature_ds+'\',\''
-					+humidity+'\',\''
-					+co2+'\',\''
-					+light+'\',\''
-					+ec+'\',\''
-					+ph+'\',\''
-					+medium_weight+'\',\''
-					+drain_weight+'\',\''
-					+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
-						if(err == null){
+
+			connection.query('insert into value(`temperature`,`temperature_ds`,`humidity`,`co2`,`light`,`ec`,`ph`,`medium_weight`,`drain_weight`,`update_time`,`update_date`,`sensor_id`) '+
+				'values(\''+temperature+'\',\''
+				+temperature_ds+'\',\''
+				+humidity+'\',\''
+				+co2+'\',\''
+				+light+'\',\''
+				+ec+'\',\''
+				+ph+'\',\''
+				+medium_weight+'\',\''
+				+drain_weight+'\',\''
+				+update_time+'\',\''+update_date+'\',\''+sensor_id+'\');',function(err){
+					if(err == null){
 							// console.log('sensor '+sensor_id+'value is inserted : '+update_time);
 
 						}else if(err.code === 'ER_NO_REFERENCED_ROW_2'){
@@ -150,7 +150,7 @@ router.post('/',function(req,res){
 							console.log(err);
 						}
 					});
-			}
+			
 		}else{
 			res.status(404).send('NOT find list for serial :'+serial);
 		}
